@@ -15,17 +15,32 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+/**
+ * This class calculates and emits astronomical values in an HTML table.
+ * The WordPress-defined var 'WPINC' is used to facilitate command line testing.
+ * To test from the command line, create a file test.php in this directory with the
+ * following content:
+ * <?php
+ * include('NightSkyManager.php');
+ * $nightSkyManager = new NightSkyManager();
+ * $nightSkyManager->runNightSky(null);
+ * ?>
+ *
+ * Then execute this command: php -f test.php
+ */
 class NightSkyManager {
     protected $loader;
     protected $plugin_name;
     protected $version;
 
     public function __construct() {
-        $this->plugin_name = 'nightsky';
-        $this->version = '.1';
+        if (defined('WPINC')) {
+            $this->plugin_name = 'nightsky';
+            $this->version = '.1';
 
-        $this->define_admin_hooks();
-        $this->define_public_hooks();
+            $this->define_admin_hooks();
+            $this->define_public_hooks();
+        }
     }
 
     private function define_admin_hooks() {
@@ -77,7 +92,8 @@ class NightSkyManager {
     public function runNightSky($atts) {
     
         // our default location is the dark sky observing site for the Austin Astronomical Society            
-        extract( shortcode_atts( array(
+        if (defined('WPINC')) {
+            extract( shortcode_atts( array(
                 'lat' => '30.8910',               // Latitude value
                 'long' => '-98.4265',             // Longitude value
                 'timezone' => 'America/Chicago',  // timezone
@@ -85,6 +101,13 @@ class NightSkyManager {
                 'graphical' => 'false'            // Display moon images?
                 
             ), $atts, 'nightsky' ) );
+        } else {
+            $lat = '30.8910';               // Latitude value
+            $long = '-98.4265';             // Longitude value
+            $timezone = 'America/Chicago';  // timezone
+            $date = 'now';                  // date
+            $graphical = 'false';           // Display moon images?
+        }
        
         /**
          * The builtin php lib requires the zenith position, but has a flawed default value. 

@@ -21,3 +21,13 @@ To use this plug-in:
 * Untar the file in your WordPress plugins directory. 
 * From the Wordpress wp-admin login, navigate to the dashboard, select plug-ins, find "nightsky", and select Activate.
 * To include the nightsky plugin on a page, insert the shortcode "[nightsky]".
+
+To test from the command line, create a file test.php in the src directory of your local repository with the following content:
+```
+    <?php
+    include('NightSkyManager.php');
+    $nightSkyManager = new NightSkyManager();
+    $nightSkyManager->runNightSky(null);
+    ?>
+```    
+Then execute this command: php -f test.php

@@ -24,10 +24,10 @@ To use this plug-in:
 
 To test from the command line, create a file test.php in the src directory of your local repository with the following content:
 ```
-    <?php
-    include('NightSkyManager.php');
-    $nightSkyManager = new NightSkyManager();
-    $nightSkyManager->runNightSky(null);
-    ?>
+<?php
+include('NightSkyManager.php');
+$nightSkyManager = new NightSkyManager();
+$nightSkyManager->runNightSky(null);
+?>
 ```    
 Then execute this command: php -f test.php

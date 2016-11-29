@@ -94,6 +94,10 @@ class NightSkyManager {
         // our default location is the dark sky observing site for the Austin Astronomical Society            
         if (defined('WPINC')) {
             extract( shortcode_atts( array(
+<<<<<<< HEAD
+                'name' => 'COE',                  // name of location
+=======
+>>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
                 'lat' => '30.8910',               // Latitude value
                 'long' => '-98.4265',             // Longitude value
                 'timezone' => 'America/Chicago',  // timezone
@@ -102,11 +106,30 @@ class NightSkyManager {
                 
             ), $atts, 'nightsky' ) );
         } else {
+<<<<<<< HEAD
+            /**
+             * If you are executing from the command line, use something like this: 
+             * php -f NightSkyManager.php name=test lat=33
+             * order of params does not matter, but make sure you get the syntax right
+             */
+            $name = 'COE';                  // name of location
+=======
+>>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
             $lat = '30.8910';               // Latitude value
             $long = '-98.4265';             // Longitude value
             $timezone = 'America/Chicago';  // timezone
             $date = 'now';                  // date
             $graphical = 'false';           // Display moon images?
+<<<<<<< HEAD
+            $size = sizeof($atts);
+            if ($size > 1) {
+                for ($i = 1; $i < $size; $i++) {
+                    $e=explode("=",$atts[$i]);
+                    ${$e[0]}=$e[1];
+                }
+            }
+=======
+>>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
         }
        
         /**
@@ -147,14 +170,23 @@ class NightSkyManager {
             $moonSet = "None";
         }
 
+<<<<<<< HEAD
+        $this->display( $name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
+=======
         $this->display( $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
+>>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
         return;
     }
 
     /*
         Displays night sky data:
+<<<<<<< HEAD
+        $name, $lat, $long - name and location 
+        $today - date of calculation 
+=======
         $lat, $long - location
         $today - time
+>>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
         $sunRise - time value for sunrise (eg. 6:00)
         $sunSet - time value for sunset (eg. 15:00)
         $moonRise - time value for Moonrise (eg. 6:00)
@@ -162,10 +194,17 @@ class NightSkyManager {
         $morningTwilight - morning astronomical twilight
         $eveningTwilight - evening astronomical twilight
     */    
+<<<<<<< HEAD
+    public function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
+    ?>
+        <div class="nightsky">
+           <bold><?php echo $name ?> (<?php echo $lat ?>, <?php echo $long ?>) astronomical times for today (<?php echo $today ?>)</bold>
+=======
     public function display($lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
     ?>
         <div class="nightsky">
            <bold>COE (<?php echo $lat ?>, <?php echo $long ?>) astronomical times for today (<?php echo $today ?>)</bold>
+>>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
            <table>
                 <tr>
                 <td>Astronomical twilight</td>

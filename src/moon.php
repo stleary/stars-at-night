@@ -27,12 +27,17 @@ class Moon {
 
 /**
  * Calculates the moon rise/set for a given location and day of year
+ * stleary 3 Dec 2016. Added new param tzOffset which is the timezone offset
+ * in minutes for the specified longitude and latitude. There is no way to
+ * calculate this value, it must be provided. It has to be in minutes because
+ * some timezones are not on 1-hour boundaries (e.g. India)
  */
-public static function calculateMoonTimes($month, $day, $year, $lat, $lon) {
+public static function calculateMoonTimes($month, $day, $year, $lat, $lon, $tzOffset) {
 
 $utrise = $utset = 0;
 
-$timezone = (int)($lon / 15);
+// convert to fractional hours
+$timezone = $tzOffset / 60;
 $date = self::modifiedJulianDate($month, $day, $year);
 $date -= $timezone / 24;
 $latRad = deg2rad($lat);

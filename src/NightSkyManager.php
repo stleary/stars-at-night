@@ -1,4 +1,4 @@
-<?php  
+<?php   
 
 /*
     This program is free software; you can redistribute it and/or modify
@@ -68,59 +68,28 @@ class NightSkyManager {
     public function enqueuestyles() {
         wp_enqueue_style( 'nightskycss', plugins_url('../css/NightSky.css',__FILE__), array(), $this->version  );
     }
-
-    /**
-     * This method can be used to calculate early morning or late evening
-     * astronomical twilight. By definition this is 90 minutes before sunrise
-     * or 90 minutes after sunset.
-     * $today - day for which the calculation is being made
-     * $tzOffset - timezone offset in seconds
-     * $sunTime - either sunrise or sunset, string hh:mm 24 hr format
-     * $delta - use -90 for morning, +90 for evening
-     * return: twilight string in hh:mm format
-     */
-    public function calculateTwilight($today, $tzOffset, $sunTime, $delta) {
-        $todayStr = $today . " " . $sunTime;
-        $todayTimestamp = strtotime($todayStr);
-        $twilight = $todayTimestamp + $delta + tzOffset;
-        $dateTime = new DateTime();
-        $dateTime = $dateTime->setTimestamp($twilight);
-        $twilightStr = $dateTime->format('H:i');
-        return $twilightStr;
-    }
+ 
     
     public function runNightSky($atts) {
     
         // our default location is the dark sky observing site for the Austin Astronomical Society            
         if (defined('WPINC')) {
             extract( shortcode_atts( array(
-<<<<<<< HEAD
-                'name' => 'COE',                  // name of location
-=======
->>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
-                'lat' => '30.8910',               // Latitude value
-                'long' => '-98.4265',             // Longitude value
-                'timezone' => 'America/Chicago',  // timezone
+                'name' => 'alt ',                  // name of location
+                'lat' => '42.71',               // Latitude value
+                'long' => '-74.04',             // Longitude value
+                'timezone' => 'America/New_York',  // timezone
                 'date' => 'now',                  // date
                 'graphical' => 'false'            // Display moon images?
                 
             ), $atts, 'nightsky' ) );
         } else {
-<<<<<<< HEAD
             /**
              * If you are executing from the command line, use something like this: 
              * php -f NightSkyManager.php name=test lat=33
              * order of params does not matter, but make sure you get the syntax right
              */
             $name = 'COE';                  // name of location
-=======
->>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
-            $lat = '30.8910';               // Latitude value
-            $long = '-98.4265';             // Longitude value
-            $timezone = 'America/Chicago';  // timezone
-            $date = 'now';                  // date
-            $graphical = 'false';           // Display moon images?
-<<<<<<< HEAD
             $size = sizeof($atts);
             if ($size > 1) {
                 for ($i = 1; $i < $size; $i++) {
@@ -128,8 +97,6 @@ class NightSkyManager {
                     ${$e[0]}=$e[1];
                 }
             }
-=======
->>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
         }
        
         /**
@@ -154,7 +121,8 @@ class NightSkyManager {
         $eveningTwilight = $this->calculateTwilight($today, $tzOffset, $sunSet, (90 * 60));
 
         include('moon.php');
-        $moonData = Moon::calculateMoonTimes($month, $day, $year, $lat, $long);
+        $moonTzOffset = $tzOffset * 60;
+        $moonData = Moon::calculateMoonTimes($month, $day, $year, $lat, $long, $moonTzOffset);
 
         $moonRise = $moonData->moonrise;
         $moonSet = $moonData->moonset;
@@ -170,23 +138,34 @@ class NightSkyManager {
             $moonSet = "None";
         }
 
-<<<<<<< HEAD
         $this->display( $name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
-=======
-        $this->display( $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
->>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
         return;
+    }
+
+    /**
+     * This method can be used to calculate early morning or late evening
+     * astronomical twilight. By definition this is 90 minutes before sunrise
+     * or 90 minutes after sunset.
+     * $today - day for which the calculation is being made
+     * $tzOffset - timezone offset in seconds
+     * $sunTime - either sunrise or sunset, string hh:mm 24 hr format
+     * $delta - use -90 for morning, +90 for evening
+     * return: twilight string in hh:mm format
+     */
+    public function calculateTwilight($today, $tzOffset, $sunTime, $delta) {
+        $todayStr = $today . " " . $sunTime;
+        $todayTimestamp = strtotime($todayStr);
+        $twilight = $todayTimestamp + $delta + tzOffset;
+        $dateTime = new DateTime();
+        $dateTime = $dateTime->setTimestamp($twilight);
+        $twilightStr = $dateTime->format('H:i');
+        return $twilightStr;
     }
 
     /*
         Displays night sky data:
-<<<<<<< HEAD
         $name, $lat, $long - name and location 
         $today - date of calculation 
-=======
-        $lat, $long - location
-        $today - time
->>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
         $sunRise - time value for sunrise (eg. 6:00)
         $sunSet - time value for sunset (eg. 15:00)
         $moonRise - time value for Moonrise (eg. 6:00)
@@ -194,17 +173,10 @@ class NightSkyManager {
         $morningTwilight - morning astronomical twilight
         $eveningTwilight - evening astronomical twilight
     */    
-<<<<<<< HEAD
     public function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
     ?>
         <div class="nightsky">
            <bold><?php echo $name ?> (<?php echo $lat ?>, <?php echo $long ?>) astronomical times for today (<?php echo $today ?>)</bold>
-=======
-    public function display($lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
-    ?>
-        <div class="nightsky">
-           <bold>COE (<?php echo $lat ?>, <?php echo $long ?>) astronomical times for today (<?php echo $today ?>)</bold>
->>>>>>> f916c12832f0c6a77cbd1590b1ad7a14f3984188
            <table>
                 <tr>
                 <td>Astronomical twilight</td>

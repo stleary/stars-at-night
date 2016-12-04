@@ -22,12 +22,7 @@ To use this plug-in:
 * From the Wordpress wp-admin login, navigate to the dashboard, select plug-ins, find "nightsky", and select Activate.
 * To include the nightsky plugin on a page, insert the shortcode "[nightsky]".
 
-To test from the command line, create a file test.php in the src directory of your local repository with the following content:
+To test from the command line, execute something like this:
 ```
-<?php
-include('NightSkyManager.php');
-$nightSkyManager = new NightSkyManager();
-$nightSkyManager->runNightSky(null);
-?>
+php  NightSkyManager.php mode=test name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
 ```    
-Then execute this command: php -f test.php

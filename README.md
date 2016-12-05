@@ -3,6 +3,7 @@ WordPress plug-in that provides astronomical information based on location and d
 
 WordPress framework and sunrise/sunset calculation credit:
 https://github.com/bengreeley/sunrisesunset
+
 Moonrise and Moonset credit:
 http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
 

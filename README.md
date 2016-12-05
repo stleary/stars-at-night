@@ -17,7 +17,7 @@ To use this plug-in:
 * \# -o: OR operator, finds both filename patterns<br>
 * \# -T : get filenames from a specified file<br>
 * \# - : stdin is the specified file<br>
-* find nightsky -name "*.php" -o -name "*.css" | tar -cf nightsky.tar -T -<br>
+* find nightsky -name "\*.php" -o -name "\*.css" | tar -cf nightsky.tar -T -<br>
 * Untar the file in your WordPress plugins directory. 
 * From the Wordpress wp-admin login, navigate to the dashboard, select plug-ins, find "nightsky", and select Activate.
 * To include the nightsky plugin on a page, insert the shortcode "[nightsky]".

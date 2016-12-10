@@ -23,10 +23,10 @@ Unix-ish:
 *       cd ..
 *       tar the files in the 'stars-at-night' directory, excluding the GitHub items: .git, .buildpath, .project, .settings. For example:<br>
 ```
-# -o: OR operator, finds both filename patterns<br>
-# -T : get filenames from a specified file<br>
-# - : stdin is the specified file<br>
-find stars-at-night -name "\*.php" -o -name "\*.css" -o "README.md" -o "LICENSE" | tar -cf starsAtNight.tar -T -<br>
+# -o: OR operator, finds both filename patterns
+# -T : get filenames from a specified file
+# - : stdin is the specified file
+find stars-at-night -name "\*.php" -o -name "\*.css" -o "README.md" -o "LICENSE" | tar -cf starsAtNight.tar -T -
 ```
 *       Upload to your WordPress installation and untar in the wp-content/plugins directory
 *       From the Wordpress wp-admin login, navigate to the dashboard, select plug-ins, find "The Stars At Night", and select Activate.

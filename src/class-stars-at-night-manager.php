@@ -129,7 +129,12 @@ class Stars_At_Night_Manager {
                 
             ), $atts, 'nightsky' ) );
         } else {
-            // command line mode for testing
+            die;
+            /**
+             * Uncomment this code if you want to try command line
+             * mode for testing
+             */
+            /*
             $size = sizeof( $atts );
             if ($size > 1) {
                 for ($i = 1; $i < $size; $i++) {
@@ -137,6 +142,7 @@ class Stars_At_Night_Manager {
                     ${ $e[ 0 ]} = $e[ 1 ];
                 }
             }
+            */
         }
 
         /**
@@ -188,7 +194,7 @@ class Stars_At_Night_Manager {
 
         if ( defined( 'WPINC' ) ) {
             // WordPress mode
-            $this->display( $name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
+            return $this->display( $name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
         } else {
             // test mode
             print "location: $name\n";
@@ -225,7 +231,8 @@ class Stars_At_Night_Manager {
     }
 
     /**
-     * Displays night sky data as a simple HTML table.
+     * Returns a string containing the HTML to render a table of
+     * night sky data.
      * Parameters:
      *     $name, $lat, $long - name and location 
      *     $today - date of calculation 
@@ -235,41 +242,39 @@ class Stars_At_Night_Manager {
      *     $moonSet - time value for Moonset (eg. 15:00)
      *     $morningTwilight - morning astronomical twilight
      *     $eveningTwilight - evening astronomical twilight
-     */    
+     */
     public function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
-    ?>
-        <div class="nightsky">
-           <bold><?php echo $name ?> (<?php echo $lat ?>, <?php echo $long ?>) astronomical times for today (<?php echo $today ?>)</bold>
-           <table>
-                <tr>
-                <td>Astronomical twilight</td>
-                <td><?php echo $morningTwilight ?></td>
-                </tr>
-                <tr>
-                <td>Sunrise</td>
-                <td><?php echo $sunRise ?></td>
-                </tr>
-                <tr>
-                <td>Sunset</td>
-                <td><?php echo $sunSet ?></td>
-                </tr>
-                <tr>
-                <td>Astronomical twilight</td>
-                <td><?php echo $eveningTwilight ?></td>
-                </tr>
-                <tr>
-                <td>Moonrise</td>
-                <td><?php echo $moonRise ?></td>
-                </tr>
-                <tr>
-                <td>Moonset</td>
-                <td><?php echo $moonSet ?></td>
-                </tr>
-            </table>    
-        </div>
-        <?php
-            
-        return;
-
+        $string = 
+        '<div class="nightsky">' .
+           '<bold>' . $name . '('  .$lat . ' '  . $long . ') astronomical times for today (' .
+           $today . ')</bold>' .
+           '<table>' .
+                '<tr>' .
+                '<td>Astronomical twilight</td>' .
+                '<td>'  . $morningTwilight . '</td>' .
+                '</tr>' .
+                '<tr>' .
+                '<td>Sunrise</td>' .
+                '<td>'  . $sunRise . '</td>' .
+                '</tr>' .
+                '<tr>' .
+                '<td>Sunset</td>' .
+                '<td>'  . $sunSet . '</td>' .
+                '</tr>' .
+                '<tr>' .
+                '<td>Astronomical twilight</td>' .
+                '<td>'  . $eveningTwilight . '</td>' .
+                '</tr>' .
+                '<tr>' .
+                '<td>Moonrise</td>' .
+                '<td>'  . $moonRise . '</td>' .
+                '</tr>' .
+                '<tr>' .
+                '<td>Moonset</td>' .
+                '<td>'  . $moonSet . '</td>' .
+                '</tr>' .
+            '</table>' .
+        '</div>';
+        return $string;
     }
 } 

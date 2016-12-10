@@ -1,4 +1,4 @@
-/* NightSky Styles */
+<?php
 
 /*
     This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,10 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-.nightsky table {
-    border: 1px solid black;
-    width: 50%;
-{
+// Functions/hooks for plugin deactivation process for cleaning up of any settings.
+class Stars_At_Night_Deactivator {
 
-
+    public static function deactivate($pluginname) {
+        // Cleanup...		
+    }
+}

@@ -15,38 +15,41 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+include('class-moon.php');
 
 /** 
  * This is just for testing from the command line
  * The WordPress-defined var 'WPINC' is used to facilitate command line testing.
  * To test from the command line, execute something like this:
- *     php  NightSkyManager.php mode=test name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
+ *     php  class-stars-at-night-manager.php mode=test name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
  * To verify the results, browse to the 10 day weather forecast for that city in https://weather.com/weather/tenday
  * which shows sun rise/set and moon rise/set in that city's local time
  */
-if (!defined('WPINC')) {
+if ( !defined( 'WPINC' ) ) {
     // var_dump($argv);
-    $nightSkyManager = new NightSkyManager();
-    $nightSkyManager->runNightSky($argv);
+    $ngc2244_stars_at_night_manager = new Stars_At_Night_Manager();
+    $ngc2244_stars_at_night_manager->run_stars_at_night( $argv );
 }
 
     
 /**
  * This class calculates and emits astronomical values in an HTML table.
  * For testing, the values are just written to stdout
+http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=30.891&lng=-98.4265&loc=Unspecified&alt=300&tz=CST
+http://stackoverflow.com/questions/4979836/domdocument-in-php/4983721#4983721
  */
-class NightSkyManager {
+class Stars_At_Night_Manager {
     protected $loader;
     protected $plugin_name;
     protected $version;
 
     /**
-     * create and initialize an instance
+     * create and initialize a class instance
      */
     public function __construct() {
         if (defined('WPINC')) {
-            $this->plugin_name = 'nightsky';
-            $this->version = '.1';
+            $this->plugin_name = 'stars-at-night';
+            $this->version = '1.0';
 
             $this->define_admin_hooks();
             $this->define_public_hooks();
@@ -54,32 +57,47 @@ class NightSkyManager {
     }
 
     /**
-     * next few methods are for WordPress
+     * This class does perform WordPress Admin functionality
      */
     private function define_admin_hooks() {
         // Any admin hooks...
     }
 
+    /**
+     * These are how the plugin interacts with WordPress
+     */
     private function define_public_hooks() {        
         // Hook shortcodes, etc.
         add_action( 'init', array( $this, 'register_shortcodes' ) );
         add_action( 'init', array( $this, 'enqueuestyles' ));
     }
 
+    /**
+     * This is how the plugin is known to WordPress
+     */
     public function get_plugin_name() {
         return $this->plugin_name;
     }
 
+    /**
+     * Report plugin version to WordPress
+     */
     public function get_version() {
         return $this->version;
     }
-    
+
+    /**
+     * WordPress shortcodes for this plugin
+     */
     public function register_shortcodes() {
-        add_shortcode('nightsky', array($this, 'runNightSky') );
+        add_shortcode('stars-at-night', array($this, 'run_stars_at_night') );
     }
-    
+
+    /**
+     * CSS for the plugin
+     */
     public function enqueuestyles() {
-        wp_enqueue_style( 'nightskycss', plugins_url('../css/NightSky.css',__FILE__), array(), $this->version  );
+        wp_enqueue_style( 'ngc2244_stars_at_night_css', plugins_url('../css/stars-at-night.css',__FILE__), array(), $this->version  );
     }
 
     /**
@@ -94,11 +112,13 @@ class NightSkyManager {
      *   date=a date that php can parse. For the current day, use "now" 
      *   graphical=not used at present. Will cause an image of the Moon phase to be displayed. 
      */ 
-    public function runNightSky($atts) {
+    public function run_stars_at_night( $atts ) {
     
-        if (defined('WPINC')) {
-            // WordPress mode.
-            // Default location is the dark sky observing site for the Austin Astronomical Society            
+        if ( defined( 'WPINC' ) ) {
+            /**
+             * WordPress mode. Default location is the dark sky observing site
+             * for the Austin Astronomical Society
+             */
             extract( shortcode_atts( array(
                 'name' => 'COE',                  // name of location
                 'lat' => '30.8910',               // Latitude value
@@ -110,64 +130,63 @@ class NightSkyManager {
             ), $atts, 'nightsky' ) );
         } else {
             // command line mode for testing
-            $size = sizeof($atts);
+            $size = sizeof( $atts );
             if ($size > 1) {
                 for ($i = 1; $i < $size; $i++) {
-                    $e=explode("=",$atts[$i]);
-                    ${$e[0]}=$e[1];
+                    $e = explode( "=", $atts[ $i ] );
+                    ${ $e[ 0 ]} = $e[ 1 ];
                 }
             }
         }
-       
+
         /**
          * The builtin php lib uses the Solar zenith position, but has a flawed default value. 
          * So we use our own instead. See http://grokbase.com/t/php/php-bugs/09932wqn2a/49448-new-sunset-sunrise-zenith-default-values-wrong
          */
-        $zenith = 90+(50/60);
+        $zenith = 90 + ( 50/60 );
         // times have to be calculated in the specified timezone
-        $remote_dtz = new DateTimeZone($timezone);
-        $remote_dt = new DateTime($date, $remote_dtz);
-        $tzOffset = $remote_dtz->getOffset($remote_dt) / 3600;
+        $remote_dtz = new DateTimeZone( $timezone );
+        $remote_dt = new DateTime( $date, $remote_dtz );
+        $tzOffset = $remote_dtz->getOffset( $remote_dt ) / 3600;
 
         /**
          * get Sun times. returns a string like this: 07:10
          */
-        $sunRise = date_sunrise(strtotime('now'), SUNFUNCS_RET_STRING, $lat, $long, $zenith, $tzOffset);
-        $sunSet = date_sunset(strtotime('now'), SUNFUNCS_RET_STRING, $lat, $long, $zenith, $tzOffset);
+        $sunRise = date_sunrise( strtotime( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, $zenith, $tzOffset );
+        $sunSet = date_sunset( strtotime( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, $zenith, $tzOffset );
 
         // get the twilight times, which we define as 90 minutes before sunrise, and after sunset
-        $morningTwilight = $this->calculateTwilight($today, $tzOffset, $sunRise, (-90 * 60));
-        $eveningTwilight = $this->calculateTwilight($today, $tzOffset, $sunSet, (90 * 60));
+        $morningTwilight = $this->calculateTwilight( $today, $tzOffset, $sunRise, (-90 * 60) );
+        $eveningTwilight = $this->calculateTwilight( $today, $tzOffset, $sunSet, (90 * 60) );
 
         // get the Moon times
-        $year = $remote_dt->format('Y');
-        $month = $remote_dt->format('m');
-        $day = $remote_dt->format('d');
-        $today = $remote_dt->format('D m/d/Y');
-        include('moon.php'); 
+        $year = $remote_dt->format( 'Y' );
+        $month = $remote_dt->format( 'm' );
+        $day = $remote_dt->format( 'd' );
+        $today = $remote_dt->format( 'D m/d/Y' );
         // we use a different timezone offset unit for the Moon. Just how moon.php is written.
         $moonTzOffset = $tzOffset * 60;
         /**
          * the original flawed object did not calculate timezone correctly. Our version does.
          */
-        $moonData = Moon::calculateMoonTimes($month, $day, $year, $lat, $long, $moonTzOffset);
+        $moonData = Moon::calculateMoonTimes( $month, $day, $year, $lat, $long, $moonTzOffset );
 
         $moonRise = $moonData->moonrise;
         $moonSet = $moonData->moonset;
-        $dtmr = new DateTime("@$moonRise");
-        $moonRise = $dtmr->format('H:i');
-        $dtms = new DateTime("@$moonSet");
-        $moonSet = $dtms->format('H:i');
+        $dtmr = new DateTime( "@$moonRise" );
+        $moonRise = $dtmr->format( 'H:i' );
+        $dtms = new DateTime( "@$moonSet" );
+        $moonSet = $dtms->format( 'H:i' );
                
         // some days might not have a moonRise or moonSet 
-        if ($moonRise ==  "00:00") {
+        if ( $moonRise ==  "00:00" ) {
             $moonRise = "None";
         }
-        if ($moonSet ==  "00:00") {
+        if ( $moonSet ==  "00:00" ) {
             $moonSet = "None";
         }
 
-        if (defined('WPINC')) {
+        if ( defined( 'WPINC' ) ) {
             // WordPress mode
             $this->display( $name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
         } else {
@@ -195,13 +214,13 @@ class NightSkyManager {
      *     $delta - use -90 for morning, +90 for evening
      * Returns: twilight string in hh:mm format
      */
-    public function calculateTwilight($today, $tzOffset, $sunTime, $delta) {
+    public function calculateTwilight( $today, $tzOffset, $sunTime, $delta ) {
         $todayStr = $today . " " . $sunTime;
-        $todayTimestamp = strtotime($todayStr);
+        $todayTimestamp = strtotime( $todayStr );
         $twilight = $todayTimestamp + $delta + tzOffset;
         $dateTime = new DateTime();
-        $dateTime = $dateTime->setTimestamp($twilight);
-        $twilightStr = $dateTime->format('H:i');
+        $dateTime = $dateTime->setTimestamp( $twilight );
+        $twilightStr = $dateTime->format( 'H:i' );
         return $twilightStr;
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 /*
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License, version 2, as
@@ -15,10 +14,9 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// Functions/hooks for plugin deactivation process for cleaning up of any settings.
-class NightSkyDeactivator {
-
-    public static function deactivate($pluginname) {
-        // Cleanup...		
+// Functions/hooks for plugin activation process.
+class Stars_At_Night_Activator {
+    public static function activate() {
+        // Activation hooks...
     }
 }

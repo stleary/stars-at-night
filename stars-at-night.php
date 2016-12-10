@@ -1,9 +1,9 @@
 <?php
 /**
  * Plugin Name:       The Stars at Night
- * Plugin URI:        http://notforlong.org/StarsAtNight
- * Description:       A WordPress plugin to display astronomical information,
- *                    given the latitude, longitude, timezone, and date.
+ * Plugin URI:        http://notforlong.org/the-stars-at-night/
+ * Description:       A WordPress plugin to display astronomical information
+ *                    for a specified location and date.
  * Version:           1.0
  * Author:            Sean Leary
  * Author URI:        http://notforlong.org

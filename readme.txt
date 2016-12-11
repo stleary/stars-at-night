@@ -54,11 +54,14 @@ This plugin is driven by user requests. Just ask.
 
 More is coming. Stay tuned!  If you have a specific request, let us know.
 
+== Screenshots ==
+
+
 == Changelog ==
 
 = 1.0 =
 
 Initial version. Sunrise, sunset, moonrise, moonset, morning astronomical twilight, evening astronomical twilight
 
-
+== Upgrade Notice ==
 

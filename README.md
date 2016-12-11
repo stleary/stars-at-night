@@ -37,8 +37,7 @@ Windows:
 *       When prompted, activate the plugin.
 * To include the plugin on a page, insert the shortcode "[stars-at-night]".
 
-To test from the command line, uncomment the code in class-stars-at-night-manager.php
-at line 138, and execute something like this in the src directory of your repository:
+To test from the command line, search the PHP files for "DEBUG ONLY" and follow the directions on commenting/uncommenting code. Execute something like this in the src directory of your repository:
 ```
-php  class-stars-at-night-manager.php mode=test name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
+php  -f class-stars-at-night-manager.php mode=test name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
 ```

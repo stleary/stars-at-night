@@ -14,22 +14,30 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+/**
+ * TODO: FOR DEBUG ONLY
+ * Not to be used in production
+ * Comment this out to allow command line testing
+ */
+defined( 'ABSPATH' ) or die;
 
 include('class-moon.php');
 
 /** 
- * This is just for testing from the command line
- * The WordPress-defined var 'WPINC' is used to facilitate command line testing.
+ * TODO: FOR DEBUG ONLY
+ * Not to be used in production.
+ * This is just for testing from the command line. 
  * To test from the command line, execute something like this:
  *     php  class-stars-at-night-manager.php mode=test name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
- * To verify the results, browse to the 10 day weather forecast for that city in https://weather.com/weather/tenday
- * which shows sun rise/set and moon rise/set in that city's local time
+ * To verify the results, use an online calculator such as http://www.rsimons.org/sunmoon/
  */
+/*
 if ( !defined( 'WPINC' ) ) {
     // var_dump($argv);
     $ngc2244_stars_at_night_manager = new Stars_At_Night_Manager();
     $ngc2244_stars_at_night_manager->run_stars_at_night( $argv );
 }
+*/
 
     
 /**
@@ -42,6 +50,13 @@ class Stars_At_Night_Manager {
     protected $loader;
     protected $plugin_name;
     protected $version;
+    // sanitized user input
+    private $sanitized_name;
+    private $sanitized_lat;
+    private $sanitized_long;
+    private $sanitized_timezone;
+    private $sanitized_date;
+    private $sanitized_graphical;
 
     /**
      * create and initialize a class instance
@@ -113,57 +128,77 @@ class Stars_At_Night_Manager {
      *   graphical=not used at present. Will cause an image of the Moon phase to be displayed. 
      */ 
     public function run_stars_at_night( $atts ) {
-    
+        // raw user input
+        $name = "";
+        $lat = "";
+        $long = "";
+        $timezone = "";
+        $date = "";
+        $graphical = "";
+         
         if ( defined( 'WPINC' ) ) {
             /**
              * WordPress mode. Default location is the dark sky observing site
              * for the Austin Astronomical Society
              */
             extract( shortcode_atts( array(
-                'name' => 'COE',                  // name of location
-                'lat' => '30.8910',               // Latitude value
-                'long' => '-98.4265',             // Longitude value
-                'timezone' => 'America/Chicago',  // timezone
-                'date' => 'now',                  // date
-                'graphical' => 'false'            // Display moon images? not in use yet
+                'name' => '',        // name of location
+                'lat' => '',        // Latitude value
+                'long' => '',       // Longitude value
+                'timezone' => '',   // timezone
+                'date' => '',       // date
+                'graphical' => ''   // Display moon images? not in use yet
                 
-            ), $atts, 'nightsky' ) );
+            ), $atts, 'stars-at-night' ), EXTR_IF_EXISTS );
         } else {
-            die;
             /**
-             * Uncomment this code if you want to try command line
-             * mode for testing
+             * TODO: FOR DEBUG ONLY
+             * Not to be used in production.
+             * Comment out 'die' and Uncomment this code if you want to try command line
+             * mode for testing. Input is unprotected since the user could create any number
+             * of random local vars.
              */
+            die;
             /*
             $size = sizeof( $atts );
             if ($size > 1) {
                 for ($i = 1; $i < $size; $i++) {
                     $e = explode( "=", $atts[ $i ] );
-                    ${ $e[ 0 ]} = $e[ 1 ];
+                    ${ $e[0]} = $e[1];
                 }
             }
             */
         }
 
         /**
+         * Make sure the incoming data is valid.
+         * If not, errors will be reported in the return string
+         * and the method stops here
+         */
+        $validator_result = $this->data_validator(
+                $name, $lat, $long, $timezone, $date, $graphical );
+        if ( !empty( $validator_result ) ) {
+           return $validator_result;
+        }
+
+        /**
          * The builtin php lib uses the Solar zenith position, but has a flawed default value. 
-         * So we use our own instead. See http://grokbase.com/t/php/php-bugs/09932wqn2a/49448-new-sunset-sunrise-zenith-default-values-wrong
+         * So we use our own instead. See 
+         * http://grokbase.com/t/php/php-bugs/09932wqn2a/49448-new-sunset-sunrise-zenith-default-values-wrong
          */
         $zenith = 90 + ( 50/60 );
         // times have to be calculated in the specified timezone
-        $remote_dtz = new DateTimeZone( $timezone );
-        $remote_dt = new DateTime( $date, $remote_dtz );
+        $remote_dtz = new DateTimeZone( $this->sanitized_timezone );
+        $remote_dt = new DateTime( $this->sanitized_date, $remote_dtz );
         $tzOffset = $remote_dtz->getOffset( $remote_dt ) / 3600;
 
         /**
          * get Sun times. returns a string like this: 07:10
          */
-        $sunRise = date_sunrise( strtotime( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, $zenith, $tzOffset );
-        $sunSet = date_sunset( strtotime( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, $zenith, $tzOffset );
-
-        // get the twilight times, which we define as 90 minutes before sunrise, and after sunset
-        $morningTwilight = $this->calculateTwilight( $today, $tzOffset, $sunRise, (-90 * 60) );
-        $eveningTwilight = $this->calculateTwilight( $today, $tzOffset, $sunSet, (90 * 60) );
+        $sunRise = date_sunrise( strtotime( 'now' ),
+                SUNFUNCS_RET_STRING, $this->sanitized_lat, $this->sanitized_long, $zenith, $tzOffset );
+        $sunSet = date_sunset( strtotime( 'now' ),
+                SUNFUNCS_RET_STRING, $this->sanitized_lat, $this->sanitized_long, $zenith, $tzOffset );
 
         // get the Moon times
         $year = $remote_dt->format( 'Y' );
@@ -175,7 +210,8 @@ class Stars_At_Night_Manager {
         /**
          * the original flawed object did not calculate timezone correctly. Our version does.
          */
-        $moonData = Moon::calculateMoonTimes( $month, $day, $year, $lat, $long, $moonTzOffset );
+        $moonData = Moon::calculateMoonTimes(
+                $month, $day, $year, $this->sanitized_lat, $this->sanitized_long, $moonTzOffset );
 
         $moonRise = $moonData->moonrise;
         $moonSet = $moonData->moonset;
@@ -192,12 +228,26 @@ class Stars_At_Night_Manager {
             $moonSet = "None";
         }
 
+        // get the twilight times, which we define as 90 minutes before sunrise, and after sunset
+        $morningTwilight = $this->calculateTwilight( $today, $tzOffset, $sunRise, (-90 * 60) );
+        $eveningTwilight = $this->calculateTwilight( $today, $tzOffset, $sunSet, (90 * 60) );
+
         if ( defined( 'WPINC' ) ) {
             // WordPress mode
-            return $this->display( $name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight );
+            return $this->display(
+                    $this->sanitized_name,
+                    $this->sanitized_lat,
+                    $this->sanitized_long,
+                    $today,
+                    $sunRise,
+                    $sunSet,
+                    $moonRise,
+                    $moonSet,
+                    $morningTwilight,
+                    $eveningTwilight );
         } else {
             // test mode
-            print "location: $name\n";
+            print "name: $this->sanitized_name\n";
             print "local day: $today\n";
             print "sunRise: $sunRise\n";
             print "sunSet: $sunSet\n";
@@ -207,6 +257,76 @@ class Stars_At_Night_Manager {
             print "eveningTwilight: $eveningTwilight\n";
         }
         return;
+    }
+
+    /**
+     * Validates the parameters sent by the user. 
+     *   @param $name the name of the location to be calculated
+     *   @param $lat lattitude of location in fractional degrees 
+     *   @param $long longitude of location in fractional degrees 
+     *   @param $timezone timezone name, must be value recognized by php
+     *   @param $date a date that php can parse 
+     *   @param $graphical not used at present 
+     * @return string containing error messages, or empty if no errors found
+     */
+    private function data_validator( $name, $lat, $long, $timezone, $date, $graphical ) {
+        $result = "";
+        /**
+         * Name must be safe, but can be any value, up to 32 chars
+         */
+        if ( strlen( $name ) > 32 ) {
+            $name = substr( $name, 32 );
+        }
+        $this->sanitized_name = filter_var( $name, FILTER_SANITIZE_STRING, 
+                FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_ENCODE_AMP );
+
+        /**
+         * lat must be valid fractional decimals +- 0-90
+         */
+        if ( !is_numeric( $lat ) ) {
+            $result .= " Latitude must be numeric.";
+        } else if ( $lat < (-90) || $lat > 90 ) {
+            $result .= " Latitude must be in the range -90 - 90.";
+        } else {
+            $this->sanitized_lat = $lat;
+        }
+
+        /**
+         * long must be valid fractional decimal, +- 0-90
+         */
+        if ( !is_numeric( $long ) ) {
+            $result .= " Longitude must be numeric.";
+        } else if ( $long < (-90) || $long > 90 ) {
+            $result .= " Longitude must be in the range -90 - 90.";
+        } else {
+            $this->sanitized_long = $long;
+        }
+
+        /**
+         * timezone must be recognized by php
+         */
+        if ( !in_array( $timezone, DateTimeZone::listIdentifiers() ) ) {
+            $result .= " Timezone contains an unrecognized value.";
+        } else {
+            $this->sanitized_timezone = $timezone;
+        }
+
+        /**
+         * Date must be recognized by php
+         */
+        try {
+            new DateTime( $date );
+        } catch ( Exception $e ) {
+            $result .= "Date contains an unrecognized value.";
+        }
+        $this->sanitized_date = $date;
+
+        // for now, graphical is ignored
+
+        if ( !empty( $result ) ) {
+            $result = "Errors: " . $result;
+        }
+        return $result;
     }
 
     /**
@@ -220,10 +340,10 @@ class Stars_At_Night_Manager {
      *     $delta - use -90 for morning, +90 for evening
      * Returns: twilight string in hh:mm format
      */
-    public function calculateTwilight( $today, $tzOffset, $sunTime, $delta ) {
+    private function calculateTwilight( $today, $tzOffset, $sunTime, $delta ) {
         $todayStr = $today . " " . $sunTime;
         $todayTimestamp = strtotime( $todayStr );
-        $twilight = $todayTimestamp + $delta + tzOffset;
+        $twilight = $todayTimestamp + $delta + $tzOffset;
         $dateTime = new DateTime();
         $dateTime = $dateTime->setTimestamp( $twilight );
         $twilightStr = $dateTime->format( 'H:i' );
@@ -243,11 +363,11 @@ class Stars_At_Night_Manager {
      *     $morningTwilight - morning astronomical twilight
      *     $eveningTwilight - evening astronomical twilight
      */
-    public function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
+    private function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
         $string = 
         '<div class="nightsky">' .
-           '<bold>' . $name . '('  .$lat . ' '  . $long . ') astronomical times for today (' .
-           $today . ')</bold>' .
+           '<bold>' . $name . ' ('  .$lat . ' '  . $long . ') astronomical times for ' .
+           $today . '</bold>' .
            '<table>' .
                 '<tr>' .
                 '<td>Astronomical twilight</td>' .

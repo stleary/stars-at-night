@@ -1,6 +1,13 @@
 <?php
 
-// From: http://dxprog.com/entry/calculate-moon-rise-and-set-in-php/
+/**
+ * TODO: FOR DEBUG ONLY
+ * Not to be used in production
+ * Comment this out to allow command line testing
+ */
+defined( 'ABSPATH' ) or die;
+
+// Credit for this code: http://dxprog.com/entry/calculate-moon-rise-and-set-in-php/
 
 /******************************************************************************
 * The following is a PHP implementation of the JavaScript code found at:      *

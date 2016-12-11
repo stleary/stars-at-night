@@ -15,6 +15,9 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+// Disallow direct access
+defined( 'ABSPATH' ) or die;
+
 // Functions/hooks for plugin deactivation process for cleaning up of any settings.
 class Stars_At_Night_Deactivator {
 

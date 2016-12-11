@@ -14,6 +14,12 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
+/**
+ * TODO: FOR DEBUG ONLY
+ * Not to be used in production
+ * Comment this out to allow command line testing
+ */
+defined( 'ABSPATH' ) or die;
 
 include('class-moon.php');
 
@@ -25,11 +31,13 @@ include('class-moon.php');
  *     php  class-stars-at-night-manager.php mode=test name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
  * To verify the results, use an online calculator such as http://www.rsimons.org/sunmoon/
  */
+/*
 if ( !defined( 'WPINC' ) ) {
     // var_dump($argv);
     $ngc2244_stars_at_night_manager = new Stars_At_Night_Manager();
     $ngc2244_stars_at_night_manager->run_stars_at_night( $argv );
 }
+*/
 
     
 /**
@@ -150,7 +158,8 @@ class Stars_At_Night_Manager {
              * mode for testing. Input is unprotected since the user could create any number
              * of random local vars.
              */
-             // die;
+            die;
+            /*
             $size = sizeof( $atts );
             if ($size > 1) {
                 for ($i = 1; $i < $size; $i++) {
@@ -158,7 +167,7 @@ class Stars_At_Night_Manager {
                     ${ $e[0]} = $e[1];
                 }
             }
-            
+            */
         }
 
         /**

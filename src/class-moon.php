@@ -5,7 +5,7 @@
  * Not to be used in production
  * Comment this out to allow command line testing
  */
-// defined( 'ABSPATH' ) or die;
+defined( 'ABSPATH' ) or die;
 
 // Credit for this code: http://dxprog.com/entry/calculate-moon-rise-and-set-in-php/
 

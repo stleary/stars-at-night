@@ -56,7 +56,7 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Screenshots ==
 
-N/A
+/assets/stars-at-night.png
 
 == Changelog ==
 

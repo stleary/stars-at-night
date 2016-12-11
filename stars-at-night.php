@@ -28,9 +28,9 @@
  * If this file is called directly, e.g. via REST API, then abort.
  * Should only be called from the WordPress framework.
  */
-if ( !defined( 'WPINC' ) ) {
-    die;
-}
+defined( 'WPINC' ) or die;
+// Disallow direct access (TODO: is this redundant?)
+defined( 'ABSPATH' ) or die;
 
 // WordPress activation 
 function activate_stars_at_night() {

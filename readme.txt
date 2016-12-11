@@ -56,6 +56,7 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Screenshots ==
 
+N/A
 
 == Changelog ==
 
@@ -65,3 +66,5 @@ Initial version. Sunrise, sunset, moonrise, moonset, morning astronomical twilig
 
 == Upgrade Notice ==
 
+= 1.0 =
+Minimum required version.

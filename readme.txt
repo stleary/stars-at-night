@@ -23,7 +23,7 @@ required, in any order:
 
 Examples:
 [stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now]
-[name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017
+[name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017]
 
 The output consists of a simple HTML table containing the times for sunrise, sunset, moonrise, moonset,
 morning astronomical twilight, and evening astronomical twilight.

@@ -295,7 +295,7 @@ class Stars_At_Night_Manager {
         if ( !is_numeric( $lat ) ) {
             $result .= " Latitude must be numeric.";
         } else if ( $lat < (-90) || $lat > 90 ) {
-            $result .= " Latitude must be in the range -90 - 90.";
+            $result .= " Latitude must be in the range -90 to 90.";
         } else {
             $this->sanitized_lat = $lat;
         }
@@ -305,8 +305,8 @@ class Stars_At_Night_Manager {
          */
         if ( !is_numeric( $long ) ) {
             $result .= " Longitude must be numeric.";
-        } else if ( $long < (-90) || $long > 90 ) {
-            $result .= " Longitude must be in the range -90 - 90.";
+        } else if ( $long < (-180) || $long > 180 ) {
+            $result .= " Longitude must be in the range -180 to 180.";
         } else {
             $this->sanitized_long = $long;
         }

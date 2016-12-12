@@ -374,7 +374,7 @@ class Stars_At_Night_Manager {
      */
     private function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
         $string = 
-        '<div class="nightsky">' .
+        '<div class="ngc2244_stars_at_night_css">' .
            '<bold>' . $name . ' ('  .$lat . ' '  . $long . ') astronomical times for ' .
            $today . '</bold>' .
            '<table>' .

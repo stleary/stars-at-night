@@ -52,8 +52,6 @@ if ( !defined( 'WPINC' ) ) {
 /**
  * This class calculates and emits astronomical values in an HTML table.
  * For testing, the values are just written to stdout
-http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=30.891&lng=-98.4265&loc=Unspecified&alt=300&tz=CST
-http://stackoverflow.com/questions/4979836/domdocument-in-php/4983721#4983721
  */
 class Stars_At_Night_Manager {
     protected $loader;
@@ -130,7 +128,7 @@ class Stars_At_Night_Manager {
      * except for the first param which is the program name, and is ignored.
      * Remaining params (order is unimportant):
      *   name=the name of the location to be calculated
-     *   lat=lattitude of location in fractional degrees (e.g. 30.8910). Positive is north, negative is south of equator
+     *   lat=latitude of location in fractional degrees (e.g. 30.8910). Positive is north, negative is south of equator
      *   long=longitude of location in fractional degrees (e.g.-98.4265). Positive is east, negative is west of the UTC line
      *   timezone=timezone name, must be value recognized by php. See http://php.net/manual/en/timezones.php
      *   date=a date that php can parse. For the current day, use "now" 
@@ -271,7 +269,7 @@ class Stars_At_Night_Manager {
     /**
      * Validates the parameters sent by the user. 
      *   @param $name the name of the location to be calculated
-     *   @param $lat lattitude of location in fractional degrees 
+     *   @param $lat latitude of location in fractional degrees 
      *   @param $long longitude of location in fractional degrees 
      *   @param $timezone timezone name, must be value recognized by php
      *   @param $date a date that php can parse 
@@ -290,7 +288,7 @@ class Stars_At_Night_Manager {
                 FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_ENCODE_AMP );
 
         /**
-         * lat must be valid fractional decimals +- 0-90
+         * lat must be valid fractional decimal [-90:90]
          */
         if ( !is_numeric( $lat ) ) {
             $result .= " Latitude must be numeric.";
@@ -301,7 +299,7 @@ class Stars_At_Night_Manager {
         }
 
         /**
-         * long must be valid fractional decimal, +- 0-90
+         * long must be valid fractional decimal [-180:180]
          */
         if ( !is_numeric( $long ) ) {
             $result .= " Longitude must be numeric.";
@@ -375,7 +373,7 @@ class Stars_At_Night_Manager {
     private function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
         $string = 
         '<div class="ngc2244_stars_at_night_css">' .
-           '<bold>' . $name . ' ('  .$lat . ' '  . $long . ') astronomical times for ' .
+           '<bold>' . $name . ' ('  .$lat . ', '  . $long . ') astronomical times for ' .
            $today . '</bold>' .
            '<table>' .
                 '<tr>' .

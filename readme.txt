@@ -59,7 +59,7 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Screenshots ==
 
-/assets/screenshot-1.jpg
+/assets/screenshot-1.png
 
 == Changelog ==
 

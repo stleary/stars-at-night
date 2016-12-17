@@ -12,7 +12,7 @@ The plugin is activated by the shortcode “stars-at-night”. Here is an exampl
 * **date** : A recognizable date. For the current day, use ‘now’
 
 # Credits
-* The WordPress framework code and sunrise/sunset algorithm uses code from this project:https://github.com/bengreeley/sunrisesunset
+* The WordPress framework code and sunrise/sunset algorithm uses code from this project: https://github.com/bengreeley/sunrisesunset
 * The Moonrise and Moonset class uses this code (with a correction for timezone): http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
 
 This is a WordPress plugin, so it is written in PHP. Since it is available on the WordPress plugin directory, it is also stored in a SVN repository. However, this project is the single source of truth for the plugin.

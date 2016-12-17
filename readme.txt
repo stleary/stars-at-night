@@ -4,9 +4,9 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.0
+Stable tag: 1.0.1
 License: MIT
-License URI: 
+License URI: https://opensource.org/licenses/MIT
 
 Stars-at-night displays astronomical data for a specified location and date.
 
@@ -63,9 +63,12 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Changelog ==
 
-= 1.0 =
+= 1.0.1 =
+* Readme.txt update. No functional changes.
 
-Initial version. Sunrise, sunset, moonrise, moonset, morning astronomical twilight, evening astronomical twilight
+= 1.0 =
+* Initial version. 
+* Sunrise, sunset, moonrise, moonset, morning astronomical twilight, evening astronomical twilight
 
 == Upgrade Notice ==
 

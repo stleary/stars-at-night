@@ -15,23 +15,26 @@ Stars-at-night displays astronomical data for a specified location and date.
 This plugin displays data of interest to amateur astronomers. It is calculated from user-provided location and date information. 
 The plugin is called from a WordPress shortcode, and the parameters are specified in the shortcode. The following parameters are
 required, in any order:
-* name: The name of the location to be calculated
-* lat: Lattitude of location in fractional degrees (e.g. 30.8910). Positive is north, negative is south of equator
-* long: Longitude of location in fractional degrees (e.g.-98.4265). Positive is east, negative is west of the UTC line
-* timezone: Timezone name, must be value recognized by PHP. See [http://php.net/manual/en/timezones.php]
-* date: A date that PHP can parse. For the current day, use "now" 
 
-Examples:
-[stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now]
-[stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017]
+* **name** : The name of the location to be calculated
+* **lat** : Lattitude of location in fractional degrees (e.g. 30.8910). Positive is north, negative is south of equator
+* **long** : Longitude of location in fractional degrees (e.g.-98.4265). Positive is east, negative is west of the UTC line
+* **timezone** : Timezone name, must be value recognized by PHP. See [http://php.net/manual/en/timezones.php]
+* **date** : A date that PHP can parse. For the current day, use "now" 
+
+**Examples:**
+* [stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now]
+* [stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017]
 
 The output consists of a simple HTML table containing the times for sunrise, sunset, moonrise, moonset,
 morning astronomical twilight, and evening astronomical twilight.
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/stars-at-night` directory, or install the plugin through the WordPress plugins screen directly.
-2. Activate the plugin through the 'Plugins' screen in WordPress
+1. Login to your WordPress site as admin.
+2. From the Dashboard menu, select Plugins, then click the Add New button. 
+3. In the Search text area, enter "stars at night", then press Enter
+4. Find the stars-at-night plugin on the results page and select the Install Now button.
 
 == Frequently Asked Questions ==
 
@@ -56,7 +59,7 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Screenshots ==
 
-/assets/stars-at-night.png
+/assets/screenshot-1.jpg
 
 == Changelog ==
 

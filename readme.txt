@@ -22,9 +22,9 @@ required, in any order:
 * **timezone** : Timezone name, must be value recognized by PHP. See [http://php.net/manual/en/timezones.php]
 * **date** : A date that PHP can parse. For the current day, use "now" 
 
-**Examples:**
-* [stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now]
-* [stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017]
+**Shortcode Examples:**
+* stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
+* stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017
 
 The output consists of a simple HTML table containing the times for sunrise, sunset, moonrise, moonset,
 morning astronomical twilight, and evening astronomical twilight.
@@ -71,3 +71,6 @@ Initial version. Sunrise, sunset, moonrise, moonset, morning astronomical twilig
 
 = 1.0 =
 Minimum required version.
+
+== Contributors ==
+stleary

@@ -31,6 +31,7 @@ SOFTWARE.
 defined( 'ABSPATH' ) or die;
 
 include('class-moon.php');
+include('class-iss-passes.php');
 
 /** 
  * TODO: FOR DEBUG ONLY
@@ -119,7 +120,7 @@ class Stars_At_Night_Manager {
      * CSS for the plugin
      */
     public function enqueuestyles() {
-        wp_enqueue_style( 'ngc2244_stars_at_night_css', plugins_url('../css/stars-at-night.css',__FILE__), array(), $this->version  );
+        wp_enqueue_style( 'ngc2244_stars_at_night_css', plugins_url('../css/stars-at-night.css',__FILE__), array(), $this->version );
     }
 
     /**
@@ -240,6 +241,11 @@ class Stars_At_Night_Manager {
         $eveningTwilight = $this->calculateTwilight( $today, $tzOffset, $sunSet, (90 * 60) );
 
         if ( defined( 'WPINC' ) ) {
+            $resp = ISS_Passes::get_iss_data( $this->sanitized_lat, 
+                    $this->sanitized_long, $this->sanitized_timezone );
+        }
+
+        if ( defined( 'WPINC' ) ) {
             // WordPress mode
             return $this->display(
                     $this->sanitized_name,
@@ -251,7 +257,7 @@ class Stars_At_Night_Manager {
                     $moonRise,
                     $moonSet,
                     $morningTwilight,
-                    $eveningTwilight );
+                    $eveningTwilight ) . $resp;
         } else {
             // test mode
             print "name: $this->sanitized_name\n";
@@ -372,10 +378,10 @@ class Stars_At_Night_Manager {
      */
     private function display($name, $lat, $long, $today, $sunRise, $sunSet, $moonRise, $moonSet, $morningTwilight, $eveningTwilight) {
         $string = 
-        '<div class="ngc2244_stars_at_night_css">' .
+        '<div ">' .
            '<bold>' . $name . ' ('  .$lat . ', '  . $long . ') astronomical times for ' .
            $today . '</bold>' .
-           '<table>' .
+           '<table class="ngc2244_stars_at_night_standardTable">' .
                 '<tr>' .
                 '<td>Astronomical twilight</td>' .
                 '<td>'  . $morningTwilight . '</td>' .

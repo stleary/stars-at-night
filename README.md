@@ -1,5 +1,5 @@
 # The Stars At Night
-The Stars at Night is a WordPress plugin. It is intended for use by amateur astronomers and others interested in tracking astronomical data for their location. For now, that is sunrise/sunset, moonrise/moonset, and twilight times. 
+The Stars at Night is a WordPress plugin. It is intended for use by amateur astronomers and others interested in tracking astronomical data for their location. For now, that is a Sun/Moon table and an ISS visible sighting table. 
 
 The plugin is activated by the shortcode “stars-at-night”. Here is an example:
 
@@ -16,6 +16,8 @@ The plugin is activated by the shortcode “stars-at-night”. Here is an exampl
 https://github.com/bengreeley/sunrisesunset
 * The Moonrise and Moonset class uses this code (with a correction for timezone): <br>
 http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
+* The ISS table is obtained by sending a GET request to:<br>
+http://heavens-above.com
 
 This is a WordPress plugin, so it is written in PHP. Since it is available on the WordPress plugin directory, it is also stored in a SVN repository. However, this project is the single source of truth for the plugin.
 

@@ -31,8 +31,20 @@ defined ( 'ABSPATH' ) or die ();
  */
 class ISS_Passes {
     /**
+     * Returns a string containing the HTML to render a table of
+     * ISS pass data inside a div.
+     * A leading table description is included as well.
+     * The data is obtained from an external website. This may affect rendering time.
+     *
+     * @param $lat latitude
+     *            of the viewer
+     * @param $long longitude
+     *            of the viewer
+     * @param $timezone timezone
+     *            of the viewer
+     * @return table HTML
      */
-    public static function get_iss_data($lat, $long, $timezone) {
+    public static function get_iss_table($lat, $long, $timezone) {
         // convert php tz to heavens above expected format
         $dateTime = new DateTime ();
         $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
@@ -40,9 +52,9 @@ class ISS_Passes {
         
         // just take a wild guess as to the location altitude, in meters
         $locationAlt = 300;
-        $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . 
-            $lat . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt . 
-            "&tz=" . $heavensAboveTZ;
+        $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
+        $url = $url . "&tz=" . $heavensAboveTZ;
         // we are not changing the http args
         $response = file_get_contents ( $url );
         // $htmlBody = htmlentities($body);
@@ -56,33 +68,52 @@ class ISS_Passes {
         $domXPath = new DOMXpath ( $doc );
         $rows = $domXPath->query ( "//*[@class='clickableRow']" );
         if (! is_null ( $rows )) {
-            $issTable = "<div><table class='ngc2244_stars_at_night_standardTable'>" . 
-                '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td><td align="center">Brightness</td><td align="center" valign="top" colspan="3">Start</td><td align="center" colspan="3">Highest point</td>     <td align="center" colspan="3">End</td></tr>' .
-                       '<tr>                                                        <td align="center">(mag)</td>     <td align="center">Time</td><td>Alt.</td><td>Az.</td> <td align="center">Time</td><td>Alt.</td><td>Az.</td> <td align="center">Time</td><td>Alt.</td><td>Az.</td></tr></thead>';
+            // table and column headers
+            $issTable = '<div>Visible ISS Passes for the Next 10 Days';
+            $issTable .= '<table class="ngc2244_stars_at_night_standardTable">';
+            $issTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
+            $issTable .= '<td align="center">Brightness</td>';
+            $issTable .= '<td align="center" valign="top" colspan="3">Start</td>';
+            $issTable .= '<td align="center" colspan="3">Highest point</td>';
+            $issTable .= '<td align="center" colspan="3">End</td></tr>';
+            $issTable .= '<tr><td align="center">(mag)</td>';
+            $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
+            $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
+            $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td></tr></thead>';
+            // column data
             foreach ( $rows as $row ) {
                 $cols = $row->childNodes;
                 if ($cols->length == 12) {
                     $day = $cols->item ( 0 )->nodeValue;
                     $magnitude = $cols->item ( 1 )->nodeValue;
                     $startTime = $cols->item ( 2 )->nodeValue;
-                    $startAlt = htmlentities($cols->item ( 3 )->nodeValue);
-                    $startAlt = str_replace("&Acirc;", "", $startAlt);
+                    $startAlt = htmlentities ( $cols->item ( 3 )->nodeValue );
+                    $startAlt = str_replace ( "&Acirc;", "", $startAlt );
                     $startAz = $cols->item ( 4 )->nodeValue;
                     $highTime = $cols->item ( 5 )->nodeValue;
-                    $highAlt = htmlentities($cols->item ( 6 )->nodeValue);
-                    $highAlt = str_replace("&Acirc;", "", $highAlt);
+                    $highAlt = htmlentities ( $cols->item ( 6 )->nodeValue );
+                    $highAlt = str_replace ( "&Acirc;", "", $highAlt );
                     $highAz = $cols->item ( 7 )->nodeValue;
                     $endTime = $cols->item ( 8 )->nodeValue;
-                    $endAlt = htmlentities($cols->item ( 9 )->nodeValue);
-                    $endAlt = str_replace("&Acirc;", "", $endAlt);
+                    $endAlt = htmlentities ( $cols->item ( 9 )->nodeValue );
+                    $endAlt = str_replace ( "&Acirc;", "", $endAlt );
                     $endAz = $cols->item ( 10 )->nodeValue;
                     // skip pass type which is always 'visible'
                 }
-                $issTable = $issTable . "<tr><td>" . $day . "</td><td>" . $magnitude . "</td><td>" . $startTime . 
-                    "</td><td>" . $startAlt . "</td><td>" . $startAz . "</td><td>" . $highTime . 
-                    "</td><td>" . $highAlt . "</td><td>" . $highAz . "</td><td>" . $endTime . 
-                    "</td><td>" . $endAlt . "</td><td>" . $endAz . "</td></tr>";
+                // table row
+                $issTable .= '<tr><td>' . $day . '</td>';
+                $issTable .= '<td>' . $magnitude . '</td>';
+                $issTable .= '<td>' . $startTime . '</td>';
+                $issTable .= '<td>' . $startAlt . '</td>';
+                $issTable .= '<td>' . $startAz . '</td>';
+                $issTable .= '<td>' . $highTime . '</td>';
+                $issTable .= '<td>' . $highAlt . '</td>';
+                $issTable .= '<td>' . $highAz . '</td>';
+                $issTable .= '<td>' . $endTime . '</td>';
+                $issTable .= '<td>' . $endAlt . '</td>';
+                $issTable .= '<td>' . $endAz . '</td></tr>';
             }
+            // end of table
             $issTable = $issTable . '</table></div>';
             return $issTable;
         } else {

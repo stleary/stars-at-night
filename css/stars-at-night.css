@@ -43,16 +43,9 @@ SOFTWARE.*/
 /* Some header settings may have to be set again, lest they be overridden */
 .ngc2244_stars_at_night_standardTable thead td {
     font-family: verdana,arial,helvetica,sans-serif; 
-    color:#000000;
     background-color: #C0C0FF;
     font-weight:bold;
-    font-style:normal;
-    text-decoration:none;
     text-align:center;
-    word-spacing:normal;
-    letter-spacing:normal;
-    text-transform:none;
-    vertical-align: top;
 }
 
 

@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.0.1
+Stable tag: 1.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -63,7 +63,7 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Screenshots ==
 
-screenshot-1.png
+1. Sample tables generated for a specified location and time
 
 == Changelog ==
 

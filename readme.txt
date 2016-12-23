@@ -26,8 +26,9 @@ required, in any order:
 * stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
 * stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017
 
-The output consists of a simple HTML table containing the times for sunrise, sunset, moonrise, moonset,
-morning astronomical twilight, and evening astronomical twilight.
+The output consists of simple HTML tables:
+Events table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified day.
+ISS table: The times and directions for visible ISS passes over the next 10 days, from the specified day.
 
 == Installation ==
 
@@ -53,7 +54,10 @@ Search for 'zenith' in class-stars-at-night-manager.php for more information.
 
 This plugin is driven by user requests. Just ask.
 
-= Can you provide more astronomical data, like visible ISS passes, what planets are visible, etc? =
+= Where to did you get the ISS data? =
+The ISS data is obtained by parsing the response to a GET request to http://www.heavens-above.com. 
+
+= Can you provide more astronomical data, like what planets are visible, etc? =
 
 More is coming. Stay tuned!  If you have a specific request, let us know.
 
@@ -62,6 +66,9 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 screenshot-1.png
 
 == Changelog ==
+
+= 1.1 =
+* ISS visible passes table for the next 10 days, starting on the specified day.
 
 = 1.0.1 =
 * Readme.txt update. No functional changes.

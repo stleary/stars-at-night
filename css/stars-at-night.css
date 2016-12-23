@@ -23,9 +23,41 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.*/
 
-.ngc2244_stars_at_night_css table {
-    border: 1px solid black;
-    width: 50%;
+
+/* Standard table settings apply to the entire table.
+* For now, all stars-at-night tables use this style
+*/
+.ngc2244_stars_at_night_standardTable { 
+    font-family: verdana,arial,helvetica,sans-serif; 
+    color: black; 
+    background-color: White;
+    border-color: Gray;
+    border-width: 2px;
+    border-style: solid;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: auto;
+    table-layout:auto;
+}
+
+/* Some header settings may have to be set again, lest they be overridden */
+.ngc2244_stars_at_night_standardTable thead td {
+    font-family: verdana,arial,helvetica,sans-serif; 
+    background-color: #C0C0FF;
+    font-weight:bold;
+    text-align:center;
+}
+
+
+/* table row alternating background colors */
+.ngc2244_stars_at_night_standardTable tbody tr:nth-child(odd)   {color: black; background-color: white;}
+.ngc2244_stars_at_night_standardTable tbody tr:nth-child(even)    {color: black; background-color: #E0E0E0;}
+
+/* table row content style*/ 
+.ngc2244_stars_at_night_standardTable td {
+    padding: 6px;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
 }
 
 

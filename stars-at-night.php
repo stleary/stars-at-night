@@ -4,7 +4,7 @@
  * Plugin URI:        http://notforlong.org/the-stars-at-night/
  * Description:       A WordPress plugin to display astronomical information
  *                    for a specified location and date.
- * Version:           1.0
+ * Version:           1.1
  * Author:            Sean Leary
  * Author URI:        http://notforlong.org
  */

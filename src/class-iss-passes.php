@@ -55,9 +55,13 @@ class ISS_Passes {
         $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         $url = $url . "&tz=" . $heavensAboveTZ;
-        // we are not changing the http args
-        $response = file_get_contents ( $url );
-        // $htmlBody = htmlentities($body);
+        /**
+         * Can't rely on using file_get_contents() since a php.ini server
+         * config may dissallow use of this method: allow_url_fopen=0
+         * Instead, use wp_remote_get(), which returns an array or a WP_Error.
+         */
+        $response = wp_remote_get($url);
+        $response = wp_remote_retrieve_body($response);
         $doc = new DOMDocument ();
         // set error level
         $internalErrors = libxml_use_internal_errors ( true );

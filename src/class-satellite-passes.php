@@ -27,9 +27,9 @@
 defined ( 'ABSPATH' ) or die ();
 
 /**
- * This class is just a helper, it holds the iss functionality
+ * This class is just a helper, it holds the heavens-above.com satellite functionality
  */
-class ISS_Passes {
+class NGC2244_Satellite_Passes {
     /**
      * Returns a string containing the HTML to render a table of
      * ISS pass data inside a div.
@@ -124,4 +124,86 @@ class ISS_Passes {
             return "body not found";
         }
     }
-}
+
+    /**
+     * Returns a string containing the HTML to render a table of
+     * Iridium satellite pass data inside a div.
+     * A leading table description is included as well.
+     * The data is obtained from an external website. This may affect rendering time.
+     *
+     * @param $lat latitude
+     *            of the viewer
+     * @param $long longitude
+     *            of the viewer
+     * @param $timezone timezone
+     *            of the viewer
+     * @return table HTML
+     */
+    public static function get_iridium_table($lat, $long, $timezone) {
+        // convert php tz to heavens above expected format
+        $dateTime = new DateTime ();
+        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
+        $heavensAboveTZ = $dateTime->format ( 'T' );
+    
+        // just take a wild guess as to the location altitude, in meters
+        $locationAlt = 300;
+        $url = "http://www.heavens-above.com/IridiumFlares.aspx?lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
+        $url = $url . "&tz=" . $heavensAboveTZ;
+        /**
+         * Can't rely on using file_get_contents() since a php.ini server
+         * config may dissallow use of this method: allow_url_fopen=0
+         * Instead, use wp_remote_get(), which returns an array or a WP_Error.
+         */
+        $response = wp_remote_get($url);
+        $response = wp_remote_retrieve_body($response);
+        $doc = new DOMDocument ();
+        // set error level
+        $internalErrors = libxml_use_internal_errors ( true );
+        $doc->loadHTML ( $response );
+        // Restore error level
+        libxml_use_internal_errors ( $internalErrors );
+        $doc->preserveWhiteSpace = false;
+        $domXPath = new DOMXpath ( $doc );
+        $rows = $domXPath->query ( "//*[@class='clickableRow']" );
+        if (! is_null ( $rows )) {
+            // table and column headers
+            $iridiumTable = '<div>Visible Iridium flares for the Next 10 Days';
+            $iridiumTable .= '<table class="ngc2244_stars_at_night_standardTable">';
+            $iridiumTable .= '<thead><tr><td align="center" valign="middle">Date</td>';
+            $iridiumTable .= '<td align="center">Time</td>';
+            $iridiumTable .= '<td align="center">Magnitude</td>';
+            $iridiumTable .= '<td align="center">Altitude</td>';
+            $iridiumTable .= '<td align="center">Azimuth</td>';
+            $iridiumTable .= '<td align="center">Satellite</td></tr></thead>';
+            // column data
+            foreach ( $rows as $row ) {
+                $cols = $row->childNodes;
+                if ($cols->length == 8) {
+                    $dayTime = $cols->item ( 0 )->nodeValue;
+                    $dateTimeArray = explode(", ", $dayTime);
+                    $day = $dateTimeArray[0];
+                    $time = $dateTimeArray[1];
+                    $magnitude = $cols->item ( 1 )->nodeValue;
+                    $altitude = htmlentities ( $cols->item ( 2 )->nodeValue );
+                    $altitude = str_replace ( "&Acirc;", "", $altitude );
+                    $azimuth = htmlentities ( $cols->item ( 3 )->nodeValue );
+                    $azimuth = str_replace ( "&Acirc;", "", $azimuth );
+                    $satellite = $cols->item ( 4 )->nodeValue;
+                }
+                // table row
+                $iridiumTable .= '<tr><td>' . $day . '</td>';
+                $iridiumTable .= '<td>' . $time . '</td>';
+                $iridiumTable .= '<td>' . $magnitude . '</td>';
+                $iridiumTable .= '<td>' . $altitude . '</td>';
+                $iridiumTable .= '<td>' . $azimuth . '</td>';
+                $iridiumTable .= '<td>' . $satellite . '</td></tr>';
+            }
+            // end of table
+            $iridiumTable = $iridiumTable . '</table></div>';
+            return $iridiumTable;
+        } else {
+            return "body not found";
+        }
+    }
+    }

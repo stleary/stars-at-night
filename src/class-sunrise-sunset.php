@@ -81,15 +81,20 @@ class NGC2244_Sunrise_Sunset {
         $sunMoonTable = '<div ">' . $name . ' (' . $lat . ', ' . $long;
         $sunMoonTable .= ') Astronomical Times for ' . $today;
         $sunMoonTable .= '<table class="ngc2244_stars_at_night_standardTable">';
-        $sunMoonTable .= '<thead><tr><td align="center" valign="middle">Event</td>';
-        $sunMoonTable .= '<td align="center">Local Time</td></tr></thead>';
-        $sunMoonTable .= '<tr><td>Astronomical twilight</td>' . '<td>' . $this->morningTwilight .
-                 '</td></tr>';
-        $sunMoonTable .= '<tr><td>Sunrise</td><td>' . $this->sunRise . '</td></tr>';
-        $sunMoonTable .= '<tr><td>Sunset</td><td>' . $this->sunSet . '</td></tr>';
-        $sunMoonTable .= '<tr><td>Astronomical twilight</td><td>' . $this->eveningTwilight . '</td></tr>';
-        $sunMoonTable .= '<tr><td>Moonrise</td><td>' . $moonriseMoonset->getMoonRise() . '</td></tr>';
-        $sunMoonTable .= '<tr><td>Moonset</td><td>' . $moonriseMoonset->getMoonSet() . '</td></tr>';
+
+        $sunMoonTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
+        $sunMoonTable .= '<td align="center">Morning</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunrise</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunset</td>';
+        $sunMoonTable .= '<td align="center">Evening</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonrise</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonset</td></tr>';
+        $sunMoonTable .= '<tr><td>Twilight</td><td>Twilight</td></tr></thead>';
+        // column data
+        $sunMoonTable .= '<tr><td>' . $today . '</td><td>' . $this->morningTwilight . '</td><td>';
+        $sunMoonTable .= $this->sunRise . '</td><td>' . $this->sunSet  . '</td><td>';
+        $sunMoonTable .= $this->eveningTwilight . '</td><td>' . $moonriseMoonset->getMoonRise();
+        $sunMoonTable .= '</td><td>' . $moonriseMoonset->getMoonSet() . '</td></tr>';
         $sunMoonTable .= '</table></div>';
         return $sunMoonTable;
     }

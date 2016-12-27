@@ -27,7 +27,7 @@ defined ( 'ABSPATH' ) or die ();
 
 include ('class-sunrise-sunset.php');
 include ('class-moonrise-moonset.php');
-include ('class-iss-passes.php');
+include ('class-satellite-passes.php');
 
 /**
  * This class calculates and emits astronomical values in an HTML table.
@@ -38,7 +38,7 @@ class Stars_At_Night_Manager {
     protected $loader;
     protected $plugin_name;
     protected $version;
-
+    
     // sanitized user input
     private $sanitized_name;
     private $sanitized_lat;
@@ -125,10 +125,17 @@ class Stars_At_Night_Manager {
      *            date: a date that php can parse. For the current day, use "now"
      *            days: number of days to report
      *            
-     *            graphical=not used at present. Will cause an image of the Moon phase to be displayed.
+     *            graphical=not used at present. Will cause an image of the Moon phase to be
+     *            displayed.
      */
     public function run_stars_at_night($atts) {
-        // raw user input
+        if (! defined ( 'WPINC' )) {
+            die ();
+        }
+        
+        /**
+         * these are the supported fields of raw user input
+         */
         $name = '';
         $lat = '';
         $long = '';
@@ -137,20 +144,16 @@ class Stars_At_Night_Manager {
         $days = '';
         $graphical = '';
         
-        if (defined ( 'WPINC' )) {
-            /**
-             * WordPress mode.
-             * Default location is the dark sky observing site
-             * for the Austin Astronomical Society
-             */
-            extract ( 
-                    shortcode_atts ( 
-                            array ('name' => '','lat' => '','long' => '','timezone' => '',
-                                    'date' => 'now','days' => '3','graphical' => '' 
-                            ), $atts, 'stars-at-night' ), EXTR_IF_EXISTS );
-        } else {
-            die ();
-        }
+        /**
+         * WordPress mode.
+         * Default location is the dark sky observing site
+         * for the Austin Astronomical Society
+         */
+        extract ( 
+                shortcode_atts ( 
+                        array ('name' => '','lat' => '','long' => '','timezone' => '',
+                                'date' => 'now','days' => '3','graphical' => '' 
+                        ), $atts, 'stars-at-night' ), EXTR_IF_EXISTS );
         
         /**
          * Make sure the incoming data is valid.
@@ -174,17 +177,23 @@ class Stars_At_Night_Manager {
         $sunriseSunset->calculate_sun_times ( $this->sanitized_lat, $this->sanitized_long, 
                 $sunTzOffset, $this->sanitized_date );
         
+        // get the Moon times
         $moonriseMoonset = new NGC2244_Moonrise_Moonset ();
         $moonriseMoonset->calculate_moon_times ( $this->sanitized_lat, $this->sanitized_long, 
                 $moonTzOffset, $this->sanitized_timezone, $this->sanitized_date );
-        
-        $eventTable = $sunriseSunset->get_sun_moon_table ( $this->sanitized_name, 
-                $this->sanitized_lat, $this->sanitized_long, $this->sanitized_date, $moonriseMoonset );
-        
-        $issTable = ISS_Passes::get_iss_table ( $this->sanitized_lat, $this->sanitized_long, 
+
+        // convert date for table rendering
+        $currDate = new DateTime($this->sanitized_date);
+        $dateStr = $currDate->format('d M Y');
+        // get the tables
+        $tables = $sunriseSunset->get_sun_moon_table ( $this->sanitized_name, 
+                $this->sanitized_lat, $this->sanitized_long, $dateStr, $moonriseMoonset );
+        $issTable = NGC2244_Satellite_Passes::get_iss_table ( $this->sanitized_lat, $this->sanitized_long, 
+                $this->sanitized_timezone );
+        $iridiumTable = NGC2244_Satellite_Passes::get_iridium_table ( $this->sanitized_lat, $this->sanitized_long,
                 $this->sanitized_timezone );
         
-        return $eventTable . $issTable;
+        return $tables . $issTable . $iridiumTable;
     }
     
     /**

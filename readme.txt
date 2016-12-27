@@ -23,12 +23,15 @@ required, in any order:
 * **date** : A date that PHP can parse. For the current day, use "now" 
 
 **Shortcode Examples:**
+
 * stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
 * stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017
 
 The output consists of simple HTML tables:
-Events table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified day.
-ISS table: The times and directions for visible ISS passes over the next 10 days, from the specified day.
+
+* Events table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified day.
+* ISS table: The times and directions for visible ISS passes over the next 10 days, from the specified day.
+* Iridium flares table: The times and directions for visible Iridium flares over the next 10 days, from the specified day.
 
 == Installation ==
 

@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.1
+Stable tag: 1.2
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -20,15 +20,18 @@ required, in any order:
 * **lat** : Lattitude of location in fractional degrees (e.g. 30.8910). Positive is north, negative is south of equator
 * **long** : Longitude of location in fractional degrees (e.g.-98.4265). Positive is east, negative is west of the UTC line
 * **timezone** : Timezone name, must be value recognized by PHP. See [http://php.net/manual/en/timezones.php]
-* **date** : A date that PHP can parse. For the current day, use "now" 
+* **days** : The number of days of data to display. Must be a value from 1 to 10. Defaults to 3 if not specified. 
 
 **Shortcode Examples:**
-* stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=now
-* stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago date=1/29/2017
+
+* stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata days=1
+* stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago 
 
 The output consists of simple HTML tables:
-Events table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified day.
-ISS table: The times and directions for visible ISS passes over the next 10 days, from the specified day.
+
+* Sun/Moon table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified days.
+* ISS table: The times and directions for visible ISS passes over the specified days.
+* Iridium flares table: The times and directions for visible Iridium flares over the specified days.
 
 == Installation ==
 
@@ -54,8 +57,8 @@ Search for 'zenith' in class-stars-at-night-manager.php for more information.
 
 This plugin is driven by user requests. Just ask.
 
-= Where to did you get the ISS data? =
-The ISS data is obtained by parsing the response to a GET request to http://www.heavens-above.com. 
+= Where did you get the satellite data? =
+The ISS and Iridium flare data is obtained by parsing the response to a GET request to http://www.heavens-above.com. 
 
 = Can you provide more astronomical data, like what planets are visible, etc? =
 
@@ -66,6 +69,11 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 1. Sample tables generated for a specified location and time
 
 == Changelog ==
+
+= 1.2 =
+* Iridium flare visible passes table. Yay!
+* Cache satellite data locally to reduce load on remote server - other apps are QOS-filtered because of too many requests.
+* Replace start date with number of days. This was done because the satellite data is reported starting with the current day. Retrieving from an arbitrary start date is not practical.
 
 = 1.1 =
 * ISS visible passes table for the next 10 days, starting on the specified day.

@@ -24,7 +24,7 @@ This is a WordPress plugin, so it is written in PHP. Since it is available on th
 # Installation
 Preferred method: 
 * Install from the WordPress Plugin Repository. Search for "Stars At Night". It carries the Astronomy tag.
-* https://wordpress.org/plugins/stars-at-night/stats/
+* https://wordpress.org/plugins/stars-at-night
 
 Manual installation is also supported:
 *       Create a "stars-at-night" directory in your WordPress installation, under wp-content/plugins

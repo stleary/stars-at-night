@@ -9,14 +9,14 @@ The plugin is activated by the shortcode “stars-at-night”. Here is an exampl
 * **lat** : latitude. North of the equator is positive, South is negative. Ex: 30.9810
 * **long** : longitude. East of the Prime Meridian is positive, West is negative. Ex: -98.4265
 * **timezone** : A recognizable timezeone. For a list of valid values, see http://php.net/manual/en/timezones.php. Ex: America/Chicago
-* **date** : A recognizable date. For the current day, use ‘now’
+* **days** : The number of days to predict. Must be a value from 1-10. Default is 3 days.
 
 # Credits
 * The WordPress framework code and sunrise/sunset algorithm uses code from this project: <br>
 https://github.com/bengreeley/sunrisesunset
 * The Moonrise and Moonset class uses this code (with a correction for timezone): <br>
 http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
-* The ISS table is obtained by sending a GET request to:<br>
+* The ISS and Iridium Flare tables are obtained by sending GET requests to:<br>
 http://heavens-above.com
 
 This is a WordPress plugin, so it is written in PHP. Since it is available on the WordPress plugin directory, it is also stored in a SVN repository. However, this project is the single source of truth for the plugin.
@@ -24,6 +24,7 @@ This is a WordPress plugin, so it is written in PHP. Since it is available on th
 # Installation
 Preferred method: 
 * Install from the WordPress Plugin Repository. Search for "Stars At Night". It carries the Astronomy tag.
+* https://wordpress.org/plugins/stars-at-night/stats/
 
 Manual installation is also supported:
 *       Create a "stars-at-night" directory in your WordPress installation, under wp-content/plugins

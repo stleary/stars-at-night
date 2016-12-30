@@ -44,10 +44,12 @@ class Stars_At_Night_Manager {
     private $sanitized_lat;
     private $sanitized_long;
     private $sanitized_timezone;
-    private $sanitized_date;
     private $sanitized_days;
     private $sanitized_graphical;
-    
+    // calculated values
+    private $startDate;
+    private $endDate;
+    private $satellitePasses;
     /**
      * create and initialize a class instance
      */
@@ -122,8 +124,7 @@ class Stars_At_Night_Manager {
      *            Positive is east, negative is west of the UTC line
      *            timezone: timezone name, must be value recognized by php.
      *            See http://php.net/manual/en/timezones.php
-     *            date: a date that php can parse. For the current day, use "now"
-     *            days: number of days to report
+     *            days: number of days to report, starting from today
      *            
      *            graphical=not used at present. Will cause an image of the Moon phase to be
      *            displayed.
@@ -133,6 +134,7 @@ class Stars_At_Night_Manager {
             die ();
         }
         
+        $this->satellitePasses = new NGC2244_Satellite_Passes ();
         /**
          * these are the supported fields of raw user input
          */
@@ -140,19 +142,13 @@ class Stars_At_Night_Manager {
         $lat = '';
         $long = '';
         $timezone = '';
-        $date = '';
         $days = '';
         $graphical = '';
         
-        /**
-         * WordPress mode.
-         * Default location is the dark sky observing site
-         * for the Austin Astronomical Society
-         */
         extract ( 
                 shortcode_atts ( 
-                        array ('name' => '','lat' => '','long' => '','timezone' => '',
-                                'date' => 'now','days' => '3','graphical' => '' 
+                        array ('name' => '','lat' => '','long' => '','timezone' => '','days' => '3',
+                                'graphical' => '' 
                         ), $atts, 'stars-at-night' ), EXTR_IF_EXISTS );
         
         /**
@@ -160,40 +156,96 @@ class Stars_At_Night_Manager {
          * If not, errors will be reported in the return string
          * and the method stops here
          */
-        $validator_result = $this->data_validator ( $name, $lat, $long, $timezone, $date, $days, 
+        $validator_result = $this->data_validator ( $name, $lat, $long, $timezone, $days, 
                 $graphical );
         if (! empty ( $validator_result )) {
             return $validator_result;
         }
-        
-        // both sun and moon require a timezone offset, although they use different units
-        $remote_dtz = new DateTimeZone ( $this->sanitized_timezone );
-        $remote_dt = new DateTime ( $this->sanitized_date, $remote_dtz );
-        $sunTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 3600;
-        $moonTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 60;
-        
-        // get the Sun times
-        $sunriseSunset = new NGC2244_Sunrise_Sunset ();
-        $sunriseSunset->calculate_sun_times ( $this->sanitized_lat, $this->sanitized_long, 
-                $sunTzOffset, $this->sanitized_date );
-        
-        // get the Moon times
-        $moonriseMoonset = new NGC2244_Moonrise_Moonset ();
-        $moonriseMoonset->calculate_moon_times ( $this->sanitized_lat, $this->sanitized_long, 
-                $moonTzOffset, $this->sanitized_timezone, $this->sanitized_date );
-
-        // convert date for table rendering
-        $currDate = new DateTime($this->sanitized_date);
-        $dateStr = $currDate->format('d M Y');
+        $today = new DateTime ( 'now', new DateTimeZone ( $timezone ) );
+        $this->startDate = new DateTime ( $today->format ( 'm/d/Y' ) );
+        // error_log ( 'startdate ' . $this->startDate->format ( 'm/d/Y' ) );
+        $this->endDate = new DateTime ( $today->format ( 'm/d/Y' ) );
+        $this->endDate->add ( new DateInterval ( 'P' . ($this->sanitized_days - 1) . 'D' ) );
+        // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
         // get the tables
-        $tables = $sunriseSunset->get_sun_moon_table ( $this->sanitized_name, 
-                $this->sanitized_lat, $this->sanitized_long, $dateStr, $moonriseMoonset );
-        $issTable = NGC2244_Satellite_Passes::get_iss_table ( $this->sanitized_lat, $this->sanitized_long, 
-                $this->sanitized_timezone );
-        $iridiumTable = NGC2244_Satellite_Passes::get_iridium_table ( $this->sanitized_lat, $this->sanitized_long,
-                $this->sanitized_timezone );
+        $sunAndMoonTable = $this->getSunAndMoonTable ();
+        $issTable = $this->getISSTable ();
+        $iridiumTable = $this->getIridiumTable ();
         
-        return $tables . $issTable . $iridiumTable;
+        return $sunAndMoonTable . $issTable . $iridiumTable;
+    }
+    
+    /**
+     */
+    private function getIridiumTable() {
+        $iridiumTable = $this->satellitePasses->get_iridium_table ( $this->sanitized_lat, 
+                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $this->endDate );
+        return $iridiumTable;
+    }
+    
+    /**
+     */
+    private function getISSTable() {
+        $issTable = $this->satellitePasses->get_iss_table ( $this->sanitized_lat, 
+                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $this->endDate );
+        return $issTable;
+    }
+    
+    /**
+     * Returns a string containing the HTML to render a table of
+     * night sky data inside a div.
+     * A leading table description is included as well.
+     *
+     * @return html table of event times
+     */
+    private function getSunAndMoonTable() {
+        $sunMoonTable = '<div "><h6>Astronomical Times for ' . $this->sanitized_name . ' (' .
+                 $this->sanitized_lat . ', ' . $this->sanitized_long . ')<br>' . 'Starting ' .
+                 $this->startDate->format ( 'd M Y' ) . ', extending for ' . $this->sanitized_days .
+                 ' days</h6>';
+        $sunMoonTable .= '<table class="ngc2244_stars_at_night_standardTable">';
+        
+        $sunMoonTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
+        $sunMoonTable .= '<td align="center">Morning</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunrise</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunset</td>';
+        $sunMoonTable .= '<td align="center">Evening</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonrise</td>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonset</td></tr>';
+        $sunMoonTable .= '<tr><td>Twilight</td><td>Twilight</td></tr></thead>';
+        
+        for($date = new DateTime ( $this->startDate->format ( 'm/d/Y' ) ); $date <= $this->endDate; $date->add ( 
+                new DateInterval ( 'P1D' ) )) {
+            
+            // both sun and moon require a timezone offset, although they use different units
+            $remote_dtz = new DateTimeZone ( $this->sanitized_timezone );
+            $remote_dt = new DateTime ( $date->format ( 'm/d/Y' ), $remote_dtz );
+            $sunTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 3600;
+            $moonTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 60;
+            
+            // get the Sun times
+            $sunriseSunset = new NGC2244_Sunrise_Sunset ();
+            $sunriseSunset->calculate_sun_times ( $this->sanitized_lat, $this->sanitized_long, 
+                    $sunTzOffset, $date );
+            
+            // get the Moon times
+            $moonriseMoonset = new NGC2244_Moonrise_Moonset ();
+            $moonriseMoonset->calculate_moon_times ( $this->sanitized_lat, $this->sanitized_long, 
+                    $moonTzOffset, $this->sanitized_timezone, $date );
+            
+            // convert date for table rendering
+            $dateStr = $date->format ( 'd M Y' );
+            // get the tables
+            $sunMoonTable .= '<tr><td>' . $dateStr . '</td><td>' . $sunriseSunset->morningTwilight .
+                     '</td><td>';
+            $sunMoonTable .= $sunriseSunset->sunRise . '</td><td>' . $sunriseSunset->sunSet .
+                     '</td><td>';
+            $sunMoonTable .= $sunriseSunset->eveningTwilight . '</td><td>' .
+                     $moonriseMoonset->getMoonRise ();
+            $sunMoonTable .= '</td><td>' . $moonriseMoonset->getMoonSet () . '</td></tr>';
+        }
+        $sunMoonTable .= '</table></div>';
+        return $sunMoonTable;
     }
     
     /**
@@ -207,15 +259,13 @@ class Stars_At_Night_Manager {
      *            longitude of location in fractional degrees
      * @param $timezone string
      *            timezone name, must be value recognized by php
-     * @param $date mixed
-     *            date that php can parse
      * @param $days int
      *            number of days to report
      * @param $graphical bool
      *            not used at present
      * @return string containing error messages, or empty if no errors found
      */
-    private function data_validator($name, $lat, $long, $timezone, $date, $days, $graphical) {
+    private function data_validator($name, $lat, $long, $timezone, $days, $graphical) {
         $result = "";
         /**
          * Name must be safe, but can be any value, up to 32 chars
@@ -258,22 +308,13 @@ class Stars_At_Night_Manager {
         }
         
         /**
-         * Date must be recognized by php
-         */
-        try {
-            new DateTime ( $date );
-        } catch ( Exception $e ) {
-            $result .= "Date contains an unrecognized value.";
-        }
-        $this->sanitized_date = $date;
-        
-        /**
-         * days must be valid int [1:10]
+         * days must be valid int [1:10].
+         * Total of date+days must not exceed 10.
          */
         if (! is_numeric ( $days )) {
-            $result .= " days must be numeric.";
+            $result .= " Days must be numeric.";
         } else if ($days < 1 || $days > 10) {
-            $result .= " days must be in the range 1 to 10.";
+            $result .= " Days must be in the range 1 to 10.";
         } else {
             $this->sanitized_days = $days;
         }

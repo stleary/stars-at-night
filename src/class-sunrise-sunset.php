@@ -30,11 +30,22 @@ defined ( 'ABSPATH' ) or die ();
  * This class is just a helper, it holds the iss functionality
  */
 class NGC2244_Sunrise_Sunset {
-    private $sunRise;
-    private $sunSet;
-    private $morningTwilight;
-    private $eveningTwilight;
-
+    public $sunRise;
+    public $sunSet;
+    public $morningTwilight;
+    public $eveningTwilight;
+    
+    /**
+     *
+     * @param float $lat
+     *            latitude of location
+     * @param float $long
+     *            longitude of location
+     * @param int $sunTzOffset
+     *            local timezone offset of location
+     * @param DateTime $date
+     *            date of calculation
+     */
     public function calculate_sun_times($lat, $long, $sunTzOffset, $date) {
         /**
          * The builtin php lib uses the Solar zenith position, but has a flawed default value.
@@ -42,61 +53,21 @@ class NGC2244_Sunrise_Sunset {
          * http://grokbase.com/t/php/php-bugs/09932wqn2a/49448-new-sunset-sunrise-zenith-default-values-wrong
          */
         $zenith = 90 + (50 / 60);
-
         
         /**
          * get Sun times.
          * returns a string like this: 07:10
          */
-        $this->sunRise = date_sunrise ( strtotime ( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, $zenith, 
-                $sunTzOffset );
-        $this->sunSet = date_sunset ( strtotime ( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, $zenith, 
-                $sunTzOffset );
-
-        // get the twilight times, which we define as 90 minutes before sunrise, and after sunset
-        $this->morningTwilight = $this->calculateTwilight ( $date, $sunTzOffset, $this->sunRise, (- 90 * 60) );
-        $this->eveningTwilight = $this->calculateTwilight ( $date, $sunTzOffset, $this->sunSet, (90 * 60) );
+        $this->sunRise = date_sunrise ( strtotime ( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, 
+                $zenith, $sunTzOffset );
+        $this->sunSet = date_sunset ( strtotime ( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, 
+                $zenith, $sunTzOffset );
         
-    }
-    
-    /**
-     * Returns a string containing the HTML to render a table of
-     * night sky data inside a div.
-     * A leading table description is included as well.
-     * Parameters:
-     *
-     * @param $name name
-     *            of location
-     * @param $lat latitude
-     *            of viewer
-     * @param $long -
-     *            longitude of viewer
-     * @param $today -
-     *            date of calculation
-     * @param $moonriseMoonset -
-     *            container for moon data
-     * @return html table of event times
-     */
-    public function get_sun_moon_table($name, $lat, $long, $today, $moonriseMoonset) {
-        $sunMoonTable = '<div ">' . $name . ' (' . $lat . ', ' . $long;
-        $sunMoonTable .= ') Astronomical Times for ' . $today;
-        $sunMoonTable .= '<table class="ngc2244_stars_at_night_standardTable">';
-
-        $sunMoonTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
-        $sunMoonTable .= '<td align="center">Morning</td>';
-        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunrise</td>';
-        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunset</td>';
-        $sunMoonTable .= '<td align="center">Evening</td>';
-        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonrise</td>';
-        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonset</td></tr>';
-        $sunMoonTable .= '<tr><td>Twilight</td><td>Twilight</td></tr></thead>';
-        // column data
-        $sunMoonTable .= '<tr><td>' . $today . '</td><td>' . $this->morningTwilight . '</td><td>';
-        $sunMoonTable .= $this->sunRise . '</td><td>' . $this->sunSet  . '</td><td>';
-        $sunMoonTable .= $this->eveningTwilight . '</td><td>' . $moonriseMoonset->getMoonRise();
-        $sunMoonTable .= '</td><td>' . $moonriseMoonset->getMoonSet() . '</td></tr>';
-        $sunMoonTable .= '</table></div>';
-        return $sunMoonTable;
+        // get the twilight times, which we define as 90 minutes before sunrise, and after sunset
+        $this->morningTwilight = $this->calculateTwilight ( $date, $sunTzOffset, $this->sunRise, 
+                (- 90 * 60) );
+        $this->eveningTwilight = $this->calculateTwilight ( $date, $sunTzOffset, $this->sunSet, 
+                (90 * 60) );
     }
     
     /**
@@ -105,18 +76,18 @@ class NGC2244_Sunrise_Sunset {
      * By definition this is 90 minutes before sunrise
      * or 90 minutes after sunset.
      *
-     * @param $today -
+     * @param DateTime $date
      *            day for which the calculation is being made
-     * @param $tzOffset -
+     * @param int $tzOffset
      *            timezone offset in seconds
-     * @param $sunTime -
+     * @param string $sunTime
      *            either sunrise or sunset, string hh:mm 24 hr format
-     * @param $delta -
+     * @param int $delta
      *            use -90 for morning, +90 for evening
      * @return twilight string in hh:mm format
      */
-    private function calculateTwilight($today, $tzOffset, $sunTime, $delta) {
-        $todayStr = $today . " " . $sunTime;
+    private function calculateTwilight($date, $tzOffset, $sunTime, $delta) {
+        $todayStr = $date->format('m/d/Y') . " " . $sunTime;
         $todayTimestamp = strtotime ( $todayStr );
         $twilight = $todayTimestamp + $delta + $tzOffset;
         $dateTime = new DateTime ();

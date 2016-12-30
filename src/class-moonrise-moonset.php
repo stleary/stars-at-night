@@ -55,32 +55,30 @@ class NGC2244_Moonrise_Moonset {
     private $day;
     private $year;
     private $moonTzOffset;
-
     public function getMoonRise() {
         return $this->moonRise;
     }
-
     public function getMoonSet() {
         return $this->moonSet;
     }
-
+    
     /**
-     * Calculates the moon rise/set for a given location and day of year
-     * Added new param tzOffset which is the timezone offset
-     * in minutes for the specified longitude and latitude.
-     * There is no way to
-     * calculate this value, it must be provided. It has to be in minutes because
-     * some timezones are not on 1-hour boundaries (e.g. India)
+     * Calculates the moon rise/set for a given location and day of year.
+     * I added new param tzOffset which is the timezone offset in minutes for the specified
+     * longitude and latitude. There is no way to calculate this value, it must be provided. It has
+     * to be in minutes because some timezones are not on 1-hour boundaries (e.g. India). When
+     * completed, the result will be stored internally for later use
      *
-     * @param $lat float
+     * @param float $lat
      *            latitude of location to be calculated
-     * @param $lon float
+     * @param float $lon
      *            longitude of location to be calculated
-     * @param $tzOffset float
+     * @param int $tzOffset
      *            timezone offset in hours for location to be calculated
-     * @param $remote_dt date
-     *            for the moon calculation
-     *            When completed, the result will be stored internally for later use
+     * @param int $timezone
+     *            timezone of location to be calculated
+     * @param DateTime $date
+     *            date of the calculation
      */
     public function calculate_moon_times($lat, $lon, $tzOffset, $timezone, $date) {
         /**
@@ -89,7 +87,7 @@ class NGC2244_Moonrise_Moonset {
          */
         $this->moonTzOffset = $tzOffset;
         $remote_dtz = new DateTimeZone ( $timezone );
-        $remote_dt = new DateTime ( $date, $remote_dtz );
+        $remote_dt = new DateTime ( $date->format('m/d/Y'), $remote_dtz );
         $this->year = $remote_dt->format ( 'Y' );
         $this->month = $remote_dt->format ( 'm' );
         $this->day = $remote_dt->format ( 'd' );
@@ -181,10 +179,12 @@ class NGC2244_Moonrise_Moonset {
         $retVal = new stdClass ();
         $utrise = self::convertTime ( $utrise );
         $utset = self::convertTime ( $utset );
-        $retVal->moonrise = $rise ? mktime ( $utrise ['hrs'], $utrise ['min'], 0, $this->month, $this->day, 
-                $this->year ) : mktime ( 0, 0, 0, $this->month, $this->day + 1, $this->year );
-        $retVal->moonset = $set ? mktime ( $utset ['hrs'], $utset ['min'], 0, $this->month, $this->day, $this->year ) : mktime ( 
-                0, 0, 0, $this->month, $this->day + 1, $this->year );
+        $retVal->moonrise = $rise ? mktime ( $utrise ['hrs'], $utrise ['min'], 0, $this->month, 
+                $this->day, $this->year ) : mktime ( 0, 0, 0, $this->month, $this->day + 1, 
+                $this->year );
+        $retVal->moonset = $set ? mktime ( $utset ['hrs'], $utset ['min'], 0, $this->month, 
+                $this->day, $this->year ) : mktime ( 0, 0, 0, $this->month, $this->day + 1, 
+                $this->year );
         return $retVal;
     }
     

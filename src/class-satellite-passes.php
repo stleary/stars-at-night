@@ -177,27 +177,61 @@ class NGC2244_Satellite_Passes {
     public function getSatelliteData($url, $startDate, $endDate) {
         /**
          * Check transient data for cached satellite data.
-         * The key to the cache is the $serverRequest, which uniquely captures the location and
-         * satellite type. The value is an array of satellite objects that was parsed from the
-         * 'body' content of the server response.
+         * The key to the cache is the $url, which uniquely captures
+         * the location and satellite type. The value is an array of satellite objects that was
+         * parsed from the 'body' tag content of the server response. Starting in v3.0,
+         * only date field is populated in the first array element; it contains the
+         * end date of the query, to ensure transient cache holds the required range of days.
+         *
+         * In v1.2, transient cache did not contain the initial record with the
+         * query end date. Sometimes a satellite is not visible for many
+         * days, causing the rows to be empty or sparse, and making it appear
+         * that the cache was empty or stale.
+         *
+         * On upgrade, the first query may retrieve the v1.2 cache. If so, this
+         * will most likely flush the cache. It will appear to be stale, due
+         * to the first row date field being interpreted as the query end date.
+         * If it does not flush the cache, that will simply mean the user requested
+         * date range ended before the date of the first matched row. Either way
+         * the code should work correctly.
          */
-        // error_log ( 
-        //         'getSatelliteData() start [' . $startDate->format ( 'm/d/Y' ) . '] end [' .
-        //                  $endDate->format ( 'm/d/Y' ) . '] url [' . $url . '] ' );
+        // error_log (
+        // 'getSatelliteData() start [' . $startDate->format ( 'm/d/Y' ) . '] end [' .
+        // $endDate->format ( 'm/d/Y' ) . '] url [' . $url . '] ' );
         if (false !== ($data = get_transient ( $url ))) {
-            // error_log ( 'transient data found for ' . $url );
-            $rows = $this->filterRowsByDate ( $data, $startDate, $endDate );
-            if (! is_null ( $rows )) {
-                // error_log('getSatelliteData() end, rows found');
-                return $rows;
+            /**
+             */
+            if (is_array ( $data )) {
+                /**
+                 * Must check the date range before filtering by rows, in case
+                 * the existing cache is empty or sparse
+                 */
+                $endQueryDay = new DateTime ( $data [0]->date );
+                if ((count ( $data ) > 0) && ($endDate <= $endQueryDay)) {
+                    // error_log ( 'transient data found for ' . $url );
+                    $rows = $this->filterRowsByDate ( $data, $startDate, $endDate );
+                    if (! is_null ( $rows )) {
+                        // error_log('getSatelliteData() end, rows found');
+                        return $rows;
+                    }
+                } else {
+                    error_log ( 'cache is empty or stale, refresh from the server' );
+                    delete_transient ( $url );
+                }
+            } else {
+                // should never happen
+                error_log ( 'Unexpected transient item, flushing the cache' );
+                delete_transient ( $url );
             }
+        } else {
+            error_log ( 'cache is empty, refresh from the server' );
         }
         /**
          * If we got this far, there was no match in the transient cache.
          * Need to send a server request and parse the response according to the satellite type,
          * adding it to the cache.
          */
-        error_log('Going to the server for satellite data for ' . $url);
+        error_log ( 'GET request for satellite data: ' . $url );
         $data = NULL;
         if (strpos ( $url, 'satid=25544' ) !== false) {
             $data = $this->getISSDataFromServer ( $url );
@@ -218,7 +252,7 @@ class NGC2244_Satellite_Passes {
      * dates.
      * Source may be the transient cache or the parsed server response.
      *
-     * @param array $data
+     * @param object $data
      *            an array of rows of satellite data.
      * @param DateTime $startDate
      *            starting date for filter
@@ -227,9 +261,12 @@ class NGC2244_Satellite_Passes {
      * @return array of matching rows, or NULL if none match
      */
     private function filterRowsByDate($data, $startDate, $endDate) {
-        // cached data found, now check for matching date range
+        /**
+         * Cached data found, make sure it has rows.
+         * The first row just contains the query end date, so don't count it.
+         */
         $count = count ( $data );
-        if ($count > 0) {
+        if ($count > 1) {
             /**
              * the server returns dates in m/d format so we have to infer the year.
              * Usually that will be the present year, but during the last 10 days of the year
@@ -246,59 +283,30 @@ class NGC2244_Satellite_Passes {
                 $today->add ( new DateInterval ( 'P1Y' ) );
                 $nextYearStr = $today->format ( ' Y' );
             }
-            $curStartDateStr = $data [0]->date . $curYearStr;
-            $curEndDateStr = $data [$count - 1]->date;
-            if (strpos ( $curEndDateStr, 'Jan' ) !== false) {
-                $curEndDateStr .= $nextYearStr;
-            } else {
-                $curEndDateStr .= $curYearStr;
-            }
-            $rowStartDate = new DateTime ( $curStartDateStr );
-            $rowEndDate = new DateTime ( $curEndDateStr );
-            // error_log ( 
-            //        'start [' . $startDate->format ( 'm/d/Y' ) . '] end [' .
-            //                 $endDate->format ( 'm/d/Y' ) . '] rowstart [' .
-            //                 $rowStartDate->format ( 'm/d/Y' ) . '] rowend [' .
-            //                 $rowEndDate->format ( 'm/d/Y' ) . ']' );
-            /**
-             * Start date will always be today, due to current limitations in
-             * satellite data availability.
-             * But the returned table may start later
-             * than today. All that really matters is that end row is greater
-             * than end date.
-             */
-            if ($rowEndDate >= $endDate) {
-                // build an array of the requested date range
-                $rows = array ();
-                $rowCount = 0;
-                for($i = 0; $i < $count; $i ++) {
-                    $rowDateStr = $data [$i]->date;
-                    if (strpos ( $rowDateStr, 'Jan' ) !== false) {
-                        $rowDateStr .= $nextYearStr;
-                    } else {
-                        $rowDateStr .= $curYearStr;
-                    }
-                    
-                    $rowDate = new DateTime ( $rowDateStr );
-                    if ($startDate <= $rowDate && $endDate >= $rowDate) {
-                        // error_log ( 'row ' . $i . ' found   ' . $data [$i]->date );
-                        $rows [$rowCount ++] = $data [$i];
-                    } else {
-                        // error_log ( 'row ' . $i . ' skipped ' . $data [$i]->date );
-                    }
-                }
-                if ($rowCount > 0) {
-                    return $rows;
+            // build an array of the requested date range
+            $rows = array ();
+            $rowCount = 0;
+            // skip first row, which contains only the query end date
+            for($i = 1; $i < $count; $i ++) {
+                $rowDateStr = $data [$i]->date;
+                if (strpos ( $rowDateStr, 'Jan' ) !== false) {
+                    $rowDateStr .= $nextYearStr;
                 } else {
-                    // error_log ( 'no rows matched' );
+                    $rowDateStr .= $curYearStr;
                 }
+                
+                $rowDate = new DateTime ( $rowDateStr );
+                if ($startDate <= $rowDate && $endDate >= $rowDate) {
+                    // error_log ( 'row ' . $i . ' found ' . $data [$i]->date );
+                    $rows [$rowCount ++] = $data [$i];
+                } else {
+                    // error_log ( 'row ' . $i . ' skipped ' . $data [$i]->date );
+                }
+            }
+            if ($rowCount > 0) {
+                return $rows;
             } else {
-                // error_log ( 
-                //        'dates out of range. start [' . $startDate->format ( 'm/d/Y' ) . '] end [' .
-                //                 $endDate->format ( 'm/d/Y' ) . ']' );
-                // error_log ( 
-                //        'rowstart [' . $rowStartDate->format ( 'm/d/Y' ) . '] rowend [' .
-                //                 $rowEndDate->format ( 'm/d/Y' ) . ']' );
+                // error_log ( 'no rows matched' );
             }
         } else {
             // error_log ( 'No rows to filter' );
@@ -337,7 +345,17 @@ class NGC2244_Satellite_Passes {
         if (! is_null ( $rows )) {
             // error_log ( 'iss rows found' );
             $issTable = array ();
-            $issTableCount = 0;
+            /**
+             * Record the end query dates, which by convention
+             * is 10 days from today.
+             * Insert it into the first array position.
+             */
+            $item = new NGC2244_ISS_Data ();
+            $tenday = new DateTime ();
+            $tenday->add ( new DateInterval ( 'P10D' ) );
+            $item->date = $tenday->format ( 'm/d/Y' );
+            $issTable [0] = $item;
+            $issTableCount = 1;
             foreach ( $rows as $row ) {
                 // error_log ( 'process iss row ' . $issTableCount );
                 $cols = $row->childNodes;
@@ -401,7 +419,17 @@ class NGC2244_Satellite_Passes {
         $rows = $domXPath->query ( "//*[@class='clickableRow']" );
         if (! is_null ( $rows )) {
             $iridiumTable = array ();
-            $iridiumTableCount = 0;
+            /**
+             * Record the end query dates, which by convention
+             * is 10 days from today.
+             * Insert it into the first array position.
+             */
+            $item = new NGC2244_Iridium_Data ();
+            $tenday = new DateTime ();
+            $tenday->add ( new DateInterval ( 'P10D' ) );
+            $item->date = $tenday->format ( 'm/d/Y' );
+            $iridiumTable [0] = $item;
+            $iridiumTableCount = 1;
             foreach ( $rows as $row ) {
                 $cols = $row->childNodes;
                 if ($cols->length == 8) {

@@ -58,10 +58,12 @@ class NGC2244_Sunrise_Sunset {
          * get Sun times.
          * returns a string like this: 07:10
          */
-        $this->sunRise = date_sunrise ( strtotime ( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, 
+        $this->sunRise = date_sunrise ( strtotime ( $date->format('m/d/Y') ), SUNFUNCS_RET_STRING, $lat, $long, 
                 $zenith, $sunTzOffset );
-        $this->sunSet = date_sunset ( strtotime ( 'now' ), SUNFUNCS_RET_STRING, $lat, $long, 
+        error_log("sunrise for " . strtotime ( $date->format('m/d/Y') ) . " date " . $date->format('m/d/Y') . " time: " . $this->sunRise);
+        $this->sunSet = date_sunset ( strtotime ( $date->format('m/d/Y') ), SUNFUNCS_RET_STRING, $lat, $long, 
                 $zenith, $sunTzOffset );
+        error_log("sunset for " . strtotime ( $date->format('m/d/Y') ) . " date " . $date->format('m/d/Y') . " time: " . $this->sunSet);
         
         // get the twilight times, which we define as 90 minutes before sunrise, and after sunset
         $this->morningTwilight = $this->calculateTwilight ( $date, $sunTzOffset, $this->sunRise, 

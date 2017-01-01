@@ -3,7 +3,7 @@ The Stars at Night is a WordPress plugin. It is intended for use by amateur astr
 
 The plugin is activated by the shortcode “stars-at-night”. Here is an example:
 
-\[stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata date=1/2/2000\]
+\[stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata days=6\]
 
 * **name** : (location name: can be anything)
 * **lat** : latitude. North of the equator is positive, South is negative. Ex: 30.9810

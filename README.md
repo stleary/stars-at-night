@@ -12,12 +12,16 @@ The plugin is activated by the shortcode “stars-at-night”. Here is an exampl
 * **days** : The number of days to predict. Must be a value from 1-10. Default is 3 days.
 
 # Credits
-* The WordPress framework code and sunrise/sunset algorithm uses code from this project: <br>
+
+* Lunar images by Dan Morgan (dan@danmorgan.org). Used with permission. http://DanMorgan.org.
+* The WordPress framework and sunrise/sunset algorithm:
 https://github.com/bengreeley/sunrisesunset
-* The Moonrise and Moonset class uses this code (with a correction for timezone): <br>
+* The Moonrise and Moonset class (with a correction for timezone): <br>
 http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
+* The Moon phase class:<br>
+https://github.com/solarissmoke/php-moon-phase 
 * The ISS and Iridium Flare tables are obtained by sending GET requests to:<br>
-http://heavens-above.com
+http://heavens-above.com (HTTP API used with permission)
 
 This is a WordPress plugin, so it is written in PHP. Since it is available on the WordPress plugin directory, it is also stored in a SVN repository. However, this project is the single source of truth for the plugin.
 
@@ -32,7 +36,7 @@ Manual installation is also supported:
 *       git clone https://github.com/stleary/stars-at-night.git .
 *           (enter your GitHub username and password when prompted)
  
-The customer-facing page for stars-at-night is:<br>
+The user-facing page for stars-at-night is:<br>
 http://notforlong.org/the-stars-at-night/
 
 

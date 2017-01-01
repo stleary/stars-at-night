@@ -1,4 +1,5 @@
 <?php
+use Solaris\NGC2244_Moon_Phase;
 
 /*
  * MIT License
@@ -27,6 +28,7 @@ defined ( 'ABSPATH' ) or die ();
 
 include ('class-sunrise-sunset.php');
 include ('class-moonrise-moonset.php');
+include ('class-moon-phase.php');
 include ('class-satellite-passes.php');
 
 /**
@@ -172,6 +174,20 @@ class Stars_At_Night_Manager {
         $issTable = $this->getISSTable ();
         $iridiumTable = $this->getIridiumTable ();
         
+        /**
+         * Get the Moon phase.
+         * For now, just get today's phase
+         * TODO: 1-28?
+         */
+        $moonPhase = new NGC2244_Moon_Phase ( $today->getTimestamp () );
+        $age = ceil ( $moonPhase->age () );
+        // Get an image that corresponds to the age in the Lunar cycle
+        $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
+        error_log ( 'image file:' . $imageFile );
+        $test = '<div><table class="ngc2244_stars_at_night_standardTable"><tbody><tr><td>' .
+                 $sunAndMoonTable . '</td><td><img class="ngc2244_stars_at_night_lunar_1st" src="' .
+                 $imageFile . '" alt="day ' . $age .
+                 ' of Moon"></img></td></tr></tbody></table></div>';
         return $sunAndMoonTable . $issTable . $iridiumTable;
     }
     
@@ -199,6 +215,27 @@ class Stars_At_Night_Manager {
      * @return html table of event times
      */
     private function getSunAndMoonTable() {
+        /**
+         * Get the Moon phase.
+         * TODO: 1-28?
+         */
+        $days = $this->endDate->diff ( $this->startDate )->days + 1;
+        error_log ( 'days: ' . $days );
+        $xdate = new DateTime ( $this->startDate->format ( 'm/d/Y' ) );
+        for($i = 0; $i < $days; $i = $i + 3) {
+            $moonPhase = new NGC2244_Moon_Phase ( $xdate->getTimestamp () );
+            $xdate->add ( new DateInterval ( 'P3D' ) );
+            $age = ceil ( $moonPhase->age () );
+            error_log ( 'age: ' . $age );
+        }
+        // Get an image that corresponds to the age in the Lunar cycle
+        $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
+        error_log ( 'image file:' . $imageFile );
+        $test = '<div><table class="ngc2244_stars_at_night_standardTable"><tbody><tr><td>' .
+                 '</td><td><img class="ngc2244_stars_at_night_lunar_1st" src="' .
+                 $imageFile . '" alt="day ' . $age .
+                 ' of Moon"></img></td></tr></tbody></table></div>';
+        
         $sunMoonTable = '<div "><h6>Astronomical Times for ' . $this->sanitized_name . ' (' .
                  $this->sanitized_lat . ', ' . $this->sanitized_long . ')<br>' . 'Starting ' .
                  $this->startDate->format ( 'd M Y' ) . ', extending for ' . $this->sanitized_days .
@@ -211,12 +248,13 @@ class Stars_At_Night_Manager {
         $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunset</td>';
         $sunMoonTable .= '<td align="center">Evening</td>';
         $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonrise</td>';
-        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonset</td></tr>';
+        $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonset</td>';
+        $sunMoonTable .= '<td aligh="center" rowspan="2" valign="middle">Moon Phase</td></tr>';
         $sunMoonTable .= '<tr><td>Twilight</td><td>Twilight</td></tr></thead>';
         
+        $dayCount = 0;
         for($date = new DateTime ( $this->startDate->format ( 'm/d/Y' ) ); $date <= $this->endDate; $date->add ( 
                 new DateInterval ( 'P1D' ) )) {
-            
             // both sun and moon require a timezone offset, although they use different units
             $remote_dtz = new DateTimeZone ( $this->sanitized_timezone );
             $remote_dt = new DateTime ( $date->format ( 'm/d/Y' ), $remote_dtz );
@@ -242,7 +280,18 @@ class Stars_At_Night_Manager {
                      '</td><td>';
             $sunMoonTable .= $sunriseSunset->eveningTwilight . '</td><td>' .
                      $moonriseMoonset->getMoonRise ();
-            $sunMoonTable .= '</td><td>' . $moonriseMoonset->getMoonSet () . '</td></tr>';
+            $sunMoonTable .= '</td><td>' . $moonriseMoonset->getMoonSet () . '</td>';
+            if ($dayCount % 3 === 0) {
+                $moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
+                $age = ceil ( $moonPhase->age () );
+                $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
+                error_log ( 'image file:' . $imageFile );
+                error_log ( 'dayCount ' . $dayCount . ' age: ' . $age );
+                $sunMoonTable .= '<td rowspan="3"><img class="ngc2244_stars_at_night_lunar" src="' .
+                         $imageFile . '" alt="day ' . $age . ' of Moon"></img></td>';
+            }
+            $sunMoonTable .= '</tr>';
+            $dayCount ++;
         }
         $sunMoonTable .= '</table></div>';
         return $sunMoonTable;

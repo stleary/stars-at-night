@@ -33,6 +33,15 @@ The output consists of simple HTML tables:
 * ISS table: The times and directions for visible ISS passes over the specified days.
 * Iridium flares table: The times and directions for visible Iridium flares over the specified days.
 
+**Credit Where it is Due:**
+
+* The WordPress framework code and sunrise/sunset algorithm uses code from this project: 
+https://github.com/bengreeley/sunrisesunset
+* The Moonrise and Moonset class uses this code (with a correction for timezone): 
+http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
+* The ISS and Iridium Flare tables are obtained by sending GET requests to:
+http://heavens-above.com
+
 == Installation ==
 
 1. Login to your WordPress site as admin.

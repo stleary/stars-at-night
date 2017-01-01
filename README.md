@@ -40,4 +40,4 @@ The user-facing page for stars-at-night is:<br>
 http://notforlong.org/the-stars-at-night/
 
 
-If you have questions or feature requests, open an issue in this project or leave a comment on the notforlong.org page.
+If you have questions or feature requests, open an issue in this project or leave a comment on the http://notforlong.org/stars-at-night

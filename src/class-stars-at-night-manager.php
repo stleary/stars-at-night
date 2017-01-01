@@ -1,5 +1,7 @@
 <?php
 
+use Solaris\NGC2244_Moon_Phase;
+
 /*
  * MIT License
  *
@@ -27,6 +29,7 @@ defined ( 'ABSPATH' ) or die ();
 
 include ('class-sunrise-sunset.php');
 include ('class-moonrise-moonset.php');
+include ('class-moon-phase.php');
 include ('class-satellite-passes.php');
 
 /**
@@ -171,8 +174,20 @@ class Stars_At_Night_Manager {
         $sunAndMoonTable = $this->getSunAndMoonTable ();
         $issTable = $this->getISSTable ();
         $iridiumTable = $this->getIridiumTable ();
-        
-        return $sunAndMoonTable . $issTable . $iridiumTable;
+
+
+        /**
+         * Get the Moon phase. For now, just get today's phase
+         * TODO: 1-28?
+         */
+        $moonPhase = new NGC2244_Moon_Phase($today->getTimestamp());
+        $age = ceil($moonPhase->age());
+        // Get an image that corresponds to the age
+        $path = plugin_dir_path( 'stars-at-night' );
+        $imageFile = plugin_dir_url() . "stars-at-night/images/Moon-" . $age . ".jpg";
+        error_log('image file:' . $imageFile);
+        $test = '<div><table><tbody><tr><td>' . $sunAndMoonTable . '</td><td><img src="' . $imageFile . '" alt="day ' . $age . ' of Moon"></img></td></tr></tbody></table></div>';
+        return $test . $issTable . $iridiumTable;
     }
     
     /**

@@ -59,5 +59,9 @@ table.ngc2244_stars_at_night_standardTable {
     border-left: 1px solid gray;
     border-right: 1px solid gray;
 }
-
+/* Lunar images stack into a table cell, side by side with sun/moon table */
+/* A table will have between 1 and 3 images, depending on the number of rows */
+.ngc2244_stars_at_night_lunar {
+    width: 100px;
+}
 

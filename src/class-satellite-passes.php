@@ -66,21 +66,20 @@ class NGC2244_Satellite_Passes {
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getSatelliteData ( $url, $startDate, $endDate );
+        // table and column headers
+        $issTable = '<div><h6>Visible ISS Passes</h6>';
+        $issTable .= '<table class="ngc2244_stars_at_night_standardTable">';
+        $issTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
+        $issTable .= '<td align="center">Brightness</td>';
+        $issTable .= '<td align="center" valign="top" colspan="3">Start</td>';
+        $issTable .= '<td align="center" colspan="3">Highest point</td>';
+        $issTable .= '<td align="center" colspan="3">End</td></tr>';
+        $issTable .= '<tr><td align="center">(mag)</td>';
+        $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
+        $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
+        $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td></tr></thead>';
         if (! is_null ( $rows )) {
-            // table and column headers
-            $issTable = '<div><h6>Visible ISS Passes</h6>';
-            $issTable .= '<table class="ngc2244_stars_at_night_standardTable">';
-            $issTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
-            $issTable .= '<td align="center">Brightness</td>';
-            $issTable .= '<td align="center" valign="top" colspan="3">Start</td>';
-            $issTable .= '<td align="center" colspan="3">Highest point</td>';
-            $issTable .= '<td align="center" colspan="3">End</td></tr>';
-            $issTable .= '<tr><td align="center">(mag)</td>';
-            $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
-            $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
-            $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td></tr></thead>';
             foreach ( $rows as $row ) {
-                // table row
                 $issTable .= '<tr><td>' . $row->date . '</td>';
                 $issTable .= '<td>' . $row->magnitude . '</td>';
                 $issTable .= '<td>' . $row->startTime . '</td>';
@@ -93,12 +92,12 @@ class NGC2244_Satellite_Passes {
                 $issTable .= '<td>' . $row->endAltitude . '</td>';
                 $issTable .= '<td>' . $row->endAzimuth . '</td></tr>';
             }
-            // end of table
-            $issTable = $issTable . '</table></div>';
-            return $issTable;
         } else {
-            return NULL;
+            // no matching days were found
+            $issTable .= '<tr><td colspan="11">No visible ISS passes during this time period</td></tr>';
         }
+        $issTable = $issTable . '</table></div>';
+        return $issTable;
     }
     
     /**
@@ -132,16 +131,16 @@ class NGC2244_Satellite_Passes {
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getSatelliteData ( $url, $startDate, $endDate );
+        // table and column headers
+        $iridiumTable = '<div><h6>Visible Iridium flares</h6>';
+        $iridiumTable .= '<table class="ngc2244_stars_at_night_standardTable">';
+        $iridiumTable .= '<thead><tr><td align="center" valign="middle">Date</td>';
+        $iridiumTable .= '<td align="center">Time</td>';
+        $iridiumTable .= '<td align="center">Magnitude</td>';
+        $iridiumTable .= '<td align="center">Altitude</td>';
+        $iridiumTable .= '<td align="center">Azimuth</td>';
+        $iridiumTable .= '<td align="center">Satellite</td></tr></thead>';
         if (! is_null ( $rows )) {
-            // table and column headers
-            $iridiumTable = '<div><h6>Visible Iridium flares</h6>';
-            $iridiumTable .= '<table class="ngc2244_stars_at_night_standardTable">';
-            $iridiumTable .= '<thead><tr><td align="center" valign="middle">Date</td>';
-            $iridiumTable .= '<td align="center">Time</td>';
-            $iridiumTable .= '<td align="center">Magnitude</td>';
-            $iridiumTable .= '<td align="center">Altitude</td>';
-            $iridiumTable .= '<td align="center">Azimuth</td>';
-            $iridiumTable .= '<td align="center">Satellite</td></tr></thead>';
             foreach ( $rows as $row ) {
                 // table row
                 $iridiumTable .= '<tr><td>' . $row->date . '</td>';
@@ -151,12 +150,12 @@ class NGC2244_Satellite_Passes {
                 $iridiumTable .= '<td>' . $row->azimuth . '</td>';
                 $iridiumTable .= '<td>' . $row->satellite . '</td></tr>';
             }
-            // end of table
-            $iridiumTable = $iridiumTable . '</table></div>';
-            return $iridiumTable;
         } else {
-            return NULL;
+            // no matching days were found
+            $iridiumTable .= '<tr><td colspan="6">No visible Iridium Flares during this time period</td></tr>';
         }
+        $iridiumTable = $iridiumTable . '</table></div>';
+        return $iridiumTable;
     }
     
     /**
@@ -199,8 +198,6 @@ class NGC2244_Satellite_Passes {
         // 'getSatelliteData() start [' . $startDate->format ( 'm/d/Y' ) . '] end [' .
         // $endDate->format ( 'm/d/Y' ) . '] url [' . $url . '] ' );
         if (false !== ($data = get_transient ( $url ))) {
-            /**
-             */
             if (is_array ( $data )) {
                 /**
                  * Must check the date range before filtering by rows, in case
@@ -321,7 +318,7 @@ class NGC2244_Satellite_Passes {
      *
      * @param string $url
      *            The fully formed URL string for an HTTP GET request to the server
-     * @return NGC2244_ISS_Data[]|NULL
+     * @return NGC2244_ISS_Data[]. May not have any rows other than the end date.
      */
     private function getISSDataFromServer($url) {
         // error_log ( 'getting iss data' );
@@ -342,19 +339,20 @@ class NGC2244_Satellite_Passes {
         $doc->preserveWhiteSpace = false;
         $domXPath = new DOMXpath ( $doc );
         $rows = $domXPath->query ( "//*[@class='clickableRow']" );
+        $issTable = array ();
+        /**
+         * Record the end query date unconditionally, which by convention
+         * is 10 days from today.
+         * Insert it into the first array position.
+         */
+        $item = new NGC2244_ISS_Data ();
+        $tenday = new DateTime ();
+        $tenday->add ( new DateInterval ( 'P10D' ) );
+        $item->date = $tenday->format ( 'm/d/Y' );
+        $issTable [0] = $item;
+        
         if (! is_null ( $rows )) {
             // error_log ( 'iss rows found' );
-            $issTable = array ();
-            /**
-             * Record the end query dates, which by convention
-             * is 10 days from today.
-             * Insert it into the first array position.
-             */
-            $item = new NGC2244_ISS_Data ();
-            $tenday = new DateTime ();
-            $tenday->add ( new DateInterval ( 'P10D' ) );
-            $item->date = $tenday->format ( 'm/d/Y' );
-            $issTable [0] = $item;
             $issTableCount = 1;
             foreach ( $rows as $row ) {
                 // error_log ( 'process iss row ' . $issTableCount );
@@ -379,15 +377,11 @@ class NGC2244_Satellite_Passes {
                     // skip pass type which is always 'visible'
                     $issTable [$issTableCount ++] = $data;
                 } else {
-                    // error_log ( 'iss 12 cols NOT found' );
+                    error_log ( 'iss expect number of columns NOT found' );
                 }
             }
-            // end of table
-            return $issTable;
-        } else {
-            // error_log ( 'iss rows NOT found' );
-            return NULL;
         }
+        return $issTable;
     }
     
     /**
@@ -397,7 +391,7 @@ class NGC2244_Satellite_Passes {
      *
      * @param string $url
      *            The fully formed URL string for an HTTP GET request to the server
-     * @return NGC2244_Iridium_Data[]|NULL
+     * @return NGC2244_Iridium_Data[]. May not have any rows other than the end date.
      */
     private function getIridiumDataFromServer($url) {
         // error_log ( 'getting iridium data' );
@@ -417,18 +411,19 @@ class NGC2244_Satellite_Passes {
         $doc->preserveWhiteSpace = false;
         $domXPath = new DOMXpath ( $doc );
         $rows = $domXPath->query ( "//*[@class='clickableRow']" );
+        /**
+         * Record the end query dates unconditionally, which by convention
+         * is 10 days from today.
+         * Insert it into the first array position.
+         */
+        $item = new NGC2244_Iridium_Data ();
+        $tenday = new DateTime ();
+        $tenday->add ( new DateInterval ( 'P10D' ) );
+        $item->date = $tenday->format ( 'm/d/Y' );
+        $iridiumTable [0] = $item;
+        
         if (! is_null ( $rows )) {
             $iridiumTable = array ();
-            /**
-             * Record the end query dates, which by convention
-             * is 10 days from today.
-             * Insert it into the first array position.
-             */
-            $item = new NGC2244_Iridium_Data ();
-            $tenday = new DateTime ();
-            $tenday->add ( new DateInterval ( 'P10D' ) );
-            $item->date = $tenday->format ( 'm/d/Y' );
-            $iridiumTable [0] = $item;
             $iridiumTableCount = 1;
             foreach ( $rows as $row ) {
                 $cols = $row->childNodes;
@@ -445,12 +440,11 @@ class NGC2244_Satellite_Passes {
                     $data->azimuth = str_replace ( "&Acirc;", "", $azimuth );
                     $data->satellite = $cols->item ( 4 )->nodeValue;
                     $iridiumTable [$iridiumTableCount ++] = $data;
+                } else {
+                    error_log ( 'iridium expected number of columns NOT found' );
                 }
             }
-            // end of table
-            return $iridiumTable;
-        } else {
-            return NULL;
         }
+        return $iridiumTable;
     }
 }

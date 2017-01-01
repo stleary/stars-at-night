@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.2
+Stable tag: 1.3
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -78,6 +78,13 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 1. Sample tables generated for a specified location and time
 
 == Changelog ==
+
+= 1.3 =
+
+* Add Lunar images to Sun/Moon table. 1 image per 3 rows.
+* Fixed Sun/Moon day increment.
+* Adapt to sparse or empty satellite cache.
+* Handle empty cache - maybe there are no visible satellites during that period.
 
 = 1.2 =
 * Iridium flare visible passes table. Yay!

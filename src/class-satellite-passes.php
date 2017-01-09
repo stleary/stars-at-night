@@ -67,9 +67,9 @@ class NGC2244_Satellite_Passes {
         $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getSatelliteData ( $url, $startDate, $endDate );
         // table and column headers
-        $issTable = '<div><h6>Visible ISS Passes</h6>';
-        $issTable .= '<table class="ngc2244_stars_at_night_standardTable">';
-        $issTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
+        $issTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
+        $issTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Visible ISS Passes</td></tr>';
+        $issTable .= '<tr><td align="center" rowspan="2" valign="middle">Date</td>';
         $issTable .= '<td align="center">Brightness</td>';
         $issTable .= '<td align="center" valign="top" colspan="3">Start</td>';
         $issTable .= '<td align="center" colspan="3">Highest point</td>';
@@ -116,9 +116,12 @@ class NGC2244_Satellite_Passes {
      *            the ending date to display
      * @param DateTime $endDate
      *            the ending date to display
+     * @param int $days
+     *            the number of days to get
      * @return table HTML
      */
-    public function get_iridium_table($lat, $long, $timezone, $startDate, $endDate) {
+    public function get_iridium_table($lat, $long, $timezone, $startDate, $endDate, 
+            $days) {
         // convert php tz to heavens above expected format
         $dateTime = new DateTime ();
         // convert the php-compatible timezone name to heavens-above format
@@ -131,10 +134,15 @@ class NGC2244_Satellite_Passes {
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getSatelliteData ( $url, $startDate, $endDate );
+        $daysStr = "";
+        if ($days > 7) {
+            $daysStr = " for the next 7 days";
+        }
         // table and column headers
-        $iridiumTable = '<div><h6>Visible Iridium flares</h6>';
-        $iridiumTable .= '<table class="ngc2244_stars_at_night_standardTable">';
-        $iridiumTable .= '<thead><tr><td align="center" valign="middle">Date</td>';
+        $iridiumTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
+        $iridiumTable .= '<thead><tr><td align="center" valign="middle" colspan="6">Visible Iridium Flares' .
+                 $daysStr . '</td></tr>';
+        $iridiumTable .= '<tr><td align="center" valign="middle">Date</td>';
         $iridiumTable .= '<td align="center">Time</td>';
         $iridiumTable .= '<td align="center">Magnitude</td>';
         $iridiumTable .= '<td align="center">Altitude</td>';
@@ -194,25 +202,46 @@ class NGC2244_Satellite_Passes {
          * date range ended before the date of the first matched row. Either way
          * the code should work correctly.
          */
-        // error_log (
-        // 'getSatelliteData() start [' . $startDate->format ( 'm/d/Y' ) . '] end [' .
-        // $endDate->format ( 'm/d/Y' ) . '] url [' . $url . '] ' );
+        
+        // Uncomment when you want to clear the cache
+        // error_log ( "delete cache for " . $url );
+        // delete_transient ( $url );
+        
+        error_log ( "getting transient for " . $url );
         if (false !== ($data = get_transient ( $url ))) {
+            error_log ( 'is array: ' . is_array ( $data ) );
             if (is_array ( $data )) {
                 /**
                  * Must check the date range before filtering by rows, in case
                  * the existing cache is empty or sparse
                  */
-                $endQueryDay = new DateTime ( $data [0]->date );
-                if ((count ( $data ) > 0) && ($endDate <= $endQueryDay)) {
-                    // error_log ( 'transient data found for ' . $url );
-                    $rows = $this->filterRowsByDate ( $data, $startDate, $endDate );
-                    if (! is_null ( $rows )) {
-                        // error_log('getSatelliteData() end, rows found');
-                        return $rows;
+                error_log ( 'is empty: ' . empty ( $data ) );
+                error_log ( 'count: ' . count ( $data ) );
+                if (! empty ( $data )) {
+                    error_log ( 'retrieved a transient for ' . $url );
+                    $x1 = 0;
+                    foreach ( $data as $x ) {
+                        error_log ( 'row ' . $x1 ++ );
+                        error_log ( $x->toString () );
+                    }
+                    
+                    $x = $data [0];
+                    $x = $x->date;
+                    error_log ( "x = " . $x );
+                    $endQueryDay = new DateTime ( $data [0]->date );
+                    if ($endDate <= $endQueryDay) {
+                        // error_log ( 'transient data found for ' . $url );
+                        $rows = $this->filterRowsByDate ( $data, $startDate, $endDate );
+                        if (! is_null ( $rows )) {
+                            error_log ( 'returning rows for ' . $url );
+                            return $rows;
+                        }
+                    } else {
+                        error_log ( 'cache is stale, refresh from the server' );
+                        delete_transient ( $url );
                     }
                 } else {
-                    error_log ( 'cache is empty or stale, refresh from the server' );
+                    error_log ( 'cache is empty, refresh from the server' );
                     delete_transient ( $url );
                 }
             } else {
@@ -236,7 +265,12 @@ class NGC2244_Satellite_Passes {
             $data = $this->getIridiumDataFromServer ( $url );
         }
         if (! is_null ( $data )) {
-            // error_log ( 'cache a new transient for ' . $url );
+            error_log ( 'cache a new transient for ' . $url );
+            $x1 = 0;
+            foreach ( $data as $x ) {
+                error_log ( 'row ' . $x1 ++ );
+                error_log ( $x->toString () );
+            }
             set_transient ( $url, $data, DAY_IN_SECONDS * 10 );
             // filter by date and return matching rows
             $rows = $this->filterRowsByDate ( $data, $startDate, $endDate );
@@ -339,12 +373,12 @@ class NGC2244_Satellite_Passes {
         $doc->preserveWhiteSpace = false;
         $domXPath = new DOMXpath ( $doc );
         $rows = $domXPath->query ( "//*[@class='clickableRow']" );
-        $issTable = array ();
         /**
          * Record the end query date unconditionally, which by convention
          * is 10 days from today.
          * Insert it into the first array position.
          */
+        $issTable = array ();
         $item = new NGC2244_ISS_Data ();
         $tenday = new DateTime ();
         $tenday->add ( new DateInterval ( 'P10D' ) );
@@ -413,17 +447,17 @@ class NGC2244_Satellite_Passes {
         $rows = $domXPath->query ( "//*[@class='clickableRow']" );
         /**
          * Record the end query dates unconditionally, which by convention
-         * is 10 days from today.
+         * is 7 days from today.
          * Insert it into the first array position.
          */
+        $iridiumTable = array ();
         $item = new NGC2244_Iridium_Data ();
-        $tenday = new DateTime ();
-        $tenday->add ( new DateInterval ( 'P10D' ) );
-        $item->date = $tenday->format ( 'm/d/Y' );
+        $sevenday = new DateTime ();
+        $sevenday->add ( new DateInterval ( 'P7D' ) );
+        $item->date = $sevenday->format ( 'm/d/Y' );
         $iridiumTable [0] = $item;
         
         if (! is_null ( $rows )) {
-            $iridiumTable = array ();
             $iridiumTableCount = 1;
             foreach ( $rows as $row ) {
                 $cols = $row->childNodes;

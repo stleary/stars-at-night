@@ -52,6 +52,7 @@ class Stars_At_Night_Manager {
     private $startDate;
     private $endDate;
     private $satellitePasses;
+    
     /**
      * create and initialize a class instance
      */
@@ -174,32 +175,31 @@ class Stars_At_Night_Manager {
         $issTable = $this->getISSTable ();
         $iridiumTable = $this->getIridiumTable ();
         
-        /**
-         * Get the Moon phase.
-         * For now, just get today's phase
-         * TODO: 1-28?
-         */
-        $moonPhase = new NGC2244_Moon_Phase ( $today->getTimestamp () );
-        $age = ceil ( $moonPhase->age () );
-        // Get an image that corresponds to the age in the Lunar cycle
-        $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
-        error_log ( 'image file:' . $imageFile );
-        $test = '<div><table class="ngc2244_stars_at_night_standardTable"><tbody><tr><td>' .
-                 $sunAndMoonTable . '</td><td><img class="ngc2244_stars_at_night_lunar_1st" src="' .
-                 $imageFile . '" alt="day ' . $age .
-                 ' of Moon"></img></td></tr></tbody></table></div>';
         return $sunAndMoonTable . $issTable . $iridiumTable;
     }
     
     /**
+     * Iridium table can only look ahead 7 days, so calculate end date to at most 7 days, but pass
+     * in the actual days in case we need to call this out in the table header.
+     *
+     * @return table of iridium flares for the request time period, starting today
      */
     private function getIridiumTable() {
+        $iridiumDays = (($this->sanitized_days > 7) ? 7 : $this->sanitized_days);
+        $iridiumEndDate = new DateTime ( $this->startDate->format ( 'm/d/Y' ) );
+        $iridiumEndDate->add ( new DateInterval ( 'P' . ($iridiumDays - 1) . 'D' ) );
+        // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
         $iridiumTable = $this->satellitePasses->get_iridium_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $this->endDate );
+                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $iridiumEndDate, 
+                $this->sanitized_days );
         return $iridiumTable;
     }
     
     /**
+     * ISS table can look ahead 10 days, same as the max days user can request, so no modification
+     * of the end date is needed
+     *
+     * @return table of ISS passes for the request timer period, starting today
      */
     private function getISSTable() {
         $issTable = $this->satellitePasses->get_iss_table ( $this->sanitized_lat, 
@@ -228,21 +228,13 @@ class Stars_At_Night_Manager {
             $age = ceil ( $moonPhase->age () );
             error_log ( 'age: ' . $age );
         }
-        // Get an image that corresponds to the age in the Lunar cycle
-        $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
-        error_log ( 'image file:' . $imageFile );
-        $test = '<div><table class="ngc2244_stars_at_night_standardTable"><tbody><tr><td>' .
-                 '</td><td><img class="ngc2244_stars_at_night_lunar_1st" src="' .
-                 $imageFile . '" alt="day ' . $age .
-                 ' of Moon"></img></td></tr></tbody></table></div>';
         
-        $sunMoonTable = '<div "><h6>Astronomical Times for ' . $this->sanitized_name . ' (' .
-                 $this->sanitized_lat . ', ' . $this->sanitized_long . ')<br>' . 'Starting ' .
-                 $this->startDate->format ( 'd M Y' ) . ', extending for ' . $this->sanitized_days .
-                 ' days</h6>';
-        $sunMoonTable .= '<table class="ngc2244_stars_at_night_standardTable">';
-        
-        $sunMoonTable .= '<thead><tr><td align="center" rowspan="2" valign="middle">Date</td>';
+        $sunMoonTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
+        $sunMoonTable .= '<thead><tr><td align="center" valign="middle" colspan="8" >Astronomical Times for ' .
+                 $this->sanitized_name . ' (' . $this->sanitized_lat . ', ' . $this->sanitized_long .
+                 ')<br>' . 'Starting ' . $this->startDate->format ( 'd M Y' ) . ', extending for ' .
+                 $this->sanitized_days . ' days</td></tr>';
+        $sunMoonTable .= '<tr><td align="center" rowspan="2" valign="middle">Date</td>';
         $sunMoonTable .= '<td align="center">Morning</td>';
         $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunrise</td>';
         $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunset</td>';
@@ -287,8 +279,8 @@ class Stars_At_Night_Manager {
                 $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
                 error_log ( 'image file:' . $imageFile );
                 error_log ( 'dayCount ' . $dayCount . ' age: ' . $age );
-                $sunMoonTable .= '<td rowspan="3"><img class="ngc2244_stars_at_night_lunar" src="' .
-                         $imageFile . '" alt="day ' . $age . ' of Moon"></img></td>';
+                $sunMoonTable .= '<td rowspan="3"><a href="' . plugin_dir_url ( __FILE__ ) .  '../images/Moon-' . $age . '-large.jpg"><img class="ngc2244_stars_at_night_lunar" src="' .
+                         $imageFile . '" alt="day ' . $age . ' of Moon"></img></a></td>';
             }
             $sunMoonTable .= '</tr>';
             $dayCount ++;

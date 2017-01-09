@@ -37,4 +37,11 @@ class NGC2244_Iridium_Data {
     public $altitude;
     public $azimuth;
     public $satellite;
+    // required for debugging
+    public function toString() {
+        $str = "NGC2244_Iridium_DATA:" . "\n   date: " . $this->date . "\n   time: " . $this->time .
+                 "\n   magnitude: " . $this->magnitude . "\n   altitude: " . $this->altitude .
+                 "\n   azimuth: " . $this->azimuth . "\n   satellite: " . $this->satellite . "\n";
+        return $str;
+    }
 }

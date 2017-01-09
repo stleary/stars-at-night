@@ -16,16 +16,19 @@ This plugin displays data of interest to amateur astronomers. It is calculated f
 The plugin is called from a WordPress shortcode, and the parameters are specified in the shortcode. The following parameters are
 required, in any order:
 
-* **name** : The name of the location to be calculated
 * **lat** : Lattitude of location in fractional degrees (e.g. 30.8910). Positive is north, negative is south of equator
 * **long** : Longitude of location in fractional degrees (e.g.-98.4265). Positive is east, negative is west of the UTC line
 * **timezone** : Timezone name, must be value recognized by PHP. See [http://php.net/manual/en/timezones.php]
+
+These parameters are optional:
+
+* **name** : The name of the location to be calculated
 * **days** : The number of days of data to display. Must be a value from 1 to 10. Defaults to 3 if not specified. 
 
 **Shortcode Examples:**
 
 * stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata days=1
-* stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago 
+* stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago days=10
 
 The output consists of simple HTML tables:
 
@@ -33,9 +36,11 @@ The output consists of simple HTML tables:
 * ISS table: The times and directions for visible ISS passes over the specified days.
 * Iridium flares table: The times and directions for visible Iridium flares over the specified days.
 
+You can view the plugin in action here: [http://notforlong.org/stars-at-night](http://notforlong.org/stars-at-night)
+
 **Credits and Acknowledgements:**
 
-* Lunar images by Dan Morgan (dan@danmorgan.org). Used with permission. http://DanMorgan.org.
+* Lunar images by [Dan Morgan](mailto://Dan@danmorgan.org). Used with permission. [http://DanMorgan.org](http://DanMorgan.org).
 * WordPress framework and sunrise/sunset algorithm: https://github.com/bengreeley/sunrisesunset
 * Moonrise and Moonset class (with a correction for timezone): http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
 * Moon phase class: https://github.com/solarissmoke/php-moon-phase

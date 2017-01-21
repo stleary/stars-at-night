@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.3
+Stable tag: 1.4
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -33,6 +33,7 @@ These parameters are optional:
 The output consists of simple HTML tables:
 
 * Sun/Moon table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified days.
+* Planets table: The times and visibility for the planets.
 * ISS table: The times and directions for visible ISS passes over the specified days.
 * Iridium flares table: The times and directions for visible Iridium flares over the specified days.
 
@@ -44,7 +45,7 @@ You can view the plugin in action here: [http://notforlong.org/stars-at-night](h
 * WordPress framework and sunrise/sunset algorithm: https://github.com/bengreeley/sunrisesunset
 * Moonrise and Moonset class (with a correction for timezone): http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
 * Moon phase class: https://github.com/solarissmoke/php-moon-phase
-* ISS and Iridium Flare tables are obtained by sending GET requests to: http://heavens-above.com (HTTP API used with permission)
+* Planetary, ISS and Iridium Flare tables are obtained by sending GET requests to: http://heavens-above.com (HTTP API used with permission)
 
 == Installation ==
 
@@ -70,18 +71,30 @@ Search for 'zenith' in class-stars-at-night-manager.php for more information.
 
 This plugin is driven by user requests. Just ask.
 
-= Where did you get the satellite data? =
-The ISS and Iridium flare data is obtained by parsing the response to a GET request to http://www.heavens-above.com. 
+= Where did you get the planet and satellite data? =
+The Planet, ISS, and Iridium flare data is obtained by parsing the response to a GET request to http://www.heavens-above.com. 
 
-= Can you provide more astronomical data, like what planets are visible, etc? =
+= Can you provide more astronomical data and images? =
 
 More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Screenshots ==
 
-1. Sample tables generated for a specified location and time
+1. Sunrise and sunset table
+2. Planet table
+3. ISS passes table
+4. Iridium flares table 
 
 == Changelog ==
+
+= 1.4 =
+
+* Add planet table
+* More consistent look for table titles
+* Clarify required vs optional params in readme
+* Fixed potential Lunar image alignment
+* Include larger Lunar clickable images
+* Fixed satellite de-caching for fewer server hits
 
 = 1.3 =
 

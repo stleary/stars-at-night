@@ -1,5 +1,4 @@
 <?php
-use Solaris\NGC2244_Moon_Phase;
 
 /*
  * MIT License
@@ -30,6 +29,7 @@ include ('class-sunrise-sunset.php');
 include ('class-moonrise-moonset.php');
 include ('class-moon-phase.php');
 include ('class-satellite-passes.php');
+include ('class-planet-passes.php');
 
 /**
  * This class calculates and emits astronomical values in an HTML table.
@@ -52,6 +52,8 @@ class Stars_At_Night_Manager {
     private $startDate;
     private $endDate;
     private $satellitePasses;
+    private $planetPasses;
+    private $sunriseSunset;
     
     /**
      * create and initialize a class instance
@@ -138,6 +140,9 @@ class Stars_At_Night_Manager {
         }
         
         $this->satellitePasses = new NGC2244_Satellite_Passes ();
+        $this->planetPasses = new NGC2244_Planet_Passes ();
+        $this->sunriseSunset = new NGC2244_Sunrise_Sunset ();
+        
         /**
          * these are the supported fields of raw user input
          */
@@ -174,8 +179,20 @@ class Stars_At_Night_Manager {
         $sunAndMoonTable = $this->getSunAndMoonTable ();
         $issTable = $this->getISSTable ();
         $iridiumTable = $this->getIridiumTable ();
+        $planetTable = $this->getPlanetTable ();
         
-        return $sunAndMoonTable . $issTable . $iridiumTable;
+        return $sunAndMoonTable . $planetTable . $issTable . $iridiumTable;
+    }
+    
+    /**
+     * Planettable is just for today
+     *
+     * @return table of planets for today
+     */
+    private function getPlanetTable() {
+        $planetTable = $this->planetPasses->get_planet_table ( $this->sanitized_lat, 
+                $this->sanitized_long, $this->sanitized_timezone, $this->sunriseSunset );
+        return $planetTable;
     }
     
     /**
@@ -220,13 +237,11 @@ class Stars_At_Night_Manager {
          * TODO: 1-28?
          */
         $days = $this->endDate->diff ( $this->startDate )->days + 1;
-        error_log ( 'days: ' . $days );
         $xdate = new DateTime ( $this->startDate->format ( 'm/d/Y' ) );
         for($i = 0; $i < $days; $i = $i + 3) {
             $moonPhase = new NGC2244_Moon_Phase ( $xdate->getTimestamp () );
             $xdate->add ( new DateInterval ( 'P3D' ) );
             $age = ceil ( $moonPhase->age () );
-            error_log ( 'age: ' . $age );
         }
         
         $sunMoonTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
@@ -254,9 +269,8 @@ class Stars_At_Night_Manager {
             $moonTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 60;
             
             // get the Sun times
-            $sunriseSunset = new NGC2244_Sunrise_Sunset ();
-            $sunriseSunset->calculate_sun_times ( $this->sanitized_lat, $this->sanitized_long, 
-                    $sunTzOffset, $date );
+            $this->sunriseSunset->calculate_sun_times ( $this->sanitized_lat, 
+                    $this->sanitized_long, $sunTzOffset, $date );
             
             // get the Moon times
             $moonriseMoonset = new NGC2244_Moonrise_Moonset ();
@@ -266,11 +280,11 @@ class Stars_At_Night_Manager {
             // convert date for table rendering
             $dateStr = $date->format ( 'd M Y' );
             // get the tables
-            $sunMoonTable .= '<tr><td>' . $dateStr . '</td><td>' . $sunriseSunset->morningTwilight .
-                     '</td><td>';
-            $sunMoonTable .= $sunriseSunset->sunRise . '</td><td>' . $sunriseSunset->sunSet .
-                     '</td><td>';
-            $sunMoonTable .= $sunriseSunset->eveningTwilight . '</td><td>' .
+            $sunMoonTable .= '<tr><td>' . $dateStr . '</td><td>' .
+                     $this->sunriseSunset->morningTwilight . '</td><td>';
+            $sunMoonTable .= $this->sunriseSunset->sunRise . '</td><td>' .
+                     $this->sunriseSunset->sunSet . '</td><td>';
+            $sunMoonTable .= $this->sunriseSunset->eveningTwilight . '</td><td>' .
                      $moonriseMoonset->getMoonRise ();
             $sunMoonTable .= '</td><td>' . $moonriseMoonset->getMoonSet () . '</td>';
             if ($dayCount % 3 === 0) {
@@ -279,8 +293,10 @@ class Stars_At_Night_Manager {
                 $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
                 error_log ( 'image file:' . $imageFile );
                 error_log ( 'dayCount ' . $dayCount . ' age: ' . $age );
-                $sunMoonTable .= '<td rowspan="3"><a href="' . plugin_dir_url ( __FILE__ ) .  '../images/Moon-' . $age . '-large.jpg"><img class="ngc2244_stars_at_night_lunar" src="' .
-                         $imageFile . '" alt="day ' . $age . ' of Moon"></img></a></td>';
+                $sunMoonTable .= '<td rowspan="3"><a href="' . plugin_dir_url ( __FILE__ ) .
+                         '../images/Moon-' . $age .
+                         '-large.jpg"><img class="ngc2244_stars_at_night_lunar" src="' . $imageFile .
+                         '" alt="day ' . $age . ' of Moon"></img></a></td>';
             }
             $sunMoonTable .= '</tr>';
             $dayCount ++;

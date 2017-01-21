@@ -34,6 +34,8 @@ include ('class-planet-data.php');
  * the future.
  */
 class NGC2244_Planet_Passes {
+    public $sunriseSunset;
+    
     /**
      * Returns a string containing the HTML to render a table of
      * planet data inside a div.
@@ -63,6 +65,16 @@ class NGC2244_Planet_Passes {
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getPlanetData ( $url, $sunriseSunset );
+        
+        $mercury = 0;
+        $venus = 1;
+        $mars = 2;
+        $jupiter = 3;
+        $saturn = 4;
+        $uranus = 5;
+        $neptune = 6;
+        $pluto = 7;
+        
         // table and column headers
         $planetTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
         $planetTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Planetary Data</td></tr>';
@@ -70,62 +82,62 @@ class NGC2244_Planet_Passes {
         $planetTable .= '<td align="center">Mercury</td>';
         $planetTable .= '<td align="center">Venus</td>';
         $planetTable .= '<td align="center" >Mars</td>';
-        $planetTable .= '<td align="center" >Jupiter</td></tr>';
+        $planetTable .= '<td align="center" >Jupiter</td>';
         $planetTable .= '<td align="center">Saturn</td>';
         $planetTable .= '<td align="center">Uranus</td>';
         $planetTable .= '<td align="center">Neptune</td>';
         $planetTable .= '<td align="center">Pluto</td>';
         $planetTable .= '</tr></thead><tbody>';
         if (! is_null ( $rows )) {
-            $planetTable .= '<tr><td>Meridian</td>';
-            $planetTable .= '<td>' . $rows ['Mercury']->meridian . '</td>';
-            $planetTable .= '<td>' . $rows ['Venus']->meridian . '</td>';
-            $planetTable .= '<td>' . $rows ['Mars']->meridian . '</td>';
-            $planetTable .= '<td>' . $rows ['Jupiter']->meridian . '</td>';
-            $planetTable .= '<td>' . $rows ['Saturn']->meridian . '</td>';
-            $planetTable .= '<td>' . $rows ['Uranus']->meridian . '</td>';
-            $planetTable .= '<td>' . $rows ['Neptune']->meridian . '</td>';
-            $planetTable .= '<td>' . $rows ['Pluto']->meridian . '</td></tr>';
+            $planetTable .= '<tr><td><b>Rises</b></td>';
+            $planetTable .= '<td>' . $rows [$mercury]->rise . '</td>';
+            $planetTable .= '<td>' . $rows [$venus]->rise . '</td>';
+            $planetTable .= '<td>' . $rows [$mars]->rise . '</td>';
+            $planetTable .= '<td>' . $rows [$jupiter]->rise . '</td>';
+            $planetTable .= '<td>' . $rows [$saturn]->rise . '</td>';
+            $planetTable .= '<td>' . $rows [$uranus]->rise . '</td>';
+            $planetTable .= '<td>' . $rows [$neptune]->rise . '</td>';
+            $planetTable .= '<td>' . $rows [$pluto]->rise . '</td></tr>';
             
-            $planetTable .= '<tr><td>Rises</td>';
-            $planetTable .= '<td>' . $rows ['Mercury']->rise . '</td>';
-            $planetTable .= '<td>' . $rows ['Venus']->rise . '</td>';
-            $planetTable .= '<td>' . $rows ['Mars']->rise . '</td>';
-            $planetTable .= '<td>' . $rows ['Jupiter']->rise . '</td>';
-            $planetTable .= '<td>' . $rows ['Saturn']->rise . '</td>';
-            $planetTable .= '<td>' . $rows ['Uranus']->rise . '</td>';
-            $planetTable .= '<td>' . $rows ['Neptune']->rise . '</td>';
-            $planetTable .= '<td>' . $rows ['Pluto']->rise . '</td></tr>';
+            $planetTable .= '<tr><td><b>Meridian</b></td>';
+            $planetTable .= '<td>' . $rows [$mercury]->meridian . '</td>';
+            $planetTable .= '<td>' . $rows [$venus]->meridian . '</td>';
+            $planetTable .= '<td>' . $rows [$mars]->meridian . '</td>';
+            $planetTable .= '<td>' . $rows [$jupiter]->meridian . '</td>';
+            $planetTable .= '<td>' . $rows [$saturn]->meridian . '</td>';
+            $planetTable .= '<td>' . $rows [$uranus]->meridian . '</td>';
+            $planetTable .= '<td>' . $rows [$neptune]->meridian . '</td>';
+            $planetTable .= '<td>' . $rows [$pluto]->meridian . '</td></tr>';
             
-            $planetTable .= '<tr><td>Sets</td>';
-            $planetTable .= '<td>' . $rows ['Mercury']->set . '</td>';
-            $planetTable .= '<td>' . $rows ['Venus']->set . '</td>';
-            $planetTable .= '<td>' . $rows ['Mars']->set . '</td>';
-            $planetTable .= '<td>' . $rows ['Jupiter']->set . '</td>';
-            $planetTable .= '<td>' . $rows ['Saturn']->set . '</td>';
-            $planetTable .= '<td>' . $rows ['Uranus']->set . '</td>';
-            $planetTable .= '<td>' . $rows ['Neptune']->set . '</td>';
-            $planetTable .= '<td>' . $rows ['Pluto']->set . '</td></tr>';
+            $planetTable .= '<tr><td><b>Sets</b></td>';
+            $planetTable .= '<td>' . $rows [$mercury]->set . '</td>';
+            $planetTable .= '<td>' . $rows [$venus]->set . '</td>';
+            $planetTable .= '<td>' . $rows [$mars]->set . '</td>';
+            $planetTable .= '<td>' . $rows [$jupiter]->set . '</td>';
+            $planetTable .= '<td>' . $rows [$saturn]->set . '</td>';
+            $planetTable .= '<td>' . $rows [$uranus]->set . '</td>';
+            $planetTable .= '<td>' . $rows [$neptune]->set . '</td>';
+            $planetTable .= '<td>' . $rows [$pluto]->set . '</td></tr>';
             
-            $planetTable .= '<tr><td>Constellation</td>';
-            $planetTable .= '<td>' . $rows ['Mercury']->constellation . '</td>';
-            $planetTable .= '<td>' . $rows ['Venus']->constellation . '</td>';
-            $planetTable .= '<td>' . $rows ['Mars']->constellation . '</td>';
-            $planetTable .= '<td>' . $rows ['Jupiter']->constellation . '</td>';
-            $planetTable .= '<td>' . $rows ['Saturn']->constellation . '</td>';
-            $planetTable .= '<td>' . $rows ['Uranus']->constellation . '</td>';
-            $planetTable .= '<td>' . $rows ['Neptune']->constellation . '</td>';
-            $planetTable .= '<td>' . $rows ['Pluto']->constellation . '</td></tr>';
+            $planetTable .= '<tr><td><b>Constellation</b></td>';
+            $planetTable .= '<td>' . $rows [$mercury]->constellation . '</td>';
+            $planetTable .= '<td>' . $rows [$venus]->constellation . '</td>';
+            $planetTable .= '<td>' . $rows [$mars]->constellation . '</td>';
+            $planetTable .= '<td>' . $rows [$jupiter]->constellation . '</td>';
+            $planetTable .= '<td>' . $rows [$saturn]->constellation . '</td>';
+            $planetTable .= '<td>' . $rows [$uranus]->constellation . '</td>';
+            $planetTable .= '<td>' . $rows [$neptune]->constellation . '</td>';
+            $planetTable .= '<td>' . $rows [$pluto]->constellation . '</td></tr>';
             
-            $planetTable .= '<tr><td>Visibility</td>';
-            $planetTable .= '<td>' . $rows ['Mercury']->visibility . '</td>';
-            $planetTable .= '<td>' . $rows ['Venus']->visibility . '</td>';
-            $planetTable .= '<td>' . $rows ['Mars']->visibility . '</td>';
-            $planetTable .= '<td>' . $rows ['Jupiter']->visibility . '</td>';
-            $planetTable .= '<td>' . $rows ['Saturn']->visibility . '</td>';
-            $planetTable .= '<td>' . $rows ['Uranus']->visibility . '</td>';
-            $planetTable .= '<td>' . $rows ['Neptune']->visibility . '</td>';
-            $planetTable .= '<td>' . $rows ['Pluto']->visibility . '</td></tr>';
+            $planetTable .= '<tr><td><b>Visibility</b></td>';
+            $planetTable .= '<td>' . $rows [$mercury]->visibility . '</td>';
+            $planetTable .= '<td>' . $rows [$venus]->visibility . '</td>';
+            $planetTable .= '<td>' . $rows [$mars]->visibility . '</td>';
+            $planetTable .= '<td>' . $rows [$jupiter]->visibility . '</td>';
+            $planetTable .= '<td>' . $rows [$saturn]->visibility . '</td>';
+            $planetTable .= '<td>' . $rows [$uranus]->visibility . '</td>';
+            $planetTable .= '<td>' . $rows [$neptune]->visibility . '</td>';
+            $planetTable .= '<td>' . $rows [$pluto]->visibility . '</td></tr>';
         } else {
             // no matching days were found
             $planetTable .= '<tr><td colspan="11">No planetary data is available at this time</td></tr>';
@@ -162,33 +174,29 @@ class NGC2244_Planet_Passes {
         // delete_transient ( $url );
         error_log ( "getting transient for " . $url );
         if (false !== ($data = get_transient ( $url ))) {
-            error_log ( 'is array: ' . is_array ( $data ) );
             if (is_array ( $data )) {
                 /**
                  * Must check the date range before filtering by rows, in case
                  * the existing cache is empty or sparse
                  */
-                error_log ( 'is empty: ' . empty ( $data ) );
-                error_log ( 'count: ' . count ( $data ) );
                 if (! empty ( $data )) {
                     error_log ( 'retrieved a transient for ' . $url );
-                    $x1 = 0;
-                    foreach ( $data as $x ) {
-                        error_log ( 'row ' . $x1 ++ );
-                        error_log ( $x->toString () );
+                    $count = 0;
+                    foreach ( $data as $row ) {
+                        error_log ( 'row ' . $count ++ );
+                        error_log ( $row->toString () );
                     }
                     
-                    $x = $data [0];
-                    $x = $x->date;
-                    error_log ( "x = " . $x );
-                    $endQueryDay = new DateTime ( $data [0]->date );
-                    if ($endDate <= $endQueryDay) {
-                        // error_log ( 'transient data found for ' . $url );
-                        $rows = $this->filterRowsByDate ( $data, $startDate, $endDate );
-                        if (! is_null ( $rows )) {
-                            error_log ( 'returning rows for ' . $url );
-                            return $rows;
-                        }
+                    // all the dates are the same, just grab first one
+                    $firstRow = $data [0];
+                    $cacheDate = $firstRow->date;
+                    error_log ( "cacheDate = " . $cacheDate );
+                    $thisDay = new DateTime ( "today" );
+                    $thisDayStr = $thisDay->format ( "m/d/Y" );
+                    if (strcmp ( $cacheDate, $thisDayStr ) == 0) {
+                        error_log ( 'transient data found for ' . $url );
+                        error_log ( 'returning rows for ' . $url );
+                        return $data;
                     } else {
                         error_log ( 'cache is stale, refresh from the server' );
                         delete_transient ( $url );
@@ -214,14 +222,16 @@ class NGC2244_Planet_Passes {
         $data = $this->getPlanetDataFromServer ( $url, $sunriseSunset );
         if (! is_null ( $data )) {
             error_log ( 'cache a new transient for ' . $url );
-            $x1 = 0;
-            foreach ( $data as $x ) {
-                error_log ( 'row ' . $x1 ++ );
-                error_log ( $x->toString () );
+            $count = 0;
+            foreach ( $data as $row ) {
+                error_log ( 'row ' . $count ++ );
+                error_log ( $row->toString () );
             }
             set_transient ( $url, $data, DAY_IN_SECONDS );
-            return $data;
+        } else {
+            error_log ( "no planet data available" );
         }
+        return $data;
     }
     
     /**
@@ -233,10 +243,12 @@ class NGC2244_Planet_Passes {
      *            The fully formed URL string for an HTTP GET request to the server
      * @param NGC2244_Sunrise_Sunset $sunriseSunset
      *            sun data for today
-     * @return NGC2244_Planet_Data[]. May not have any rows other than the date.
+     * @return NGC2244_Planet_Data[]
      */
     private function getPlanetDataFromServer($url, $sunriseSunset) {
-        // error_log ( 'getting planet data' );
+        // error_log ( 'getting planet data' )
+        $this->sunriseSunset = $sunriseSunset;
+        
         /**
          * Can't rely on using file_get_contents() since a php.ini server
          * config may dissallow use of this method: allow_url_fopen=0
@@ -244,7 +256,7 @@ class NGC2244_Planet_Passes {
          */
         $response = wp_remote_get ( $url );
         $response = wp_remote_retrieve_body ( $response );
-        // error_log ( 'iss response received' );
+        // error_log ( 'planet response received: ' . $response );
         $doc = new DOMDocument ();
         // set error level
         $internalErrors = libxml_use_internal_errors ( true );
@@ -273,39 +285,71 @@ class NGC2244_Planet_Passes {
          * In this case data is an associate array key=planetname value=planet_data
          * For this table, every item has today's date, which is the transient expiration date.
          */
-        $data = array ();
-        $planetCount = count ( $planetNames );
-        // The first element is empty
-        for($i = 1; $i < $planetCount; ++ $i) {
-            $data [$planetNames [i]] = new NGC2244_Planet_Data ();
-            $data [$planetNames [i]]->date = todayStr;
+        $planetTable = array ();
+        for($i = 0; $i < 8; ++ $i) {
+            $data = new NGC2244_Planet_Data ();
+            $data->date = $todayStr;
+            $planetTable [$i] = $data;
+        }
+        
+        if (! is_null ( $planetNames )) {
+            $count = 0;
+            // there is an empty td on far left, but it does not seem to be returned in the query
+            foreach ( $planetNames as $planetName ) {
+                $planetTable [$count]->name = $planetName->textContent;
+                ++ $count;
+            }
         }
         
         // fill in the planet data detail
         if (! is_null ( $constellations )) {
-            for($i = 1; $i < $planetCount; ++ $i) {
-                $data [$planetNames [i]]->constellation = $constellations [$i]->textContent;
+            $count = 0;
+            foreach ( $constellations as $constellation ) {
+                // only text nodes have a element, so don't skip first column
+                $planetTable [$count]->constellation = $constellation->textContent;
+                ++ $count;
             }
         }
         if (! is_null ( $meridians )) {
-            for($i = 1; $i < $planetCount; ++ $i) {
-                $data [$planetNames [i]]->meridian = $meridians [$i]->textContent;
+            $count = 0;
+            foreach ( $meridians as $meridian ) {
+                // first column is a label, so skip it
+                if ($count == 0) {
+                    ++ $count;
+                } else {
+                    $planetTable [$count - 1]->meridian = $meridian->textContent;
+                    ++ $count;
+                }
             }
         }
         if (! is_null ( $rises )) {
-            for($i = 1; $i < $planetCount; ++ $i) {
-                $data [$planetNames [i]]->rise = $rises [$i]->textContent;
+            $count = 0;
+            foreach ( $rises as $rise ) {
+                // first column is a label, so skip it
+                if ($count == 0) {
+                    ++ $count;
+                } else {
+                    $planetTable [$count - 1]->rise = $rise->textContent;
+                    ++ $count;
+                }
             }
         }
         if (! is_null ( $sets )) {
-            for($i = 1; $i < $planetCount; ++ $i) {
-                $data [$planetNames [i]]->set = $sets [$i]->textContent;
+            $count = 0;
+            foreach ( $sets as $set ) {
+                // first column is a label, so skip it
+                if ($count == 0) {
+                    ++ $count;
+                } else {
+                    $planetTable [$count - 1]->set = $set->textContent;
+                    ++ $count;
+                }
             }
         }
-        for($i = 1; $i < $planetCount; ++ $i) {
-            $this->getVisibility ( $planetNames [i] );
+        foreach ( $planetTable as $data ) {
+            $data->visibility = $this->getVisibility ( $data );
         }
-        return $data;
+        return $planetTable;
     }
     
     /**
@@ -317,8 +361,53 @@ class NGC2244_Planet_Passes {
      * Prime
      *
      * @param NGC2244_Planet_Data $planetData
-     *            update with visibility, already contains date
+     *            populated planet values
+     * @return visibility string
      */
-    private function getVisibility(NGC2244_Planet_Data $planetData) {
+    private function getVisibility($planetData) {
+        $sunsetDate = new DateTime ( 'today ' . $this->sunriseSunset->sunSet );
+        $darkDate = new DateTime ( 'today ' . $this->sunriseSunset->eveningTwilight );
+        $sunset2Date = new DateTime ( $sunsetDate->format ( "m/d/Y H:i:s" ) );
+        $sunset2Date->add ( new DateInterval ( 'PT2H' ) );
+        $endDate = new DateTime ( 'tomorrow ' . "00:00:00" );
+        $end2Date = new DateTime ( 'today ' . "22:00:00" );
+        // error_log ( 'sunset: ' . $sunsetDate->format ( "m/d/Y H:i:s" ) );
+        // error_log ( 'dark: ' . $darkDate->format ( "m/d/Y H:i:s" ) );
+        // error_log ( 'sunset2: ' . $sunset2Date->format ( "m/d/Y H:i:s" ) );
+        // error_log ( 'end: ' . $endDate->format ( "m/d/Y H:i:s" ) );
+        // error_log ( 'end2: ' . $end2Date->format ( "m/d/Y H:i:s" ) );
+        
+        // resets all timestamps to today 00:00:00
+        $riseDate = new DateTime ( 'today ' . $planetData->rise );
+        $setDate = new DateTime ( 'today ' . $planetData->set );
+        $meridianDate = new DateTime ( 'today ' . $planetData->meridian );
+        
+        if ($meridianDate < $riseDate) {
+            $meridianDate->add ( new DateInterval ( 'P1D' ) );
+            $setDate->add ( new DateInterval ( 'P1D' ) );
+        } else if ($setDate < $meridianDate) {
+            $setDate->add ( new DateInterval ( 'P1D' ) );
+        }
+        
+        // error_log (
+        // 'planet: ' . $planetData->name . ' rise: ' . $riseDate->format ( 'd H:i' ) .
+        // ' merid: ' . $meridianDate->format ( 'd H:i' ) . ' set: ' .
+        // $setDate->format ( 'd H:i' ) );
+        
+        $visibility = '';
+        if ($setDate >= $sunsetDate && $setDate < $sunset2Date) {
+            $visibility = 'Visible';
+        } else if (($setDate >= $sunset2Date) && ($meridianDate < $sunsetDate)) {
+            $visibility = 'Good';
+        } else if (($meridianDate >= $sunsetDate) && ($meridianDate < $endDate)) {
+            $visibility = 'Prime';
+        } else if (($meridianDate >= $endDate) && ($riseDate < $endDate)) {
+            $visibility = 'Good';
+        } else if (($riseDate >= $endDate) && ($riseDate < $end2Date)) {
+            $visibility = 'Visible';
+        } else {
+            $visibility = 'Not visible';
+        }
+        return $visibility;
     }
 }

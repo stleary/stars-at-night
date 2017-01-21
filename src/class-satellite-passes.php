@@ -209,25 +209,22 @@ class NGC2244_Satellite_Passes {
         
         error_log ( "getting transient for " . $url );
         if (false !== ($data = get_transient ( $url ))) {
-            error_log ( 'is array: ' . is_array ( $data ) );
             if (is_array ( $data )) {
                 /**
                  * Must check the date range before filtering by rows, in case
                  * the existing cache is empty or sparse
                  */
-                error_log ( 'is empty: ' . empty ( $data ) );
-                error_log ( 'count: ' . count ( $data ) );
                 if (! empty ( $data )) {
                     error_log ( 'retrieved a transient for ' . $url );
-                    $x1 = 0;
-                    foreach ( $data as $x ) {
-                        error_log ( 'row ' . $x1 ++ );
-                        error_log ( $x->toString () );
+                    $count = 0;
+                    foreach ( $data as $row ) {
+                        error_log ( 'row ' . $count ++ );
+                        error_log ( $row->toString () );
                     }
                     
-                    $x = $data [0];
-                    $x = $x->date;
-                    error_log ( "x = " . $x );
+                    $row = $data [0];
+                    $rowDate = $row->date;
+                    error_log ( "row date = " . $rowDate );
                     $endQueryDay = new DateTime ( $data [0]->date );
                     if ($endDate <= $endQueryDay) {
                         // error_log ( 'transient data found for ' . $url );
@@ -266,10 +263,10 @@ class NGC2244_Satellite_Passes {
         }
         if (! is_null ( $data )) {
             error_log ( 'cache a new transient for ' . $url );
-            $x1 = 0;
-            foreach ( $data as $x ) {
-                error_log ( 'row ' . $x1 ++ );
-                error_log ( $x->toString () );
+            $count = 0;
+            foreach ( $data as $row ) {
+                error_log ( 'row ' . $count ++ );
+                error_log ( $row->toString () );
             }
             set_transient ( $url, $data, DAY_IN_SECONDS * 10 );
             // filter by date and return matching rows

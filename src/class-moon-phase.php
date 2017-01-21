@@ -29,7 +29,6 @@
  * by Samir Shah (http://rayofsolaris.net)
  * License: MIT
  **/
-namespace Solaris;
 
 class NGC2244_Moon_Phase {
     private $timestamp;

@@ -41,4 +41,14 @@ class NGC2244_ISS_Data {
     public $endTime;
     public $endAltitude;
     public $endAzimuth;
+    // required for debugging
+    public function toString() {
+        $str = "NGC2244_ISS_DATA:" . "\n   date: " . $this->date . "\n   magnitude:" .
+                 $this->magnitude . "\n   startTime: " . $this->startTime . "\n   startAltitude: " .
+                 $this->startAltitude . "\n   startAzimuth: " . $this->startAzimuth . "\n   highTime: " .
+                 $this->highTime . "\n   highAltitude: " . $this->highAltitude . "\n   highAzimuth: " .
+                 $this->highAzimuth . "\n   endTime: " . $this->endTime . "\n   endAltitude: " .
+                 $this->endAltitude . "\n   endAzimuth: " . $this->endAzimuth . "\n";
+        return $str;
+    }
 }

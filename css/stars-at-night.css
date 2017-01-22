@@ -48,6 +48,10 @@ table.ngc2244_stars_at_night_standardTable {
     text-align:center;
 }
 
+/* keep images aligned with however many rows are displayed */
+.ngc2244_stars_at_night_standardTable tbody td {
+    vertical-align:middle;
+}
 
 /* table row alternating background colors */
 .ngc2244_stars_at_night_standardTable tbody tr:nth-child(odd)   {color: black; background-color: white;}

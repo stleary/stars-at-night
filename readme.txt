@@ -32,10 +32,10 @@ These parameters are optional:
 
 The output consists of simple HTML tables:
 
-* Sun/Moon table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified days.
-* Planets table: The times and visibility for the planets.
-* ISS table: The times and directions for visible ISS passes over the specified days.
-* Iridium flares table: The times and directions for visible Iridium flares over the specified days.
+* Sun/Moon table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified days (max 10 days).
+* Planets table: The times and visibility for the planets, for the current day.
+* ISS table: The times and directions for visible ISS passes over the specified days (max 10 days).
+* Iridium flares table: The times and directions for visible Iridium flares over the specified days (max 7 days).
 
 You can view the plugin in action here: [http://notforlong.org/stars-at-night](http://notforlong.org/stars-at-night)
 

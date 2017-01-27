@@ -181,7 +181,7 @@ class Stars_At_Night_Manager {
         $iridiumTable = $this->getIridiumTable ();
         $planetTable = $this->getPlanetTable ();
         
-        return $sunAndMoonTable . $planetTable . $issTable . $iridiumTable;
+        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable;
     }
     
     /**

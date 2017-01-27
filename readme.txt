@@ -18,7 +18,7 @@ required, in any order:
 
 * **lat** : Lattitude of location in fractional degrees (e.g. 30.8910). Positive is north, negative is south of equator
 * **long** : Longitude of location in fractional degrees (e.g.-98.4265). Positive is east, negative is west of the UTC line
-* **timezone** : Timezone name, must be value recognized by PHP. See [http://php.net/manual/en/timezones.php]
+* **timezone** : Timezone name, must be value recognized by PHP. See [http://php.net/manual/en/timezones.php](http://php.net/manual/en/timezones.php)
 
 These parameters are optional:
 

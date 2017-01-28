@@ -77,7 +77,7 @@ class NGC2244_Planet_Passes {
         
         // table and column headers
         $planetTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
-        $planetTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Planetary Data</td></tr>';
+        $planetTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Planetary Data for today</td></tr>';
         $planetTable .= '<tr><td></td>';
         $planetTable .= '<td align="center">Mercury</td>';
         $planetTable .= '<td align="center">Venus</td>';

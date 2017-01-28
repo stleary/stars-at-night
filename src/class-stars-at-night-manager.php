@@ -259,10 +259,15 @@ class Stars_At_Night_Manager {
         }
         
         $sunMoonTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
+        if ($this->sanitized_days == 1) {
+            $days = " day";
+        } else {
+            $days = " days";
+        }
         $sunMoonTable .= '<thead><tr><td align="center" valign="middle" colspan="8" >Astronomical Times for ' .
                  $this->sanitized_name . ' (' . $this->sanitized_lat . ', ' . $this->sanitized_long .
-                 ')<br>' . 'Starting ' . $this->startDate->format ( 'd M Y' ) . ', extending for ' .
-                 $this->sanitized_days . ' days</td></tr>';
+                 ')<br>' . 'Starting ' . $this->startDate->format ( 'd M Y' ) . ', for the next ' .
+                 $this->sanitized_days . $days . '</td></tr>';
         $sunMoonTable .= '<tr><td align="center" rowspan="2" valign="middle">Date</td>';
         $sunMoonTable .= '<td align="center">Morning</td>';
         $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunrise</td>';

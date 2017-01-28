@@ -67,8 +67,15 @@ class NGC2244_Satellite_Passes {
         $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getSatelliteData ( $url, $startDate, $endDate );
         // table and column headers
+        $imageFileIssSmall = plugin_dir_url ( __FILE__ ) . "../images/iss-small.jpg";
+        $imageFileIssLarge = plugin_dir_url ( __FILE__ ) . "../images/iss-large.jpg";
         $issTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
-        $issTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Visible ISS Passes</td></tr>';
+        $issTable .= '<thead>';
+        $issTable .= '<tr><td align="center" valign="middle" colspan="11">Visible ISS Passes</td></tr>';
+        $issTable .= '<tr><td align="center" valign="middle" colspan="11">';
+        $issTable .= '<a href="' . $imageFileIssLarge . '">';
+        $issTable .= '<img class="ngc2244_stars_at_night_iss" ';
+        $issTable .= 'src="' . $imageFileIssSmall . '" alt="ISS image. Credit: NASA" /></a></td></tr>';
         $issTable .= '<tr><td align="center" rowspan="2" valign="middle">Date</td>';
         $issTable .= '<td align="center">Brightness</td>';
         $issTable .= '<td align="center" valign="top" colspan="3">Start</td>';

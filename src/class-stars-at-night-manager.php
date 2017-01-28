@@ -304,7 +304,7 @@ class Stars_At_Night_Manager {
             if ($dayCount % 3 === 0) {
                 $moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
                 $age = round ( $moonPhase->age () );
-                $imageCount = $phaseArray [$age + 1];
+                $imageCount = $phaseArray [$age];
                 $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $imageCount . ".jpg";
                 error_log ( 'image file:' . $imageFile );
                 error_log ( 
@@ -320,16 +320,15 @@ class Stars_At_Night_Manager {
         }
         $sunMoonTable .= '</table></div>';
         // for debugging the phase array
-        /*
-         * for($i = 0; $i < 32; ++ $i) {
-         * $moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
-         * $age = $moonPhase->age ();
-         * $roundAge = round($age) + 1;
-         * error_log ( "test " . $i . " age " . $age . " round " . $roundAge . " image " .
-         * $phaseArray[$roundAge] );
-         * $date->add ( new DateInterval ( 'P1D' ) );
-         * }
-         */
+        //for($i = 0; $i < 200; ++ $i) {
+        //$moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
+        //$age = $moonPhase->age ();
+        //$roundAge = round($age) + 1;
+        //error_log ( "test " . $i . " age " . $roundAge . " image " .
+        //$phaseArray[$roundAge] );
+        //$date->add ( new DateInterval ( 'P1D' ) );
+        //}
+         
         return $sunMoonTable;
     }
     

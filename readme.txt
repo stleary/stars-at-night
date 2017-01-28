@@ -87,6 +87,12 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Changelog ==
 
+= 1.5 =
+
+* Update lunar images for accuracy and fixed image select algorithm
+* Add table images for ISS, Iridium, and planet tables
+* Table rendering cleanup
+
 = 1.4 =
 
 * Add planet table

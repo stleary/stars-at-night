@@ -181,7 +181,7 @@ class Stars_At_Night_Manager {
         $iridiumTable = $this->getIridiumTable ();
         $planetTable = $this->getPlanetTable ();
         
-        return $sunAndMoonTable . $planetTable . $issTable . $iridiumTable;
+        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable;
     }
     
     /**
@@ -233,22 +233,41 @@ class Stars_At_Night_Manager {
      */
     private function getSunAndMoonTable() {
         /**
+         * table for day to image mapping.
+         * It's problematic because
+         * there are only 26 lunar images (28 if you count the blank images),
+         * whereas the lunar cycle goes from 0 to 29.52 days. Complicating
+         * things is that a couple of the images do not seem to be a day
+         * apart, and other images may be missing. I also wanted the quarter
+         * images to match up with the real phase days. Here is the result,
+         * where key=day of moon, value=image number
+         */
+        $phaseArray = [ 1 => 1,2 => 2,3 => 3,4 => 4,5 => 5,6 => 6,7 => 8,8 => 8,9 => 9,10 => 10,
+                11 => 11,12 => 11,13 => 12,14 => 13,15 => 13,16 => 14,17 => 15,18 => 16,19 => 17,
+                20 => 18,21 => 19,22 => 20,23 => 21,24 => 22,25 => 23,26 => 24,27 => 25,28 => 26,
+                29 => 27,30 => 28 
+        ];
+        
+        /**
          * Get the Moon phase.
-         * TODO: 1-28?
          */
         $days = $this->endDate->diff ( $this->startDate )->days + 1;
         $xdate = new DateTime ( $this->startDate->format ( 'm/d/Y' ) );
         for($i = 0; $i < $days; $i = $i + 3) {
             $moonPhase = new NGC2244_Moon_Phase ( $xdate->getTimestamp () );
             $xdate->add ( new DateInterval ( 'P3D' ) );
-            $age = ceil ( $moonPhase->age () );
         }
         
         $sunMoonTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
+        if ($this->sanitized_days == 1) {
+            $days = " day";
+        } else {
+            $days = " days";
+        }
         $sunMoonTable .= '<thead><tr><td align="center" valign="middle" colspan="8" >Astronomical Times for ' .
                  $this->sanitized_name . ' (' . $this->sanitized_lat . ', ' . $this->sanitized_long .
-                 ')<br>' . 'Starting ' . $this->startDate->format ( 'd M Y' ) . ', extending for ' .
-                 $this->sanitized_days . ' days</td></tr>';
+                 ')<br>' . 'Starting ' . $this->startDate->format ( 'd M Y' ) . ', for the next ' .
+                 $this->sanitized_days . $days . '</td></tr>';
         $sunMoonTable .= '<tr><td align="center" rowspan="2" valign="middle">Date</td>';
         $sunMoonTable .= '<td align="center">Morning</td>';
         $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Sunrise</td>';
@@ -289,12 +308,15 @@ class Stars_At_Night_Manager {
             $sunMoonTable .= '</td><td>' . $moonriseMoonset->getMoonSet () . '</td>';
             if ($dayCount % 3 === 0) {
                 $moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
-                $age = ceil ( $moonPhase->age () );
-                $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $age . ".jpg";
+                $age = round ( $moonPhase->age () );
+                $imageCount = $phaseArray [$age];
+                $imageFile = plugin_dir_url ( __FILE__ ) . "../images/Moon-" . $imageCount . ".jpg";
                 error_log ( 'image file:' . $imageFile );
-                error_log ( 'dayCount ' . $dayCount . ' age: ' . $age );
+                error_log ( 
+                        'dayCount ' . $dayCount . ' age: ' . $age . ' calendar: ' .
+                                 $date->format ( 'Y M d' ) );
                 $sunMoonTable .= '<td rowspan="3"><a href="' . plugin_dir_url ( __FILE__ ) .
-                         '../images/Moon-' . $age .
+                         '../images/Moon-' . $imageCount .
                          '-large.jpg"><img class="ngc2244_stars_at_night_lunar" src="' . $imageFile .
                          '" alt="day ' . $age . ' of Moon"></img></a></td>';
             }
@@ -302,6 +324,16 @@ class Stars_At_Night_Manager {
             $dayCount ++;
         }
         $sunMoonTable .= '</table></div>';
+        // for debugging the phase array
+        //for($i = 0; $i < 200; ++ $i) {
+        //$moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
+        //$age = $moonPhase->age ();
+        //$roundAge = round($age) + 1;
+        //error_log ( "test " . $i . " age " . $roundAge . " image " .
+        //$phaseArray[$roundAge] );
+        //$date->add ( new DateInterval ( 'P1D' ) );
+        //}
+         
         return $sunMoonTable;
     }
     

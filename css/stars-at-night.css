@@ -69,3 +69,16 @@ table.ngc2244_stars_at_night_standardTable {
     width: 100px;
 }
 
+/* ISS and Iridium images must be centered */
+.ngc2244_stars_at_night_satellite {
+    display: block;
+    margin: auto;
+    width: 100%;
+}
+
+/* planets must be small and centered */
+.ngc2244_stars_at_night_planet {
+    display: block;
+    margin: auto;
+    width: 65px;
+}

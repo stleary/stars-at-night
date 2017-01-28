@@ -77,7 +77,18 @@ class NGC2244_Planet_Passes {
         
         // table and column headers
         $planetTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
-        $planetTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Planetary Data</td></tr>';
+        $planetTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Planetary Data for today</td></tr>';
+        // most sure way of overriding the standardTable thead td style is with inline style
+        $planetTable .= '<tr><td style="background-color: #000000;"></td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/mercury-sm.jpg"</td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/venus-sm.jpg"</td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/mars-sm.jpg"</td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/jupiter-sm.jpg"</td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/saturn-sm.jpg"</td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/uranus-sm.jpg"</td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/neptune-sm.jpg"</td>';
+        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/pluto-sm.jpg"</td>';
+        $planetTable .= '</tr>';
         $planetTable .= '<tr><td></td>';
         $planetTable .= '<td align="center">Mercury</td>';
         $planetTable .= '<td align="center">Venus</td>';

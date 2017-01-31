@@ -242,11 +242,11 @@ class Stars_At_Night_Manager {
          * images to match up with the real phase days. Here is the result,
          * where key=day of moon, value=image number
          */
-        $phaseArray = [ 1 => 1,2 => 2,3 => 3,4 => 4,5 => 5,6 => 6,7 => 8,8 => 8,9 => 9,10 => 10,
-                11 => 11,12 => 11,13 => 12,14 => 13,15 => 13,16 => 14,17 => 15,18 => 16,19 => 17,
-                20 => 18,21 => 19,22 => 20,23 => 21,24 => 22,25 => 23,26 => 24,27 => 25,28 => 26,
-                29 => 27,30 => 28 
-        ];
+        $phaseArray = array (1 => 1,2 => 2,3 => 3,4 => 4,5 => 5,6 => 6,7 => 8,8 => 8,9 => 9,
+                10 => 10,11 => 11,12 => 11,13 => 12,14 => 13,15 => 13,16 => 14,17 => 15,18 => 16,
+                19 => 17,20 => 18,21 => 19,22 => 20,23 => 21,24 => 22,25 => 23,26 => 24,27 => 25,
+                28 => 26,29 => 27,30 => 28 
+        );
         
         /**
          * Get the Moon phase.
@@ -325,15 +325,15 @@ class Stars_At_Night_Manager {
         }
         $sunMoonTable .= '</table></div>';
         // for debugging the phase array
-        //for($i = 0; $i < 200; ++ $i) {
-        //$moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
-        //$age = $moonPhase->age ();
-        //$roundAge = round($age) + 1;
-        //error_log ( "test " . $i . " age " . $roundAge . " image " .
-        //$phaseArray[$roundAge] );
-        //$date->add ( new DateInterval ( 'P1D' ) );
-        //}
-         
+        // for($i = 0; $i < 200; ++ $i) {
+        // $moonPhase = new NGC2244_Moon_Phase ( $date->getTimestamp () );
+        // $age = $moonPhase->age ();
+        // $roundAge = round($age) + 1;
+        // error_log ( "test " . $i . " age " . $roundAge . " image " .
+        // $phaseArray[$roundAge] );
+        // $date->add ( new DateInterval ( 'P1D' ) );
+        // }
+        
         return $sunMoonTable;
     }
     

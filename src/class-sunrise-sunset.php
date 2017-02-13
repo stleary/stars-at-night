@@ -23,6 +23,13 @@
  * SOFTWARE.
  */
 
+/*
+ * Original author: Ben Greeley https://github.com/bengreeley/sunrisesunset
+ * Original license:
+ * License: GPLv2 or later
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ */
+
 // Disallow direct access
 defined ( 'ABSPATH' ) or die ();
 

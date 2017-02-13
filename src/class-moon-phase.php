@@ -24,6 +24,7 @@
  */
 /**
  * Original author: Samir Shah (http://rayofsolaris.net)
+ * https://github.com/solarissmoke/php-moon-phase
  * Original license:
  * Copyright 2012 Samir Shah, < samir [at] rayofsolaris.net >, http://rayofsolaris.net
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 

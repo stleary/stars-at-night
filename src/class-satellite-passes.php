@@ -64,7 +64,7 @@ class NGC2244_Satellite_Passes {
         $locationAlt = 300;
         $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
-        $url = $url . "&tz=" . $heavensAboveTZ;
+        // $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getSatelliteData ( $url, $startDate, $endDate );
         // table and column headers
         $imageFileIssSmall = plugin_dir_url ( __FILE__ ) . "../images/iss-small.jpg";
@@ -86,16 +86,27 @@ class NGC2244_Satellite_Passes {
         $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
         $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td></tr></thead>';
         if (! is_null ( $rows )) {
+            $wkDtz = new DateTimeZone($timezone);
+            $wkDT = new DateTime("now");
             foreach ( $rows as $row ) {
-                $issTable .= '<tr><td>' . $row->date . '</td>';
+                // this could be inaccurate at the new year
+                $wkTime = new DateTime($row->date . $wkDT->format(" Y ") . $row->startTime);
+                $wkTime->setTimeZone($wkDtz);
+                $issTable .= '<tr><td>' . $wkTime->format("d M") . '</td>';
                 $issTable .= '<td>' . $row->magnitude . '</td>';
-                $issTable .= '<td>' . $row->startTime . '</td>';
+                $wkTime = new DateTime($row->startTime);
+                $wkTime->setTimeZone($wkDtz);
+                $issTable .= '<td>' . $wkTime->format("H:i:s") . '</td>';
                 $issTable .= '<td>' . $row->startAltitude . '</td>';
                 $issTable .= '<td>' . $row->startAzimuth . '</td>';
-                $issTable .= '<td>' . $row->highTime . '</td>';
+                $wkTime = new DateTime($row->highTime);
+                $wkTime->setTimeZone($wkDtz);
+                $issTable .= '<td>' . $wkTime->format("H:i:s") . '</td>';
                 $issTable .= '<td>' . $row->highAltitude . '</td>';
                 $issTable .= '<td>' . $row->highAzimuth . '</td>';
-                $issTable .= '<td>' . $row->endTime . '</td>';
+                $wkTime = new DateTime($row->endTime);
+                $wkTime->setTimeZone($wkDtz);
+                $issTable .= '<td>' . $wkTime->format("H:i:s") . '</td>';
                 $issTable .= '<td>' . $row->endAltitude . '</td>';
                 $issTable .= '<td>' . $row->endAzimuth . '</td></tr>';
             }
@@ -139,7 +150,7 @@ class NGC2244_Satellite_Passes {
         $locationAlt = 300;
         $url = "http://www.heavens-above.com/IridiumFlares.aspx?lat=" . $lat;
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
-        $url = $url . "&tz=" . $heavensAboveTZ;
+        // $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getSatelliteData ( $url, $startDate, $endDate );
         $daysStr = "";
         if ($days > 7) {
@@ -156,10 +167,17 @@ class NGC2244_Satellite_Passes {
         $iridiumTable .= '<td align="center">Azimuth</td>';
         $iridiumTable .= '<td align="center">Satellite</td></tr></thead>';
         if (! is_null ( $rows )) {
+            $wkDtz = new DateTimeZone($timezone);
+            $wkDT = new DateTime("now");
             foreach ( $rows as $row ) {
                 // table row
-                $iridiumTable .= '<tr><td>' . $row->date . '</td>';
-                $iridiumTable .= '<td>' . $row->time . '</td>';
+                // this could be inaccurate at the new year
+                $wkTime = new DateTime($row->date . $wkDT->format(" Y ") . $row->time);
+                $wkTime->setTimeZone($wkDtz);
+                $iridiumTable .= '<tr><td>' . $wkTime->format("d M") . '</td>';
+                $wkTime = new DateTime($row->time);
+                $wkTime->setTimeZone($wkDtz);
+                $iridiumTable .= '<td>' . $wkTime->format("H:i:s") . '</td>';
                 $iridiumTable .= '<td>' . $row->magnitude . '</td>';
                 $iridiumTable .= '<td>' . $row->altitude . '</td>';
                 $iridiumTable .= '<td>' . $row->azimuth . '</td>';

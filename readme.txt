@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.5.1
+Stable tag: 1.6
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -86,6 +86,10 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 4. Iridium flares table 
 
 == Changelog ==
+
+= 1.6 =
+
+Fix planet and satellite requests to heavens-above.com, since the website does not accept daylight savings timezones.
 
 = 1.5.1 =
 

@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.6
+Stable tag: 1.7
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -24,11 +24,12 @@ These parameters are optional:
 
 * **name** : The name of the location to be calculated
 * **days** : The number of days of data to display. Must be a value from 1 to 10. Defaults to 3 if not specified. 
+* **refresh** : true/false. Set to true if you want to force the transient cache to be refreshed.
 
 **Shortcode Examples:**
 
 * stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata days=1
-* stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago days=10
+* stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago days=10 refresh=true
 
 The output consists of simple HTML tables:
 
@@ -73,6 +74,20 @@ This plugin is driven by user requests. Just ask.
 
 = Where did you get the planet and satellite data? =
 The Planet, ISS, and Iridium flare data is obtained by parsing the response to a GET request to http://www.heavens-above.com. 
+
+= What is the refresh parameter for? What is the transient cache and why should I care? =
+
+Much of the information in the astronomical tables is obtained, with permission, from www.heavens-above.com. However,
+due to poor design by many mobile app writers, the server is getting hammered with requests. To mitigate what is in effect
+an accidental denial-of-service, heavens-above limits the number of times per day that a given webpage can request data.
+Stars-at-night prevents the problem from occurring by maintaining a Wordpress-supported transient table in the webserver
+database, so we only have to send a request to heavens-above once, no matter how many people are using your website. 
+The cache is automatically refreshed when the requested time range or  location parameters in the shortcode change. Suppose
+that  a bug results in data display problems. Once the bad data gets into the cache, you might want to clear it out, rather
+than waiting a day or so for the cache to refresh due to exceeding the time range. This parameter allows you to force the cache
+to clear on the next page display. Webmasters are cautioned not to leave this parameter always set, or heavens-above.com may 
+stop servicing your requests. I think this may happen after about 20 requests in a given day, from a given webpage, and I think
+it lasts for 1 day.
 
 = Can you provide more astronomical data and images? =
 

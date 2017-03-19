@@ -10,6 +10,7 @@ The plugin is activated by the shortcode “stars-at-night”. Here is an exampl
 * **long** : longitude. East of the Prime Meridian is positive, West is negative. Ex: -98.4265
 * **timezone** : A recognizable timezeone. For a list of valid values, see http://php.net/manual/en/timezones.php. Ex: America/Chicago
 * **days** : The number of days to predict. Must be a value from 1-10. Default is 3 days.
+* **refresh** : (Optional) set to true to force the cache to be refreshed
 
 # Credits
 

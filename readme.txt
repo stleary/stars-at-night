@@ -24,7 +24,8 @@ These parameters are optional:
 
 * **name** : The name of the location to be calculated
 * **days** : The number of days of data to display. Must be a value from 1 to 10. Defaults to 3 if not specified. 
-* **refresh** : true/false. Set to true if you want to force the transient cache to be refreshed.
+* **refresh** : true/false. Set to true if you want to force the transient cache to be refreshed. Defaults to false.
+* **suppressDegrees**:  true/false. Set to true if you are not able to display the degreee symbol: ° (but see the Wiki first) Defaults to false. 
 
 **Shortcode Examples:**
 
@@ -88,6 +89,12 @@ than waiting a day or so for the cache to refresh due to exceeding the time rang
 to clear on the next page display. Webmasters are cautioned not to leave this parameter always set, or heavens-above.com may 
 stop servicing your requests. I think this may happen after about 20 requests in a given day, from a given webpage, and I think
 it lasts for 1 day.
+
+= What is the suppressDegrees parameter for? =
+The degree symbol (°) is rendered in the browser with the escape sequence " &deg;". Currently, it only appears in
+the ISS table and the Iridium Flare table. It may not display correctly if you are using an incompatible font or 
+don't have UTF-8 character encoding enabled on your webpage. If you can't get it to display right, it can be
+omitted from the table contents by setting this parameter to true. 
 
 = Can you provide more astronomical data and images? =
 

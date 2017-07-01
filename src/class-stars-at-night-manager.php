@@ -48,6 +48,9 @@ class Stars_At_Night_Manager {
     private $sanitized_timezone;
     private $sanitized_days;
     private $sanitized_graphical;
+    private $sanitized_refresh;
+    private $sanitized_suppressDegrees;
+    
     // calculated values
     private $startDate;
     private $endDate;
@@ -152,11 +155,13 @@ class Stars_At_Night_Manager {
         $timezone = '';
         $days = '';
         $graphical = '';
+        $refresh = false;
+        $suppressDegrees = false;
         
         extract ( 
                 shortcode_atts ( 
                         array ('name' => '','lat' => '','long' => '','timezone' => '','days' => '3',
-                                'graphical' => '' 
+                                'graphical' => '','refresh' => false,'suppressDegrees' => false 
                         ), $atts, 'stars-at-night' ), EXTR_IF_EXISTS );
         
         /**
@@ -165,7 +170,7 @@ class Stars_At_Night_Manager {
          * and the method stops here
          */
         $validator_result = $this->data_validator ( $name, $lat, $long, $timezone, $days, 
-                $graphical );
+                $graphical, $refresh, $suppressDegrees );
         if (! empty ( $validator_result )) {
             return $validator_result;
         }
@@ -177,9 +182,9 @@ class Stars_At_Night_Manager {
         // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
         // get the tables
         $sunAndMoonTable = $this->getSunAndMoonTable ();
-        $issTable = $this->getISSTable ();
-        $iridiumTable = $this->getIridiumTable ();
-        $planetTable = $this->getPlanetTable ();
+        $issTable = $this->getISSTable ( $refresh, $suppressDegrees );
+        $iridiumTable = $this->getIridiumTable ( $refresh, $suppressDegrees );
+        $planetTable = $this->getPlanetTable ( $refresh );
         
         return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable;
     }
@@ -187,11 +192,13 @@ class Stars_At_Night_Manager {
     /**
      * Planettable is just for today
      *
+     * @param $refresh boolean
+     *            if true, get from server instead of cache
      * @return table of planets for today
      */
-    private function getPlanetTable() {
+    private function getPlanetTable($refresh) {
         $planetTable = $this->planetPasses->get_planet_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->sunriseSunset );
+                $this->sanitized_long, $this->sanitized_timezone, $this->sunriseSunset, $refresh );
         return $planetTable;
     }
     
@@ -199,16 +206,20 @@ class Stars_At_Night_Manager {
      * Iridium table can only look ahead 7 days, so calculate end date to at most 7 days, but pass
      * in the actual days in case we need to call this out in the table header.
      *
+     * @param $refresh boolean
+     *            if true, get from server instead of cache
+     * @param $suppressDegrees boolean
+     *            if true, omit degree symbol from table
      * @return table of iridium flares for the request time period, starting today
      */
-    private function getIridiumTable() {
+    private function getIridiumTable($refresh, $suppressDegrees) {
         $iridiumDays = (($this->sanitized_days > 7) ? 7 : $this->sanitized_days);
         $iridiumEndDate = new DateTime ( $this->startDate->format ( 'm/d/Y' ) );
         $iridiumEndDate->add ( new DateInterval ( 'P' . ($iridiumDays - 1) . 'D' ) );
         // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
         $iridiumTable = $this->satellitePasses->get_iridium_table ( $this->sanitized_lat, 
                 $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $iridiumEndDate, 
-                $this->sanitized_days );
+                $this->sanitized_days, $this->sanitized_refresh, $this->sanitized_suppressDegrees );
         return $iridiumTable;
     }
     
@@ -216,11 +227,16 @@ class Stars_At_Night_Manager {
      * ISS table can look ahead 10 days, same as the max days user can request, so no modification
      * of the end date is needed
      *
+     * @param $refresh boolean
+     *            if true, get from server instead of cache
+     * @param $suppressDegrees boolean
+     *            if true, omit degree symbol from table
      * @return table of ISS passes for the request timer period, starting today
      */
-    private function getISSTable() {
+    private function getISSTable($refresh, $suppressDegrees) {
         $issTable = $this->satellitePasses->get_iss_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $this->endDate );
+                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $this->endDate, 
+                $refresh, $suppressDegrees );
         return $issTable;
     }
     
@@ -352,9 +368,14 @@ class Stars_At_Night_Manager {
      *            number of days to report
      * @param $graphical bool
      *            not used at present
+     * @param $refresh bool
+     *            if true, force a transient cache refresh for all tables
+     * @param $suppressDegrees bool
+     *            if true, suppress the degree symbol for all tables
      * @return string containing error messages, or empty if no errors found
      */
-    private function data_validator($name, $lat, $long, $timezone, $days, $graphical) {
+    private function data_validator($name, $lat, $long, $timezone, $days, $graphical, $refresh, 
+            $suppressDegrees) {
         $result = "";
         /**
          * Name must be safe, but can be any value, up to 32 chars
@@ -412,6 +433,17 @@ class Stars_At_Night_Manager {
         
         if (! empty ( $result )) {
             $result = "Errors: " . $result;
+        }
+        // validate the booleans
+        if (! (strcmp ( 'true', $refresh ))) {
+            $this->sanitized_refresh = true;
+        } else {
+            $this->sanitized_refresh = false;
+        }
+        if (! (strcmp ( 'true', $suppressDegrees ))) {
+            $this->sanitized_suppressDegrees = true;
+        } else {
+            $this->sanitized_suppressDegrees = false;
         }
         return $result;
     }

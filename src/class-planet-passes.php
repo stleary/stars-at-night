@@ -50,9 +50,11 @@ class NGC2244_Planet_Passes {
      *            timezone of the viewer
      * @param NGC2244_Sunrise_Sunset $sunriseSunset
      *            current day sun data
+     * @param $refresh boolean
+     *            if true, get from server instead of cache
      * @return table HTML
      */
-    public function get_planet_table($lat, $long, $timezone, $sunriseSunset) {
+    public function get_planet_table($lat, $long, $timezone, $sunriseSunset, $refresh) {
         // convert php tz to heavens above expected format
         $dateTime = new DateTime ();
         // convert the php-compatible timezone name to heavens-above format
@@ -64,7 +66,7 @@ class NGC2244_Planet_Passes {
         $url = "http://www.heavens-above.com/PlanetSummary.aspx?lat=" . $lat;
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         // $url = $url . "&tz=" . $heavensAboveTZ;
-        $rows = $this->getPlanetData ( $url, $sunriseSunset );
+        $rows = $this->getPlanetData ( $url, $sunriseSunset, $refresh );
         
         $mercury = 0;
         $venus = 1;
@@ -189,15 +191,6 @@ class NGC2244_Planet_Passes {
             $planetTable .= '<td>' . $rows [$neptune]->constellation . '</td>';
             $planetTable .= '<td>' . $rows [$pluto]->constellation . '</td></tr>';
             
-            $planetTable .= '<tr><td><b>Visibility</b></td>';
-            $planetTable .= '<td>' . $rows [$mercury]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$venus]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$mars]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$jupiter]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$saturn]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$uranus]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$neptune]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$pluto]->visibility . '</td></tr>';
         } else {
             // no matching days were found
             $planetTable .= '<tr><td colspan="11">No planetary data is available at this time</td></tr>';
@@ -217,9 +210,11 @@ class NGC2244_Planet_Passes {
      *            http://www.heavens-above.com/PlanetSummary.aspx?lat=30.891&lng=-98.4265&loc=Unspecified&alt=300&tz=CST
      * @param DateTime $sunriseSunset
      *            sun data for today
+     * @param $refresh boolean
+     *            if true, get from server instead of cache
      * @return array of matching rows, or null if no rows are forthcoming
      */
-    public function getPlanetData($url, $sunriseSunset) {
+    public function getPlanetData($url, $sunriseSunset, $refresh) {
         /**
          * Check transient data for cached planetary data.
          * The key to the cache is the $url, which uniquely captures
@@ -233,7 +228,7 @@ class NGC2244_Planet_Passes {
         // error_log ( "delete cache for " . $url );
         // delete_transient ( $url );
         error_log ( "getting transient for " . $url );
-        if (false !== ($data = get_transient ( $url ))) {
+        if (!$refresh && false !== ($data = get_transient ( $url ))) {
             if (is_array ( $data )) {
                 /**
                  * Must check the date range before filtering by rows, in case
@@ -271,7 +266,7 @@ class NGC2244_Planet_Passes {
                 delete_transient ( $url );
             }
         } else {
-            error_log ( 'cache is empty, refresh from the server' );
+            error_log ( 'refresh [' . $refresh . '] cache not used, get from the server' );
         }
         /**
          * If we got this far, there was no match in the transient cache.
@@ -406,68 +401,7 @@ class NGC2244_Planet_Passes {
                 }
             }
         }
-        foreach ( $planetTable as $data ) {
-            $data->visibility = $this->getVisibility ( $data );
-        }
         return $planetTable;
     }
     
-    /**
-     * Calculate visibility for this planet on this date.
-     * Result is a string with one of these values:
-     * Not visible
-     * Visible
-     * Good
-     * Prime
-     *
-     * @param NGC2244_Planet_Data $planetData
-     *            populated planet values
-     * @return visibility string
-     */
-    private function getVisibility($planetData) {
-        $sunsetDate = new DateTime ( 'today ' . $this->sunriseSunset->sunSet );
-        $darkDate = new DateTime ( 'today ' . $this->sunriseSunset->eveningTwilight );
-        $sunset2Date = new DateTime ( $sunsetDate->format ( "m/d/Y H:i:s" ) );
-        $sunset2Date->add ( new DateInterval ( 'PT2H' ) );
-        $endDate = new DateTime ( 'tomorrow ' . "00:00:00" );
-        $end2Date = new DateTime ( 'today ' . "22:00:00" );
-        // error_log ( 'sunset: ' . $sunsetDate->format ( "m/d/Y H:i:s" ) );
-        // error_log ( 'dark: ' . $darkDate->format ( "m/d/Y H:i:s" ) );
-        // error_log ( 'sunset2: ' . $sunset2Date->format ( "m/d/Y H:i:s" ) );
-        // error_log ( 'end: ' . $endDate->format ( "m/d/Y H:i:s" ) );
-        // error_log ( 'end2: ' . $end2Date->format ( "m/d/Y H:i:s" ) );
-        
-        // resets all timestamps to today 00:00:00
-        $riseDate = new DateTime ( 'today ' . $planetData->rise );
-        $setDate = new DateTime ( 'today ' . $planetData->set );
-        $meridianDate = new DateTime ( 'today ' . $planetData->meridian );
-        
-        if ($meridianDate < $riseDate) {
-            $meridianDate->add ( new DateInterval ( 'P1D' ) );
-            $setDate->add ( new DateInterval ( 'P1D' ) );
-        } else if ($setDate < $meridianDate) {
-            $setDate->add ( new DateInterval ( 'P1D' ) );
-        }
-        
-        // error_log (
-        // 'planet: ' . $planetData->name . ' rise: ' . $riseDate->format ( 'd H:i' ) .
-        // ' merid: ' . $meridianDate->format ( 'd H:i' ) . ' set: ' .
-        // $setDate->format ( 'd H:i' ) );
-        
-        $visibility = '';
-        if ($setDate >= $sunsetDate && $setDate < $sunset2Date) {
-            $visibility = 'Visible';
-        } else if (($setDate >= $sunset2Date) && ($meridianDate < $sunsetDate)) {
-            $visibility = 'Good';
-        } else if (($meridianDate >= $sunsetDate) && ($meridianDate < $endDate)) {
-            $visibility = 'Prime';
-        } else if (($meridianDate >= $endDate) && ($riseDate < $endDate)) {
-            $visibility = 'Good';
-        } else if (($riseDate >= $endDate) && ($riseDate < $end2Date)) {
-            $visibility = 'Visible';
-        } else {
-            $visibility = 'Not visible';
-        }
-        return $visibility;
-    }
 }

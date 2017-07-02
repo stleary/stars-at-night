@@ -185,8 +185,57 @@ class Stars_At_Night_Manager {
         $issTable = $this->getISSTable ( $refresh, $suppressDegrees );
         $iridiumTable = $this->getIridiumTable ( $refresh, $suppressDegrees );
         $planetTable = $this->getPlanetTable ( $refresh );
+        $mobileText = '<script>/* Credits:
+         This bit of code: Exis | exisweb.net/responsive-tables-in-wordpress
+         Original idea: Dudley Storey | codepen.io/dudleystorey/pen/Geprd */
         
-        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable;
+        var headertext = [];
+        var headers = document.querySelectorAll("thead");
+        var tablebody = document.querySelectorAll("tbody");
+        var thnames = [];
+        thnames[0] = ["Date", "Morning Twilight", "Sunrise", "Sunset", "Evening Twilight", "Moonrise", "Moonset", "Moon Phase"];
+        thnames[1] = ["Mercury", "Venus", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto"];
+        thnames[2] = ["Date", "Brightness (mag)", "Start Time", "Start Alt.", "Start Az.", "Highest Point Time", "Highest Point Alt.", "Highest Point Az.", "End Time", "End Alt.", "End Az."];
+        thnames[3] = ["Date", "Time", "Magnitude", "Altitude", "Azimuth", "Satellite"];
+                
+        for (var i = 0; i < headers.length; i++) {
+            headertext[i]=[];
+            for (var j = 0, j < thnames[i].length; ; j++) {
+                headrow = headers[i].rows[0].cells[j]
+                var current = headrow;
+                // headertext[i].push(current.textContent);
+                headertext[i].push(thnames[i][j]);
+            }
+        }
+        
+        for (var h = 0, tbody; tbody = tablebody[h]; h++) {
+            for (var i = 0, row; row = tbody.rows[i]; i++) {
+                for (var j = 0, col; col = row.cells[j]; j++) {
+                    col.setAttribute("data-th", headertext[h][j]);
+                }
+            }
+        }</script>';
+        $mobileText .= '<style>
+        /* 
+           Credits:
+           This bit of code: Exis | exisweb.net/responsive-tables-in-wordpress
+           Original idea: Dudley Storey | codepen.io/dudleystorey/pen/Geprd 
+         */
+  
+         @media screen and (max-width: 600px) {
+             table {width:100%;}
+             thead {display: none;}
+             tr:nth-of-type(2n) {background-color: inherit;}
+             tr td:first-child {background: #f0f0f0; font-weight:bold;font-size:1.3em;}
+             tbody td {display: block;  text-align:center;}
+             tbody td:before { 
+                 content: attr(data-th); 
+                 display: block;
+                 text-align:center;  
+             }
+         }</style>'; 
+        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable . $mobileText;
+
     }
     
     /**

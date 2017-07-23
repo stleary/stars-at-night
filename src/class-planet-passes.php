@@ -189,15 +189,6 @@ class NGC2244_Planet_Passes {
             $planetTable .= '<td>' . $rows [$neptune]->constellation . '</td>';
             $planetTable .= '<td>' . $rows [$pluto]->constellation . '</td></tr>';
             
-            $planetTable .= '<tr><td><b>Visibility</b></td>';
-            $planetTable .= '<td>' . $rows [$mercury]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$venus]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$mars]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$jupiter]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$saturn]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$uranus]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$neptune]->visibility . '</td>';
-            $planetTable .= '<td>' . $rows [$pluto]->visibility . '</td></tr>';
         } else {
             // no matching days were found
             $planetTable .= '<tr><td colspan="11">No planetary data is available at this time</td></tr>';
@@ -406,14 +397,12 @@ class NGC2244_Planet_Passes {
                 }
             }
         }
-        foreach ( $planetTable as $data ) {
-            $data->visibility = $this->getVisibility ( $data );
-        }
         return $planetTable;
     }
     
     /**
      * Calculate visibility for this planet on this date.
+     * Not used at the present time - this method is buggy
      * Result is a string with one of these values:
      * Not visible
      * Visible

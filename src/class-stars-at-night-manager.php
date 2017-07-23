@@ -59,20 +59,45 @@ class Stars_At_Night_Manager {
     private $planetPasses;
     private $sunriseSunset;
     private $tableBuildHelper;
-    
-    public function get_sanitized_name() { return $this->sanitized_name; }
-    public function get_sanitized_lat() { return $this->sanitized_lat; }
-    public function get_sanitized_long() { return $this->sanitized_long; }
-    public function get_sanitized_timezone() { return $this->sanitized_timezone; }
-    public function get_sanitized_days() { return $this->sanitized_days; }
-    public function get_sanitized_graphical() { return $this->sanitized_graphical; }
-    public function get_sanitized_refresh() { return $this->sanitized_refresh; }
-    public function get_sanitized_suppressDegrees() { return $this->sanitized_suppressDegrees; }
-    public function getStartDate() { return $this->startDate; }
-    public function getEndDate() { return $this->endDate; }
-    public function getSatellitePasses() { return $this->satellitePasses; }
-    public function getPlanetPasses() { return $this->planetPasses; }
-    public function getSunriseSunset() { return $this->sunriseSunset; }
+    public function get_sanitized_name() {
+        return $this->sanitized_name;
+    }
+    public function get_sanitized_lat() {
+        return $this->sanitized_lat;
+    }
+    public function get_sanitized_long() {
+        return $this->sanitized_long;
+    }
+    public function get_sanitized_timezone() {
+        return $this->sanitized_timezone;
+    }
+    public function get_sanitized_days() {
+        return $this->sanitized_days;
+    }
+    public function get_sanitized_graphical() {
+        return $this->sanitized_graphical;
+    }
+    public function get_sanitized_refresh() {
+        return $this->sanitized_refresh;
+    }
+    public function get_sanitized_suppressDegrees() {
+        return $this->sanitized_suppressDegrees;
+    }
+    public function getStartDate() {
+        return $this->startDate;
+    }
+    public function getEndDate() {
+        return $this->endDate;
+    }
+    public function getSatellitePasses() {
+        return $this->satellitePasses;
+    }
+    public function getPlanetPasses() {
+        return $this->planetPasses;
+    }
+    public function getSunriseSunset() {
+        return $this->sunriseSunset;
+    }
     
     /**
      * create and initialize a class instance
@@ -161,7 +186,7 @@ class Stars_At_Night_Manager {
         $this->satellitePasses = new NGC2244_Satellite_Passes ();
         $this->planetPasses = new NGC2244_Planet_Passes ();
         $this->sunriseSunset = new NGC2244_Sunrise_Sunset ();
-        $this->tableBuildHelper = new NGC2244_Table_Build_Helper($this);
+        $this->tableBuildHelper = new NGC2244_Table_Build_Helper ( $this );
         
         /**
          * these are the supported fields of raw user input
@@ -201,7 +226,7 @@ class Stars_At_Night_Manager {
         $sunAndMoonTable = $this->getSunAndMoonTable ();
         $issTable = $this->getISSTable ( $refresh, $suppressDegrees );
         $iridiumTable = $this->getIridiumTable ( $refresh, $suppressDegrees );
-        $planetTable = $this->getPlanetTable ( $refresh );
+        $planetTable = $this->getPlanetTable ();
         $mobileText = '<style>
         .is-mobile {
             display: none;
@@ -214,8 +239,8 @@ class Stars_At_Night_Manager {
                 display: block;
             }
         }</style>';
-        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable . $mobileText;
-
+        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable .
+                 $mobileText;
     }
     
     /**
@@ -225,10 +250,9 @@ class Stars_At_Night_Manager {
      *            if true, get from server instead of cache
      * @return table of planets for today
      */
-    private function getPlanetTable($refresh) {
-        $planetTable = $this->planetPasses->get_planet_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->sunriseSunset, $refresh );
-        return $planetTable;
+    private function getPlanetTable() {
+        return $this->tableBuildHelper->getPlanetTableMobile () .
+                 $this->tableBuildHelper->getPlanetTableFull ();
     }
     
     /**
@@ -241,15 +265,9 @@ class Stars_At_Night_Manager {
      *            if true, omit degree symbol from table
      * @return table of iridium flares for the request time period, starting today
      */
-    private function getIridiumTable($refresh, $suppressDegrees) {
-        $iridiumDays = (($this->sanitized_days > 7) ? 7 : $this->sanitized_days);
-        $iridiumEndDate = new DateTime ( $this->startDate->format ( 'm/d/Y' ) );
-        $iridiumEndDate->add ( new DateInterval ( 'P' . ($iridiumDays - 1) . 'D' ) );
-        // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
-        $iridiumTable = $this->satellitePasses->get_iridium_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $iridiumEndDate, 
-                $this->sanitized_days, $this->sanitized_refresh, $this->sanitized_suppressDegrees );
-        return $iridiumTable;
+    private function getIridiumTable() {
+        return $this->tableBuildHelper->getIridiumTableMobile () .
+                 $this->tableBuildHelper->getIridiumTableFull ();
     }
     
     /**
@@ -262,13 +280,11 @@ class Stars_At_Night_Manager {
      *            if true, omit degree symbol from table
      * @return table of ISS passes for the request timer period, starting today
      */
-    private function getISSTable($refresh, $suppressDegrees) {
-        $issTable = $this->satellitePasses->get_iss_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $this->endDate, 
-                $refresh, $suppressDegrees );
-        return $issTable;
+    private function getISSTable() {
+        return $this->tableBuildHelper->getISSTableMobile () .
+                 $this->tableBuildHelper->getISSTableFull ();
     }
-
+    
     /**
      * Returns a string containing the HTML to render a table of
      * night sky data inside a div.
@@ -277,10 +293,10 @@ class Stars_At_Night_Manager {
      * @return html table of event times
      */
     private function getSunAndMoonTable() {
-        return $this->tableBuildHelper->getSunAndMoonTableMobile() . 
-            $this->tableBuildHelper->getSunAndMoonTableFull();
+        return $this->tableBuildHelper->getSunAndMoonTableMobile () .
+                 $this->tableBuildHelper->getSunAndMoonTableFull ();
     }
-
+    
     /**
      * Validates the parameters sent by the user.
      *

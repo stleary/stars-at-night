@@ -37,184 +37,28 @@ class NGC2244_Planet_Passes {
     public $sunriseSunset;
     
     /**
-     * Returns a string containing the HTML to render a table of
-     * planet data inside a div.
-     * A leading table description is included as well.
-     * The data is obtained from an external website. This may affect rendering time.
-     *
-     * @param float $lat
-     *            latitude of the viewer
-     * @param float $long
-     *            longitude of the viewer
-     * @param string $timezone
-     *            timezone of the viewer
-     * @param NGC2244_Sunrise_Sunset $sunriseSunset
-     *            current day sun data
-     * @param $refresh boolean
-     *            if true, get from server instead of cache
-     * @return table HTML
-     */
-    public function get_planet_table($lat, $long, $timezone, $sunriseSunset, $refresh) {
-        // convert php tz to heavens above expected format
-        $dateTime = new DateTime ();
-        // convert the php-compatible timezone name to heavens-above format
-        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
-        $heavensAboveTZ = $dateTime->format ( 'T' );
-        
-        // just take a wild guess as to the location altitude, in meters
-        $locationAlt = 300;
-        $url = "http://www.heavens-above.com/PlanetSummary.aspx?lat=" . $lat;
-        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
-        // $url = $url . "&tz=" . $heavensAboveTZ;
-        $rows = $this->getPlanetData ( $url, $sunriseSunset, $refresh );
-        
-        $mercury = 0;
-        $venus = 1;
-        $mars = 2;
-        $jupiter = 3;
-        $saturn = 4;
-        $uranus = 5;
-        $neptune = 6;
-        $pluto = 7;
-        
-        // table and column headers
-        $planetTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
-        $planetTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Planetary Data for today</td></tr>';
-        // most sure way of overriding the standardTable thead td style is with inline style
-        $planetTable .= '<tr><td style="background-color: #000000;"></td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/mercury-sm.jpg"</td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/venus-sm.jpg"</td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/mars-sm.jpg"</td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/jupiter-sm.jpg"</td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/saturn-sm.jpg"</td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/uranus-sm.jpg"</td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/neptune-sm.jpg"</td>';
-        $planetTable .= '<td style="background-color: #000000;"><img class="ngc2244_stars_at_night_planet" src="' . plugin_dir_url ( __FILE__ ) . '../images/pluto-sm.jpg"</td>';
-        $planetTable .= '</tr>';
-        $planetTable .= '<tr><td></td>';
-        $planetTable .= '<td align="center">Mercury</td>';
-        $planetTable .= '<td align="center">Venus</td>';
-        $planetTable .= '<td align="center" >Mars</td>';
-        $planetTable .= '<td align="center" >Jupiter</td>';
-        $planetTable .= '<td align="center">Saturn</td>';
-        $planetTable .= '<td align="center">Uranus</td>';
-        $planetTable .= '<td align="center">Neptune</td>';
-        $planetTable .= '<td align="center">Pluto</td>';
-        $planetTable .= '</tr></thead><tbody>';
-        $wkDtz = new DateTimeZone($timezone);
-        if (! is_null ( $rows )) {
-            $planetTable .= '<tr><td><b>Rises</b></td>';
-            $wkTime = new DateTime($rows [$mercury]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$venus]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$mars]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$jupiter]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$saturn]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$uranus]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$neptune]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$pluto]->rise);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td></tr>';
-            
-            $planetTable .= '<tr><td><b>Meridian</b></td>';
-            $wkTime = new DateTime($rows [$mercury]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$venus]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$mars]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$jupiter]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$saturn]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$uranus]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$neptune]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$pluto]->meridian);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td></tr>';
-            
-            $planetTable .= '<tr><td><b>Sets</b></td>';
-            $wkTime = new DateTime($rows [$mercury]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$venus]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$mars]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$jupiter]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$saturn]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$uranus]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$neptune]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td>';
-            $wkTime = new DateTime($rows [$pluto]->set);
-            $wkTime->setTimeZone($wkDtz);
-            $planetTable .= '<td>' . $wkTime->format("H:i") . '</td></tr>';
-            
-            $planetTable .= '<tr><td><b>Constellation</b></td>';
-            $planetTable .= '<td>' . $rows [$mercury]->constellation . '</td>';
-            $planetTable .= '<td>' . $rows [$venus]->constellation . '</td>';
-            $planetTable .= '<td>' . $rows [$mars]->constellation . '</td>';
-            $planetTable .= '<td>' . $rows [$jupiter]->constellation . '</td>';
-            $planetTable .= '<td>' . $rows [$saturn]->constellation . '</td>';
-            $planetTable .= '<td>' . $rows [$uranus]->constellation . '</td>';
-            $planetTable .= '<td>' . $rows [$neptune]->constellation . '</td>';
-            $planetTable .= '<td>' . $rows [$pluto]->constellation . '</td></tr>';
-            
-        } else {
-            // no matching days were found
-            $planetTable .= '<tr><td colspan="11">No planetary data is available at this time</td></tr>';
-        }
-        $planetTable = $planetTable . '</tbody></table></div>';
-        return $planetTable;
-    }
-    
-    /**
      * Get an array of planet data from cache or server.
      * Each row of the array will be an NGC2244_Planet_Data instance. If the user makes multiple
      * requests with different location params, there may be more than one transient
      * array in the cache.
      *
-     * @param string $url
-     *            URL request for this location. For example,
-     *            http://www.heavens-above.com/PlanetSummary.aspx?lat=30.891&lng=-98.4265&loc=Unspecified&alt=300&tz=CST
      * @param DateTime $sunriseSunset
      *            sun data for today
+     * @param int $lat
+     *            local latitude
+     * @param int $long
+     *            local longitude
      * @param $refresh boolean
      *            if true, get from server instead of cache
      * @return array of matching rows, or null if no rows are forthcoming
      */
-    public function getPlanetData($url, $sunriseSunset, $refresh) {
+    public function getPlanetData($sunriseSunset, $lat, $long, $refresh) {
+        // just take a wild guess as to the location altitude, in meters
+        $locationAlt = 300;
+        $url = "http://www.heavens-above.com/PlanetSummary.aspx?lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
+        // $url = $url . "&tz=" . $heavensAboveTZ;
+        
         /**
          * Check transient data for cached planetary data.
          * The key to the cache is the $url, which uniquely captures
@@ -228,7 +72,7 @@ class NGC2244_Planet_Passes {
         // error_log ( "delete cache for " . $url );
         // delete_transient ( $url );
         error_log ( "getting transient for " . $url );
-        if (!$refresh && false !== ($data = get_transient ( $url ))) {
+        if (! $refresh && false !== ($data = get_transient ( $url ))) {
             if (is_array ( $data )) {
                 /**
                  * Must check the date range before filtering by rows, in case
@@ -403,5 +247,4 @@ class NGC2244_Planet_Passes {
         }
         return $planetTable;
     }
-    
 }

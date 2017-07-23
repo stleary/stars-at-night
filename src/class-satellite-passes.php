@@ -35,178 +35,6 @@ include ('class-iridium-data.php');
  * the future.
  */
 class NGC2244_Satellite_Passes {
-    /**
-     * Returns a string containing the HTML to render a table of
-     * ISS pass data inside a div.
-     * A leading table description is included as well.
-     * The data is obtained from an external website. This may affect rendering time.
-     *
-     * @param float $lat
-     *            latitude of the viewer
-     * @param float $long
-     *            longitude of the viewer
-     * @param string $timezone
-     *            timezone of the viewer
-     * @param DateTime $startDate
-     *            the ending date to display
-     * @param DateTime $endDate
-     *            the ending date to display
-     * @param $refresh boolean
-     *            if true, get from server instead of cache
-     * @param $suppressDegrees if
-     *            true, omit degree symbol
-     * @return table HTML
-     */
-    public function get_iss_table($lat, $long, $timezone, $startDate, $endDate, $refresh, 
-            $suppressDegrees) {
-        // convert php tz to heavens above expected format
-        $dateTime = new DateTime ();
-        // convert the php-compatible timezone name to heavens-above format
-        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
-        $heavensAboveTZ = $dateTime->format ( 'T' );
-        
-        // just take a wild guess as to the location altitude, in meters
-        $locationAlt = 300;
-        $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
-        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
-        // $url = $url . "&tz=" . $heavensAboveTZ;
-        $rows = $this->getSatelliteData ( $url, $startDate, $endDate, $refresh, $suppressDegrees );
-        // table and column headers
-        $imageFileIssSmall = plugin_dir_url ( __FILE__ ) . "../images/iss-small.jpg";
-        $imageFileIssLarge = plugin_dir_url ( __FILE__ ) . "../images/iss-large.jpg";
-        $issTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
-        $issTable .= '<thead>';
-        $issTable .= '<tr><td align="center" valign="middle" colspan="11">Visible ISS Passes</td></tr>';
-        $issTable .= '<tr><td align="center" valign="middle" colspan="11">';
-        $issTable .= '<a href="' . $imageFileIssLarge . '">';
-        $issTable .= '<img class="ngc2244_stars_at_night_satellite" ';
-        $issTable .= 'src="' . $imageFileIssSmall .
-                 '" alt="ISS image. Credit: NASA" /></a></td></tr>';
-        $issTable .= '<tr><td align="center" rowspan="2" valign="middle">Date</td>';
-        $issTable .= '<td align="center">Brightness</td>';
-        $issTable .= '<td align="center" valign="top" colspan="3">Start</td>';
-        $issTable .= '<td align="center" colspan="3">Highest point</td>';
-        $issTable .= '<td align="center" colspan="3">End</td></tr>';
-        $issTable .= '<tr><td align="center">(mag)</td>';
-        $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
-        $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td>';
-        $issTable .= '<td align="center">Time</td><td>Alt.</td><td>Az.</td></tr></thead>';
-        if (! is_null ( $rows )) {
-            $wkDtz = new DateTimeZone ( $timezone );
-            $wkDT = new DateTime ( "now" );
-            foreach ( $rows as $row ) {
-                // this could be inaccurate at the new year
-                $wkTime = new DateTime ( $row->date . $wkDT->format ( " Y " ) . $row->startTime );
-                $wkTime->setTimeZone ( $wkDtz );
-                $issTable .= '<tr><td>' . $wkTime->format ( "d M" ) . '</td>';
-                $issTable .= '<td>' . $row->magnitude . '</td>';
-                $wkTime = new DateTime ( $row->startTime );
-                $wkTime->setTimeZone ( $wkDtz );
-                $issTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
-                $issTable .= '<td>' . $this->getDegreeMarkup ( $row->startAltitude, 
-                        $suppressDegrees ) . '</td>';
-                $issTable .= '<td>' . $row->startAzimuth . '</td>';
-                $wkTime = new DateTime ( $row->highTime );
-                $wkTime->setTimeZone ( $wkDtz );
-                $issTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
-                $issTable .= '<td>' . $this->getDegreeMarkup ( $row->highAltitude, 
-                        $suppressDegrees ) . '</td>';
-                $issTable .= '<td>' . $row->highAzimuth . '</td>';
-                $wkTime = new DateTime ( $row->endTime );
-                $wkTime->setTimeZone ( $wkDtz );
-                $issTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
-                $issTable .= '<td>' . $this->getDegreeMarkup ( $row->endAltitude, $suppressDegrees ) .
-                         '</td>';
-                $issTable .= '<td>' . $row->endAzimuth . '</td></tr>';
-            }
-        } else {
-            // no matching days were found
-            $issTable .= '<tr><td colspan="11">No visible ISS passes during this time period</td></tr>';
-        }
-        $issTable = $issTable . '</table></div>';
-        return $issTable;
-    }
-    
-    /**
-     * Returns a string containing the HTML to render a table of
-     * Iridium satellite pass data inside a div.
-     * A leading table description is included as well.
-     * The data is obtained from an external website. This may affect rendering time.
-     *
-     * @param float $lat
-     *            latitude of the viewer
-     * @param float $long
-     *            longitude of the viewer
-     * @param string $timezone
-     *            timezone of the viewer
-     * @param DateTime $startDate
-     *            the ending date to display
-     * @param DateTime $endDate
-     *            the ending date to display
-     * @param int $days
-     *            the number of days to get
-     * @param $refresh boolean
-     *            if true, get from server instead of cache
-     * @param $suppressDegrees boolean
-     *            if true, omit degree symbol from table
-     * @return table HTML
-     */
-    public function get_iridium_table($lat, $long, $timezone, $startDate, $endDate, $days, $refresh, 
-            $suppressDegrees) {
-        // convert php tz to heavens above expected format
-        $dateTime = new DateTime ();
-        // convert the php-compatible timezone name to heavens-above format
-        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
-        $heavensAboveTZ = $dateTime->format ( 'T' );
-        
-        // just take a wild guess as to the location altitude, in meters
-        $locationAlt = 300;
-        $url = "http://www.heavens-above.com/IridiumFlares.aspx?lat=" . $lat;
-        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
-        // $url = $url . "&tz=" . $heavensAboveTZ;
-        $rows = $this->getSatelliteData ( $url, $startDate, $endDate, $refresh, $suppressDegrees );
-        $daysStr = "";
-        if ($days > 7) {
-            $daysStr = " for the next 7 days";
-        }
-        // table and column headers
-        $iridiumTable = '<div><table class="ngc2244_stars_at_night_standardTable"><thead>';
-        $iridiumTable .= '<tr><td align="center" valign="middle" colspan="6">Visible Iridium Flares' .
-                 $daysStr . '</td></tr>';
-        $iridiumTable .= '<tr><td colspan="6"><img class="ngc2244_stars_at_night_satellite" src="' .
-                 plugin_dir_url ( __FILE__ ) . '../images/iridium-flare.jpg"</td></tr>';
-        $iridiumTable .= '<tr><td align="center" valign="middle">Date</td>';
-        $iridiumTable .= '<td align="center">Time</td>';
-        $iridiumTable .= '<td align="center">Magnitude</td>';
-        $iridiumTable .= '<td align="center">Altitude</td>';
-        $iridiumTable .= '<td align="center">Azimuth</td>';
-        $iridiumTable .= '<td align="center">Satellite</td></tr></thead>';
-        if (! is_null ( $rows )) {
-            $wkDtz = new DateTimeZone ( $timezone );
-            $wkDT = new DateTime ( "now" );
-            foreach ( $rows as $row ) {
-                // table row
-                // this could be inaccurate at the new year
-                $wkTime = new DateTime ( $row->date . $wkDT->format ( " Y " ) . $row->time );
-                $wkTime->setTimeZone ( $wkDtz );
-                $iridiumTable .= '<tr><td>' . $wkTime->format ( "d M" ) . '</td>';
-                $wkTime = new DateTime ( $row->time );
-                $wkTime->setTimeZone ( $wkDtz );
-                $iridiumTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
-                $iridiumTable .= '<td>' . $row->magnitude . '</td>';
-                $iridiumTable .= '<td>' . $this->getDegreeMarkup ( $row->altitude, 
-                        $suppressDegrees ) . '</td>';
-                $iridiumTable .= '<td>' . $this->getDegreeMarkup ( $row->azimuth, $suppressDegrees ) .
-                         '</td>';
-                $iridiumTable .= '<td>' . $row->satellite . '</td></tr>';
-            }
-        } else {
-            // no matching days were found
-            $iridiumTable .= '<tr><td colspan="6">No visible Iridium Flares during this time period</td></tr>';
-        }
-        $iridiumTable = $iridiumTable . '</table></div>';
-        return $iridiumTable;
-    }
     
     /**
      * Get an array of ISS visible passes from cache or server.
@@ -214,9 +42,14 @@ class NGC2244_Satellite_Passes {
      * satellite requests with different location params, there may be more than one transient ISS
      * array in the cache.
      *
-     * @param string $url
-     *            URL request for this location. For example,
-     *            http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=30.891&lng=-98.4265&loc=Unspecified&alt=300&tz=CST
+     * @param string $finalSegment
+     *            final segment of the URL request
+     * @param int $satId
+     *            satellite id
+     * @param int $lat
+     *            local latitude
+     * @param int $long
+     *            local longitude
      * @param DateTime $startDate
      *            start of date range requested
      * @param DateTime $endDate
@@ -227,7 +60,8 @@ class NGC2244_Satellite_Passes {
      *            if true, omit degree symbol from table
      * @return array of matching rows, or null if no rows are forthcoming
      */
-    public function getSatelliteData($url, $startDate, $endDate, $refresh, $suppressDegrees) {
+    public function getSatelliteData($finalSegment, $satId, $lat, $long, $startDate, $endDate, 
+            $refresh, $suppressDegrees) {
         /**
          * Check transient data for cached satellite data.
          * The key to the cache is the $url, which uniquely captures
@@ -252,6 +86,14 @@ class NGC2244_Satellite_Passes {
         // Uncomment when you want to clear the cache
         // error_log ( "delete cache for " . $url );
         // delete_transient ( $url );
+        
+        // just take a wild guess as to the location altitude, in meters
+        $url = "http://www.heavens-above.com/?lat=" . $lat;
+        
+        $locationAlt = 300;
+        $url = "http://www.heavens-above.com/' . $finalSegment . '?' . $satId . 'lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
+        
         error_log ( "getting transient for " . $url );
         if (! $refresh && false !== ($data = get_transient ( $url ))) {
             if (is_array ( $data )) {

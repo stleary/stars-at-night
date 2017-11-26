@@ -36,13 +36,11 @@ class NGC2244_Planet_Data {
     public $set;
     public $meridian;
     public $constellation;
-    public $visibility;
     // required for debugging
     public function toString() {
         $str = "NGC2244_PLANET_DATA:" . "\n   date: " . $this->date . "\n   name: " . $this->name .
                  "\n   rise:" . $this->rise . "\n   set: " . $this->set . "\n   meridian: " .
-                 $this->meridian . "\n   constellation: " . $this->constellation .
-                 "\n   visibility: " .  $this->visibility . "\n";
+                 $this->meridian . "\n   constellation: " . $this->constellation . "\n";
         return $str;
     }
 }

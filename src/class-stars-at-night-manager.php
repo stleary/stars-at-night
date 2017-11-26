@@ -30,6 +30,7 @@ include ('class-moonrise-moonset.php');
 include ('class-moon-phase.php');
 include ('class-satellite-passes.php');
 include ('class-planet-passes.php');
+include ('class-table-build-helper.php');
 
 /**
  * This class calculates and emits astronomical values in an HTML table.
@@ -54,7 +55,48 @@ class Stars_At_Night_Manager {
     private $satellitePasses;
     private $planetPasses;
     private $sunriseSunset;
-    
+    private $tablebuildHelper;
+
+    public function get_sanitized_name() {
+        return $this->sanitized_name;
+    }
+    public function get_sanitized_lat() {
+        return $this->sanitized_lat;
+    }
+    public function get_sanitized_long() {
+        return $this->sanitized_long;
+    }
+    public function get_sanitized_timezone() {
+        return $this->sanitized_timezone;
+    }
+    public function get_sanitized_days() {
+        return $this->sanitized_days;
+    }
+    public function get_sanitized_graphical() {
+        return $this->sanitized_graphical;
+    }
+    public function get_sanitized_refresh() {
+        return $this->sanitized_refresh;
+    }
+    public function get_sanitized_suppressDegrees() {
+        return $this->sanitized_suppressDegrees;
+    }
+    public function getStartDate() {
+        return $this->startDate;
+    }
+    public function getEndDate() {
+        return $this->endDate;
+    }
+    public function getSatellitePasses() {
+        return $this->satellitePasses;
+    }
+    public function getPlanetPasses() {
+        return $this->planetPasses;
+    }
+    public function getSunriseSunset() {
+        return $this->sunriseSunset;
+    }
+
     /**
      * create and initialize a class instance
      */
@@ -116,7 +158,11 @@ class Stars_At_Night_Manager {
     }
     
     /**
-     * Here is where all of the work is done.
+     * The WordPress framework finds and executes stars-at-night.php, which
+     * matches the plugin name.
+     * stars-at-night creates a new instance of
+     * class-stars-at-night-manager, which registers this method as the shortcode
+     * handler. Here is where all of the work is done.
      *
      * @param $atts array
      *            An array of parameter values with '=' delimiters inside each array element,
@@ -139,9 +185,11 @@ class Stars_At_Night_Manager {
             die ();
         }
         
+        // objects that will build the astronomical tables
         $this->satellitePasses = new NGC2244_Satellite_Passes ();
         $this->planetPasses = new NGC2244_Planet_Passes ();
         $this->sunriseSunset = new NGC2244_Sunrise_Sunset ();
+        $this->tableBuildHelper = new NGC2244_Table_Build_Helper ( $this );
         
         /**
          * these are the supported fields of raw user input
@@ -181,7 +229,30 @@ class Stars_At_Night_Manager {
         $iridiumTable = $this->getIridiumTable ();
         $planetTable = $this->getPlanetTable ();
         
-        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable;
+        /**
+         * Each of the above getTable methods returns 2 concatenated tables,
+         * one for full size displays (marked with class is-default), and one
+         * for small displays (marked with class is-mobile).
+         * This HTML inline styling suppresses is-mobile class elements
+         * and shows is-default class elements by default. But if the
+         * calculated max-width is 600 or less, then is-mobile
+         * is shown is-default is suppressed.
+         */
+        $mobileText = '<style>
+                .is-mobile {
+                    display: none;
+                }
+                @media (max-width: 600px) {
+                    .is-default {
+                        display: none;
+                    }
+                    .is-mobile {
+                        display: block;
+                    }
+                }
+            </style>';
+        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable .
+                 $mobileText;
     }
     
     /**
@@ -190,9 +261,8 @@ class Stars_At_Night_Manager {
      * @return table of planets for today
      */
     private function getPlanetTable() {
-        $planetTable = $this->planetPasses->get_planet_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->sunriseSunset );
-        return $planetTable;
+        return $this->tableBuildHelper->getPlanetTableMobile () .
+            $this->tableBuildHelper->getPlanetTableFull ();
     }
     
     /**

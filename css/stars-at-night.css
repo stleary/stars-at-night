@@ -48,6 +48,13 @@ table.ngc2244_stars_at_night_standardTable {
     text-align:center;
 }
 
+.ngc2244_stars_at_night_standardTable thead th {
+    font-family: verdana,arial,helvetica,sans-serif; 
+    background-color: #C0C0FF;
+    font-weight:bold;
+    text-align:center;
+}
+
 /* keep images aligned with however many rows are displayed */
 .ngc2244_stars_at_night_standardTable tbody td {
     vertical-align:middle;

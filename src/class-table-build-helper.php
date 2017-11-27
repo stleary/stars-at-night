@@ -285,7 +285,7 @@ class NGC2244_Table_Build_Helper {
         
         $rows = $this->manager->getPlanetPasses ()->getPlanetData ( 
                 $this->manager->getSunriseSunset (), $this->manager->get_sanitized_lat (), 
-                $this->manager->get_sanitized_long ());
+                $this->manager->get_sanitized_long () );
         
         $mercury = 0;
         $venus = 1;
@@ -539,7 +539,7 @@ class NGC2244_Table_Build_Helper {
         
         $rows = $this->manager->getPlanetPasses ()->getPlanetData ( 
                 $this->manager->getSunriseSunset (), $this->manager->get_sanitized_lat (), 
-                $this->manager->get_sanitized_long ());
+                $this->manager->get_sanitized_long () );
         
         $mercury = 0;
         $venus = 1;
@@ -678,9 +678,75 @@ class NGC2244_Table_Build_Helper {
         $planetTable = $planetTable . '</tbody></table></div>';
         return $planetTable;
     }
+    
+    /*
+     * Returns a string containing the HTML to render a table of
+     * ISS data inside a div, suitable for mobile displays.
+     * A leading table description is included as well.
+     * The data is obtained from an external website. This may affect rendering time.
+     *
+     * @return table HTML
+     */
     public function getISSTableMobile() {
-        return '';
+        $timezone = $this->manager->get_sanitized_timezone ();
+        $lat = $this->manager->get_sanitized_lat ();
+        $long = $this->manager->get_sanitized_long ();
+        $startDate = $this->manager->getStartDate ();
+        $endDate = $this->manager->getEndDate ();
+        
+        // convert php tz to heavens above expected format
+        $dateTime = new DateTime ();
+        // convert the php-compatible timezone name to heavens-above format
+        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
+        $heavensAboveTZ = $dateTime->format ( 'T' );
+        
+        // just take a wild guess as to the location altitude, in meters
+        $locationAlt = 300;
+        $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
+        // $url = $url . "&tz=" . $heavensAboveTZ;
+        $rows = $this->manager->getSatellitePasses ()->getSatelliteData ( $url, $startDate, 
+                $endDate );
+        
+        // table and column headers
+        $issTable = '<div class="is-mobile">';
+        if (is_null ( $rows )) {
+            // no matching days were found
+            $issTable .= '<table class="ngc2244_stars_at_night_standardTable"><thead><tr><th align="center" valign="middle" colspan="2">ISS Passes</th></tr>';
+            $issTable .= '<tr><td colspan="2">No ISS passes during this period</td></tr></table></div>';
+        } else {
+            $wkDtz = new DateTimeZone ( $this->manager->get_sanitized_timezone () );
+            $wkDT = new DateTime ( "now" );
+            foreach ( $rows as $row ) {
+                $wkTime = new DateTime ( $row->date . $wkDT->format ( " Y " ) . $row->startTime );
+                $wkTime->setTimeZone ( $wkDtz );
+                $currentDate = $wkTime->format ( "d M" );
+                $issTable .= '<table class="ngc2244_stars_at_night_standardTable"><thead><tr><th align="center" valign="middle" colspan="2">ISS Pass: ' .
+                         $currentDate . '</th></tr></thead>';
+                $issTable .= '<tr><td>Magnitude</td><td>' . $row->magnitude . '</td></tr>';
+                $wkTime = new DateTime ( $row->startTime );
+                $wkTime->setTimeZone ( $wkDtz );
+                $issTable .= '<tr><td>Start Time</td><td>' . $wkTime->format ( "H:i:s" ) .
+                         '</td></tr>';
+                $issTable .= '<tr><td>Start Altitude</td><td>' . $row->startAltitude . '</td></tr>';
+                $issTable .= '<tr><td>Start Azimuth</td><td>' . $row->startAzimuth . '</td></tr>';
+                $wkTime = new DateTime ( $row->highTime );
+                $wkTime->setTimeZone ( $wkDtz );
+                $issTable .= '<tr><td>High Time</td><td>' . $wkTime->format ( "H:i:s" ) . '</td></tr>';
+                $issTable .= '<tr><td>High Altitude</td><td>' . $row->highAltitude . '</td></tr>';
+                $issTable .= '<tr><td>High Azimuth</td><td>' . $row->highAzimuth . '</td></tr>';
+                $wkTime = new DateTime ( $row->endTime );
+                $wkTime->setTimeZone ( $wkDtz );
+                $issTable .= '<tr><td>End Time</td><td>' . $wkTime->format ( "H:i:s" ) . '</td></tr>';
+                $issTable .= '<tr><td>End Altitude</td><td>' . $row->endAltitude . '</td></tr>';
+                $issTable .= '<tr><td>End Azimuth</td><td>' . $row->endAzimuth . '</td></tr>';
+                $issTable .= '</table>';
+            }
+            $issTable .= '</div>';
+        }
+        return $issTable;
     }
+    
     /**
      * Returns a string containing the HTML to render a table of
      * ISS pass data inside a div.
@@ -691,18 +757,25 @@ class NGC2244_Table_Build_Helper {
      * @return table HTML
      */
     public function getISSTableFull() {
+        $timezone = $this->manager->get_sanitized_timezone ();
+        $lat = $this->manager->get_sanitized_lat ();
+        $long = $this->manager->get_sanitized_long ();
+        $startDate = $this->manager->getStartDate ();
+        $endDate = $this->manager->getEndDate ();
+        
         // convert php tz to heavens above expected format
         $dateTime = new DateTime ();
         // convert the php-compatible timezone name to heavens-above format
-        $dateTime->setTimeZone ( new DateTimeZone ( $this->manager->get_sanitized_timezone () ) );
+        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
         $heavensAboveTZ = $dateTime->format ( 'T' );
         
+        // just take a wild guess as to the location altitude, in meters
+        $locationAlt = 300;
+        $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         // $url = $url . "&tz=" . $heavensAboveTZ;
-        $rows = $this->manager->getSatellitePasses ()->getSatelliteData ( 'PassSummary.aspx', 
-                'satId=25544&', $this->manager->get_sanitized_lat (), 
-                $this->manager->get_sanitized_long (), $this->manager->getStartDate (), 
-                $this->manager->getEndDate (), $this->manager->get_sanitized_refresh (), 
-                $this->manager->get_sanitized_suppressDegrees () );
+        $rows = $this->manager->getSatellitePasses ()->getSatelliteData ( $url, $startDate, 
+                $endDate );
         // table and column headers
         $imageFileIssSmall = plugin_dir_url ( __FILE__ ) . "../images/iss-small.jpg";
         $imageFileIssLarge = plugin_dir_url ( __FILE__ ) . "../images/iss-large.jpg";
@@ -735,20 +808,17 @@ class NGC2244_Table_Build_Helper {
                 $wkTime = new DateTime ( $row->startTime );
                 $wkTime->setTimeZone ( $wkDtz );
                 $issTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
-                $issTable .= '<td>' . $this->getDegreeMarkup ( $row->startAltitude, 
-                        $suppressDegrees ) . '</td>';
+                $issTable .= '<td>' . $row->startAltitude . '</td>';
                 $issTable .= '<td>' . $row->startAzimuth . '</td>';
                 $wkTime = new DateTime ( $row->highTime );
                 $wkTime->setTimeZone ( $wkDtz );
                 $issTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
-                $issTable .= '<td>' . $this->getDegreeMarkup ( $row->highAltitude, 
-                        $suppressDegrees ) . '</td>';
+                $issTable .= '<td>' . $row->highAltitude . '</td>';
                 $issTable .= '<td>' . $row->highAzimuth . '</td>';
                 $wkTime = new DateTime ( $row->endTime );
                 $wkTime->setTimeZone ( $wkDtz );
                 $issTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
-                $issTable .= '<td>' . $this->getDegreeMarkup ( $row->endAltitude, $suppressDegrees ) .
-                         '</td>';
+                $issTable .= '<td>' . $row->endAltitude . '</td>';
                 $issTable .= '<td>' . $row->endAzimuth . '</td></tr>';
             }
         } else {
@@ -789,7 +859,7 @@ class NGC2244_Table_Build_Helper {
                 $this->manager->get_sanitized_refresh (), 
                 $this->manager->get_sanitized_suppressDegrees () );
         $daysStr = "";
-        if ($this->manager->get_sanitized_days() > 7) {
+        if ($this->manager->get_sanitized_days () > 7) {
             $daysStr = " for the next 7 days";
         }
         // table and column headers

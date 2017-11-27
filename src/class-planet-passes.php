@@ -48,11 +48,9 @@ class NGC2244_Planet_Passes {
      *            local latitude
      * @param int $long
      *            local longitude
-     * @param $refresh boolean
-     *            if true, get from server instead of cache
      * @return array of matching rows, or null if no rows are forthcoming
      */
-    public function getPlanetData($sunriseSunset, $lat, $long, $refresh) {
+    public function getPlanetData($sunriseSunset, $lat, $long) {
         // just take a wild guess as to the location altitude, in meters
         $locationAlt = 300;
         $url = "http://www.heavens-above.com/PlanetSummary.aspx?lat=" . $lat;
@@ -72,7 +70,7 @@ class NGC2244_Planet_Passes {
         // error_log ( "delete cache for " . $url );
         // delete_transient ( $url );
         error_log ( "getting transient for " . $url );
-        if (! $refresh && false !== ($data = get_transient ( $url ))) {
+        if (false !== ($data = get_transient ( $url ))) {
             if (is_array ( $data )) {
                 /**
                  * Must check the date range before filtering by rows, in case

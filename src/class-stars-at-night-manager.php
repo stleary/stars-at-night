@@ -74,12 +74,6 @@ class Stars_At_Night_Manager {
     public function get_sanitized_graphical() {
         return $this->sanitized_graphical;
     }
-    public function get_sanitized_refresh() {
-        return $this->sanitized_refresh;
-    }
-    public function get_sanitized_suppressDegrees() {
-        return $this->sanitized_suppressDegrees;
-    }
     public function getStartDate() {
         return $this->startDate;
     }
@@ -271,14 +265,8 @@ class Stars_At_Night_Manager {
      * @return table of iridium flares for the request time period, starting today
      */
     private function getIridiumTable() {
-        $iridiumDays = (($this->sanitized_days > 7) ? 7 : $this->sanitized_days);
-        $iridiumEndDate = new DateTime ( $this->startDate->format ( 'm/d/Y' ) );
-        $iridiumEndDate->add ( new DateInterval ( 'P' . ($iridiumDays - 1) . 'D' ) );
-        // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
-        $iridiumTable = $this->satellitePasses->get_iridium_table ( $this->sanitized_lat, 
-                $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $iridiumEndDate, 
-                $this->sanitized_days );
-        return $iridiumTable;
+        return $this->tableBuildHelper->getIridiumTableMobile () .
+                 $this->tableBuildHelper->getIridiumTableFull ();
     }
     
     /**

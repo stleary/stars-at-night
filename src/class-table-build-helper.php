@@ -693,13 +693,6 @@ class NGC2244_Table_Build_Helper {
         $long = $this->manager->get_sanitized_long ();
         $startDate = $this->manager->getStartDate ();
         $endDate = $this->manager->getEndDate ();
-        
-        // convert php tz to heavens above expected format
-        $dateTime = new DateTime ();
-        // convert the php-compatible timezone name to heavens-above format
-        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
-        $heavensAboveTZ = $dateTime->format ( 'T' );
-        
         // just take a wild guess as to the location altitude, in meters
         $locationAlt = 300;
         $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
@@ -715,6 +708,7 @@ class NGC2244_Table_Build_Helper {
             $issTable .= '<table class="ngc2244_stars_at_night_standardTable"><thead><tr><th align="center" valign="middle" colspan="2">ISS Passes</th></tr>';
             $issTable .= '<tr><td colspan="2">No ISS passes during this period</td></tr></table></div>';
         } else {
+            $imageFileIssSmall = plugin_dir_url ( __FILE__ ) . "../images/iss-small.jpg";
             $wkDtz = new DateTimeZone ( $this->manager->get_sanitized_timezone () );
             $wkDT = new DateTime ( "now" );
             foreach ( $rows as $row ) {
@@ -722,7 +716,10 @@ class NGC2244_Table_Build_Helper {
                 $wkTime->setTimeZone ( $wkDtz );
                 $currentDate = $wkTime->format ( "d M" );
                 $issTable .= '<table class="ngc2244_stars_at_night_standardTable"><thead><tr><th align="center" valign="middle" colspan="2">ISS Pass: ' .
-                         $currentDate . '</th></tr></thead>';
+                         $currentDate .
+                         '</tr><tr><td align="center" valign="middle" colspan="2"><img class="ngc2244_stars_at_night_satellite" src="' .
+                         $imageFileIssSmall .
+                         '" alt="ISS image. Credit: NASA" /></a></td></tr></th></thead>';
                 $issTable .= '<tr><td>Magnitude</td><td>' . $row->magnitude . '</td></tr>';
                 $wkTime = new DateTime ( $row->startTime );
                 $wkTime->setTimeZone ( $wkDtz );
@@ -732,7 +729,8 @@ class NGC2244_Table_Build_Helper {
                 $issTable .= '<tr><td>Start Azimuth</td><td>' . $row->startAzimuth . '</td></tr>';
                 $wkTime = new DateTime ( $row->highTime );
                 $wkTime->setTimeZone ( $wkDtz );
-                $issTable .= '<tr><td>High Time</td><td>' . $wkTime->format ( "H:i:s" ) . '</td></tr>';
+                $issTable .= '<tr><td>High Time</td><td>' . $wkTime->format ( "H:i:s" ) .
+                         '</td></tr>';
                 $issTable .= '<tr><td>High Altitude</td><td>' . $row->highAltitude . '</td></tr>';
                 $issTable .= '<tr><td>High Azimuth</td><td>' . $row->highAzimuth . '</td></tr>';
                 $wkTime = new DateTime ( $row->endTime );
@@ -762,12 +760,6 @@ class NGC2244_Table_Build_Helper {
         $long = $this->manager->get_sanitized_long ();
         $startDate = $this->manager->getStartDate ();
         $endDate = $this->manager->getEndDate ();
-        
-        // convert php tz to heavens above expected format
-        $dateTime = new DateTime ();
-        // convert the php-compatible timezone name to heavens-above format
-        $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
-        $heavensAboveTZ = $dateTime->format ( 'T' );
         
         // just take a wild guess as to the location altitude, in meters
         $locationAlt = 300;
@@ -829,7 +821,66 @@ class NGC2244_Table_Build_Helper {
         return $issTable;
     }
     public function getIridiumTableMobile() {
-        return '';
+        $iridiumDays = (($this->manager->get_sanitized_days () > 7) ? 7 : $this->manager->get_sanitized_days ());
+        $iridiumEndDate = new DateTime ( $this->manager->getStartDate ()->format ( 'm/d/Y' ) );
+        $iridiumEndDate->add ( new DateInterval ( 'P' . ($iridiumDays - 1) . 'D' ) );
+        // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
+        $daysStr = "";
+        if ($this->manager->get_sanitized_days () > 7) {
+            $daysStr = " for the next 7 days";
+        }
+
+        $timezone = $this->manager->get_sanitized_timezone ();
+        $lat = $this->manager->get_sanitized_lat ();
+        $long = $this->manager->get_sanitized_long ();
+        $startDate = $this->manager->getStartDate ();
+        $endDate = $iridiumEndDate;
+        // just take a wild guess as to the location altitude, in meters
+        $locationAlt = 300;
+        $url = "http://www.heavens-above.com/IridiumFlares.aspx?lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
+        $rows = $this->manager->getSatellitePasses ()->getSatelliteData ( $url, $startDate, $endDate );
+
+        $iridiumTable = '<div class="is-mobile">';
+        $imgFile = plugin_dir_url ( __FILE__ ) . '../images/iridium-flare.jpg';
+        $wkDtz = new DateTimeZone ( $this->manager->get_sanitized_timezone () );
+        $wkDT = new DateTime ( "now" );
+        if (is_null ( $rows )) {
+            // no matching days were found
+            $iridiumTable .= '<table class="ngc2244_stars_at_night_standardTable"><thead><tr>' .
+                     '<th align="center" valign="middle" colspan="2">Iridium Flares</th></tr><tr>' .
+                     '<th align="center" valign="middle" colspan="2"><img class="ngc2244_stars_at_night_satellite" src="' .
+                     $imgFile . '"</th></tr></thead>';
+            $iridiumTable .= '<tbody><tr><td colspan="2">No Iridium flares during this period</td></tr></tbody>';
+        } else {
+            $imageFileIssSmall = plugin_dir_url ( __FILE__ ) . "../images/iss-small.jpg";
+            $wkDtz = new DateTimeZone ( $this->manager->get_sanitized_timezone () );
+            $wkDT = new DateTime ( "now" );
+            foreach ( $rows as $row ) {
+                // this could be inaccurate at the new year
+                $wkTime = new DateTime ( $row->date . $wkDT->format ( " Y " ) . $row->time );
+                $wkTime->setTimeZone ( $wkDtz );
+                $dateTimeStr = $wkTime->format ( "d M" );
+                $wkTime = new DateTime ( $row->time );
+                $wkTime->setTimeZone ( $wkDtz );
+                $dateTimeStr .= ' at ' . $wkTime->format ( "H:i:s" );
+                
+                $iridiumTable .= '<table class="ngc2244_stars_at_night_standardTable"><thead><tr>' .
+                         '<th align="center" valign="middle" colspan="2">Iridium Flare: ' . $dateTimeStr .
+                         '</th></tr><tr>' .
+                         '<th align="center" valign="middle" colspan="2"><img class="ngc2244_stars_at_night_satellite" src="' .
+                         $imgFile . '"</th></tr></thead><tbody>';
+
+                $iridiumTable .= '<tr><td>' . 'Magnitude' . '</td><td>' . $row->magnitude .
+                         '</td></tr>';
+                $iridiumTable .= '<tr><td> Altitude</td><td>' . $row->altitude . '</td></tr>';
+                $iridiumTable .= '<tr><td>Azimuth</td><td>' . $row->azimuth . '</td></tr>';
+                $iridiumTable .= '<tr><td>Satellite</td><td>' . $row->satellite . '</td></tr>';
+            }
+            $iridiumTable .= '</tbody>';
+        }
+        $iridiumTable = $iridiumTable . '</table></div>';
+        return $iridiumTable;
     }
     
     /**
@@ -846,22 +897,21 @@ class NGC2244_Table_Build_Helper {
         $iridiumEndDate = new DateTime ( $this->manager->getStartDate ()->format ( 'm/d/Y' ) );
         $iridiumEndDate->add ( new DateInterval ( 'P' . ($iridiumDays - 1) . 'D' ) );
         // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
-        
-        // convert php tz to heavens above expected format
-        $dateTime = new DateTime ();
-        // convert the php-compatible timezone name to heavens-above format
-        $dateTime->setTimeZone ( new DateTimeZone ( $this->manager->get_sanitized_timezone () ) );
-        $heavensAboveTZ = $dateTime->format ( 'T' );
-        
-        $rows = $this->manager->getSatellitePasses ()->getSatelliteData ( 'IridiumFlares.aspx', '', 
-                $this->manager->get_sanitized_lat (), $this->manager->get_sanitized_long (), 
-                $this->manager->getStartDate (), $this->manager->getEndDate (), 
-                $this->manager->get_sanitized_refresh (), 
-                $this->manager->get_sanitized_suppressDegrees () );
         $daysStr = "";
         if ($this->manager->get_sanitized_days () > 7) {
             $daysStr = " for the next 7 days";
         }
+        
+        $timezone = $this->manager->get_sanitized_timezone ();
+        $lat = $this->manager->get_sanitized_lat ();
+        $long = $this->manager->get_sanitized_long ();
+        $startDate = $this->manager->getStartDate ();
+        $endDate = $iridiumEndDate;
+        // just take a wild guess as to the location altitude, in meters
+        $locationAlt = 300;
+        $url = "http://www.heavens-above.com/IridiumFlares.aspx?lat=" . $lat;
+        $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
+        $rows = $this->manager->getSatellitePasses ()->getSatelliteData ( $url, $startDate, $endDate );
         // table and column headers
         $iridiumTable = '<div class="is-default"><table class="ngc2244_stars_at_night_standardTable"><thead>';
         $iridiumTable .= '<tr><td align="center" valign="middle" colspan="6">Visible Iridium Flares' .
@@ -887,10 +937,8 @@ class NGC2244_Table_Build_Helper {
                 $wkTime->setTimeZone ( $wkDtz );
                 $iridiumTable .= '<td>' . $wkTime->format ( "H:i:s" ) . '</td>';
                 $iridiumTable .= '<td>' . $row->magnitude . '</td>';
-                $iridiumTable .= '<td>' . $this->getDegreeMarkup ( $row->altitude, 
-                        $suppressDegrees ) . '</td>';
-                $iridiumTable .= '<td>' . $this->getDegreeMarkup ( $row->azimuth, $suppressDegrees ) .
-                         '</td>';
+                $iridiumTable .= '<td>' . $row->altitude . '</td>';
+                $iridiumTable .= '<td>' . $row->azimuth . '</td>';
                 $iridiumTable .= '<td>' . $row->satellite . '</td></tr>';
             }
         } else {

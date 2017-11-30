@@ -107,8 +107,6 @@ class NGC2244_Planet_Passes {
                 error_log ( 'Unexpected transient item, flushing the cache' );
                 delete_transient ( $url );
             }
-        } else {
-            error_log ( 'refresh [' . $refresh . '] cache not used, get from the server' );
         }
         /**
          * If we got this far, there was no match in the transient cache.

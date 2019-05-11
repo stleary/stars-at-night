@@ -31,8 +31,8 @@ Preferred method:
 * https://wordpress.org/plugins/stars-at-night
 
 Manual installation is also supported:
-*       Create a "stars-at-night" directory in your WordPress installation, under wp-content/plugins
-*       cd to the stars-at-night directory
-*       git clone https://github.com/stleary/stars-at-night.git .
-*           (enter your GitHub username and password when prompted)
+* Create a "stars-at-night" directory in your WordPress installation, under wp-content/plugins
+* cd to the stars-at-night directory
+* git clone https://github.com/stleary/stars-at-night.git .
+* (enter your GitHub username and password if prompted)
  

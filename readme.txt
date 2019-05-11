@@ -89,7 +89,7 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 = 1.7.1 =
 
-Fix version, tag
+Fix version, tag. No code changes.
 
 = 1.7 =
 

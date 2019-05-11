@@ -87,6 +87,10 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Changelog ==
 
+= 1.7 =
+
+Removed planetary visibility row - it was too buggy
+
 = 1.6 =
 
 Fix planet and satellite requests to heavens-above.com, since the website does not accept daylight savings timezones.

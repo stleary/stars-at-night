@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 5.2
-Stable tag: 1.7
+Stable tag: 1.7.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -86,6 +86,10 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 4. Iridium flares table 
 
 == Changelog ==
+
+= 1.7.1 =
+
+Fix version, tag
 
 = 1.7 =
 

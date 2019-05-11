@@ -4,7 +4,7 @@ Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
 Tested up to: 4.7
-Stable tag: 1.6
+Stable tag: 1.7
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 

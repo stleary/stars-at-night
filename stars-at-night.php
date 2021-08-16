@@ -4,7 +4,7 @@
  * Plugin URI:        https://github.com/stleary/stars-at-night
  * Description:       A WordPress plugin to display astronomical information
  *                    for a specified location and date.
- * Version:           1.7.2
+ * Version:           1.8
  * Author:            Sean Leary
  * Author URI:        https://github.com/stleary/stars-at-night
  */

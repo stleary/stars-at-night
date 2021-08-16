@@ -177,11 +177,11 @@ class Stars_At_Night_Manager {
         // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
         // get the tables
         $sunAndMoonTable = $this->getSunAndMoonTable ();
-        $issTable = $this->getISSTable ();
-        $iridiumTable = $this->getIridiumTable ();
+        // $issTable = $this->getISSTable ();
+        // $iridiumTable = $this->getIridiumTable ();
         $planetTable = $this->getPlanetTable ();
         
-        return $sunAndMoonTable . "<p>" . $planetTable . "<p>" . $issTable . "<p>" . $iridiumTable;
+        return $sunAndMoonTable . "<p>" . $planetTable . "<p>"; // . $issTable . "<p>" . $iridiumTable;
     }
     
     /**

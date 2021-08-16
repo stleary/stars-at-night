@@ -1,9 +1,9 @@
 # The Stars At Night
-The Stars at Night is a WordPress plugin. It is intended for use by amateur astronomers and others interested in tracking astronomical data for their location. For now, that includes tables for the Moon, planets, ISS, and Iridium flares visible from your local area. 
+The Stars at Night is a WordPress plugin. It is intended for use by amateur astronomers and others interested in tracking astronomical data for their location. For now, that includes tables for the Moon and planets visible from your local area. 
 
-The plugin is activated by the shortcode “stars-at-night”. Here is an example:
+The plugin is activated by the shortcode \[stars-at-night\]. Here is an example:
 
-\[stars-at-night name=”COE Observing Field” lat=30.891 long=-97.4265 timezone=America/Chicago days=10\]
+\[stars-at-night name=\"COE Observing Field\" lat=30.891 long=-97.4265 timezone=America/Chicago days=10\]
 
 * **name** : (location name: can be anything)
 * **lat** : latitude. North of the equator is positive, South is negative. 

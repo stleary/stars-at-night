@@ -3,8 +3,9 @@ Contributors: stleary
 Donate link: N/A
 Tags: astronomy
 Requires at least: 4.6
-Tested up to: 5.2
-Stable tag: 1.7.1
+Requires PHP: 7.0
+Tested up to: 5.8
+Stable tag: 1.8
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -86,9 +87,17 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Changelog ==
 
+= 1.8 =
+
+Use correct version number, fix readme
+
+= 1.7.3 =
+
+Fix tested version and tag (not released)
+
 = 1.7.2 =
 
-Disable ISS passes (heavens-above API has changed), remove Iridium flares display.
+Disable ISS passes (heavens-above API has changed), remove Iridium flares display. (not released)
 
 = 1.7.1 =
 

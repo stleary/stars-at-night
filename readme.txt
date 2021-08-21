@@ -87,6 +87,10 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 == Changelog ==
 
+= 1.8.1 =
+
+update change num
+
 = 1.8 =
 
 Use correct version number, fix readme

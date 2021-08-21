@@ -5,7 +5,7 @@ Tags: astronomy
 Requires at least: 4.6
 Requires PHP: 7.0
 Tested up to: 5.8
-Stable tag: 1.8
+Stable tag: 1.8.1
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 

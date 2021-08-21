@@ -7,7 +7,7 @@
  * Requires at least: 4.6
  * Requires PHP:      7.0
  * Tested up to:      5.8
- * Version:           1.8
+ * Version:           1.8.1
  * Author:            Sean Leary
  * Author URI:        https://github.com/stleary/stars-at-night
  */

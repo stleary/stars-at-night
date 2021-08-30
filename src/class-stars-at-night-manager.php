@@ -103,8 +103,10 @@ class Stars_At_Night_Manager {
      * WordPress shortcodes for this plugin
      */
     public function register_shortcodes() {
-        add_shortcode ( 'stars-at-night', array ($this,'run_stars_at_night' 
-        ) );
+        add_shortcode ( 'stars-at-night',          array ($this,'run_stars_at_night') );
+        add_shortcode ( 'stars-at-night-sun-moon', array ($this,'run_stars_at_night') );
+        add_shortcode ( 'stars-at-night-planets',  array ($this,'run_stars_at_night') );
+        add_shortcode ( 'stars-at-night-iss',      array ($this,'run_stars_at_night') );
     }
     
     /**
@@ -133,8 +135,14 @@ class Stars_At_Night_Manager {
      *            
      *            graphical=not used at present. Will cause an image of the Moon phase to be
      *            displayed.
+     *
+     * @param content String
+     *            The shortcode content or null.
+     * @param shortcode_tag String
+     *            The shortcode tag.
+     *
      */
-    public function run_stars_at_night($atts) {
+    public function run_stars_at_night($atts, $content, $shortcode_tag) {
         if (! defined ( 'WPINC' )) {
             die ();
         }
@@ -174,14 +182,29 @@ class Stars_At_Night_Manager {
         // error_log ( 'startdate ' . $this->startDate->format ( 'm/d/Y' ) );
         $this->endDate = new DateTime ( $today->format ( 'm/d/Y' ) );
         $this->endDate->add ( new DateInterval ( 'P' . ($this->sanitized_days - 1) . 'D' ) );
-        // error_log ( 'enddate ' . $this->endDate->format ( 'm/d/Y' ) );
-        // get the tables
-        $sunAndMoonTable = $this->getSunAndMoonTable ();
-        // $issTable = $this->getISSTable ();
-        // $iridiumTable = $this->getIridiumTable ();
-        $planetTable = $this->getPlanetTable ();
-        
-        return $sunAndMoonTable . "<p>" . $planetTable . "<p>"; // . $issTable . "<p>" . $iridiumTable;
+
+        // Create an output string.
+        $output = '';
+
+        // Populate the output depending on the shortcode tag.
+        switch ($shortcode_tag) {
+          case 'stars-at-night-sun-moon':
+            $output .= '<p>' . $this->getSunAndMoonTable ();
+            break;
+          case 'stars-at-night-planets':
+            $output .= '<p>' . $this->getPlanetTable ();
+            break;
+          case 'stars-at-night-iss':
+            $output .= '<p>'.  $this->getISSTable ();
+            break;
+          default:
+            $output .= '<p>' . $this->getSunAndMoonTable ();
+            $output .= '<p>' . $this->getPlanetTable ();
+            $output .= '<p>'.  $this->getISSTable ();
+            break;
+        }
+
+        return $output;
     }
     
     /**

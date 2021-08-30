@@ -22,18 +22,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 /**
  * Original author: Samir Shah (http://rayofsolaris.net)
  * https://github.com/solarissmoke/php-moon-phase
  * Original license:
  * Copyright 2012 Samir Shah, < samir [at] rayofsolaris.net >, http://rayofsolaris.net
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
  * files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
- * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the 
+ * modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the
  * Software is furnished to do so, subject to the following conditions:
  * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- * 
- * Other comments: 
+ *
+ * Other comments:
  * Adapted for PHP from Moontool for Windows (http://www.fourmilab.ch/moontoolw/)
  * License: MIT
  **/

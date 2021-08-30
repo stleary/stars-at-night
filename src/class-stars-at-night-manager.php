@@ -40,7 +40,7 @@ class Stars_At_Night_Manager {
     protected $loader;
     protected $plugin_name;
     protected $version;
-    
+
     // sanitized user input
     private $sanitized_name;
     private $sanitized_lat;
@@ -54,7 +54,7 @@ class Stars_At_Night_Manager {
     private $satellitePasses;
     private $planetPasses;
     private $sunriseSunset;
-    
+
     /**
      * create and initialize a class instance
      */
@@ -62,19 +62,19 @@ class Stars_At_Night_Manager {
         if (defined ( 'WPINC' )) {
             $this->plugin_name = 'stars-at-night';
             $this->version = '1.0';
-            
+
             $this->define_admin_hooks ();
             $this->define_public_hooks ();
         }
     }
-    
+
     /**
      * This class does perform WordPress Admin functionality
      */
     private function define_admin_hooks() {
         // Any admin hooks...
     }
-    
+
     /**
      * These are how the plugin interacts with WordPress
      */
@@ -84,21 +84,21 @@ class Stars_At_Night_Manager {
         add_action ( 'init', array ($this,'enqueuestyles' 
         ) );
     }
-    
+
     /**
      * This is how the plugin is known to WordPress
      */
     public function get_plugin_name() {
         return $this->plugin_name;
     }
-    
+
     /**
      * Report plugin version to WordPress
      */
     public function get_version() {
         return $this->version;
     }
-    
+
     /**
      * WordPress shortcodes for this plugin
      */
@@ -106,7 +106,7 @@ class Stars_At_Night_Manager {
         add_shortcode ( 'stars-at-night', array ($this,'run_stars_at_night' 
         ) );
     }
-    
+
     /**
      * CSS for the plugin
      */
@@ -114,7 +114,7 @@ class Stars_At_Night_Manager {
         wp_enqueue_style ( 'ngc2244_stars_at_night_css', 
                 plugins_url ( '../css/stars-at-night.css', __FILE__ ), array (), $this->version );
     }
-    
+
     /**
      * Here is where all of the work is done.
      *
@@ -130,7 +130,7 @@ class Stars_At_Night_Manager {
      *            timezone: timezone name, must be value recognized by php.
      *            See http://php.net/manual/en/timezones.php
      *            days: number of days to report, starting from today
-     *            
+     *
      *            graphical=not used at present. Will cause an image of the Moon phase to be
      *            displayed.
      */
@@ -138,11 +138,11 @@ class Stars_At_Night_Manager {
         if (! defined ( 'WPINC' )) {
             die ();
         }
-        
+
         $this->satellitePasses = new NGC2244_Satellite_Passes ();
         $this->planetPasses = new NGC2244_Planet_Passes ();
         $this->sunriseSunset = new NGC2244_Sunrise_Sunset ();
-        
+
         /**
          * these are the supported fields of raw user input
          */
@@ -152,13 +152,13 @@ class Stars_At_Night_Manager {
         $timezone = '';
         $days = '';
         $graphical = '';
-        
+
         extract ( 
                 shortcode_atts ( 
                         array ('name' => '','lat' => '','long' => '','timezone' => '','days' => '3',
                                 'graphical' => '' 
                         ), $atts, 'stars-at-night' ), EXTR_IF_EXISTS );
-        
+
         /**
          * Make sure the incoming data is valid.
          * If not, errors will be reported in the return string
@@ -183,7 +183,7 @@ class Stars_At_Night_Manager {
         
         return $sunAndMoonTable . "<p>" . $planetTable . "<p>"; // . $issTable . "<p>" . $iridiumTable;
     }
-    
+
     /**
      * Planettable is just for today
      *
@@ -194,7 +194,7 @@ class Stars_At_Night_Manager {
                 $this->sanitized_long, $this->sanitized_timezone, $this->sunriseSunset );
         return $planetTable;
     }
-    
+
     /**
      * Iridium table can only look ahead 7 days, so calculate end date to at most 7 days, but pass
      * in the actual days in case we need to call this out in the table header.
@@ -211,7 +211,7 @@ class Stars_At_Night_Manager {
                 $this->sanitized_days );
         return $iridiumTable;
     }
-    
+
     /**
      * ISS table can look ahead 10 days, same as the max days user can request, so no modification
      * of the end date is needed
@@ -223,7 +223,7 @@ class Stars_At_Night_Manager {
                 $this->sanitized_long, $this->sanitized_timezone, $this->startDate, $this->endDate );
         return $issTable;
     }
-    
+
     /**
      * Returns a string containing the HTML to render a table of
      * night sky data inside a div.
@@ -247,7 +247,7 @@ class Stars_At_Night_Manager {
                 19 => 17,20 => 18,21 => 19,22 => 20,23 => 21,24 => 22,25 => 23,26 => 24,27 => 25,
                 28 => 26,29 => 27,30 => 28 
         );
-        
+
         /**
          * Get the Moon phase.
          */
@@ -257,7 +257,7 @@ class Stars_At_Night_Manager {
             $moonPhase = new NGC2244_Moon_Phase ( $xdate->getTimestamp () );
             $xdate->add ( new DateInterval ( 'P3D' ) );
         }
-        
+
         $sunMoonTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
         if ($this->sanitized_days == 1) {
             $days = " day";
@@ -277,7 +277,7 @@ class Stars_At_Night_Manager {
         $sunMoonTable .= '<td align="center" rowspan="2" valign="middle">Moonset</td>';
         $sunMoonTable .= '<td aligh="center" rowspan="2" valign="middle">Moon Phase</td></tr>';
         $sunMoonTable .= '<tr><td>Twilight</td><td>Twilight</td></tr></thead>';
-        
+
         $dayCount = 0;
         for($date = new DateTime ( $this->startDate->format ( 'm/d/Y' ) ); $date <= $this->endDate; $date->add ( 
                 new DateInterval ( 'P1D' ) )) {
@@ -286,16 +286,16 @@ class Stars_At_Night_Manager {
             $remote_dt = new DateTime ( $date->format ( 'm/d/Y' ), $remote_dtz );
             $sunTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 3600;
             $moonTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 60;
-            
+
             // get the Sun times
             $this->sunriseSunset->calculate_sun_times ( $this->sanitized_lat, 
                     $this->sanitized_long, $sunTzOffset, $date );
-            
+
             // get the Moon times
             $moonriseMoonset = new NGC2244_Moonrise_Moonset ();
             $moonriseMoonset->calculate_moon_times ( $this->sanitized_lat, $this->sanitized_long, 
                     $moonTzOffset, $this->sanitized_timezone, $date );
-            
+
             // convert date for table rendering
             $dateStr = $date->format ( 'd M Y' );
             // get the tables
@@ -333,10 +333,10 @@ class Stars_At_Night_Manager {
         // $phaseArray[$roundAge] );
         // $date->add ( new DateInterval ( 'P1D' ) );
         // }
-        
+
         return $sunMoonTable;
     }
-    
+
     /**
      * Validates the parameters sent by the user.
      *
@@ -364,7 +364,7 @@ class Stars_At_Night_Manager {
         }
         $filterFlags = FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH | FILTER_FLAG_ENCODE_AMP;
         $this->sanitized_name = filter_var ( $name, FILTER_SANITIZE_STRING, $filterFlags );
-        
+
         /**
          * lat must be valid fractional decimal [-90:90]
          */
@@ -375,7 +375,7 @@ class Stars_At_Night_Manager {
         } else {
             $this->sanitized_lat = $lat;
         }
-        
+
         /**
          * long must be valid fractional decimal [-180:180]
          */
@@ -386,7 +386,7 @@ class Stars_At_Night_Manager {
         } else {
             $this->sanitized_long = $long;
         }
-        
+
         /**
          * timezone must be recognized by php
          */
@@ -395,7 +395,7 @@ class Stars_At_Night_Manager {
         } else {
             $this->sanitized_timezone = $timezone;
         }
-        
+
         /**
          * days must be valid int [1:10].
          * Total of date+days must not exceed 10.
@@ -407,9 +407,9 @@ class Stars_At_Night_Manager {
         } else {
             $this->sanitized_days = $days;
         }
-        
+
         // for now, graphical is ignored
-        
+
         if (! empty ( $result )) {
             $result = "Errors: " . $result;
         }

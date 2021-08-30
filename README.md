@@ -11,6 +11,12 @@ The plugin is activated by the shortcode \[stars-at-night\]. Here is an example:
 * **timezone** : A recognizable timezeone. For a list of valid values, see http://php.net/manual/en/timezones.php. 
 * **days** : The number of days to predict. Must be a value from 1-10. Default is 3 days.
 
+You can also display the individual data tables via more specific shortcodes:
+
+\[stars-at-night-sun-moon name=\"Mount Kilimanjaro\" lat=-2.55 long=37.55 timezone=Africa/EAT\]
+\[stars-at-night-planets name=\"Ushuaia\" lat=-54.8 long=-68.33 timezone=America/Argentina/Ushuaia\]
+\[stars-at-night-iss name=\"Mount Burnett Observatory\" lat=-37.9 long=145.4 timezone=Australia/Melbourne days=7\]
+
 # Credits
 
 * Lunar images by Dan Morgan (dan@danmorgan.org). Used with permission. http://DanMorgan.org.

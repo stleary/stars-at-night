@@ -61,7 +61,7 @@ class NGC2244_Moonrise_Moonset {
     public function getMoonSet() {
         return $this->moonSet;
     }
-    
+
     /**
      * Calculates the moon rise/set for a given location and day of year.
      * I added new param tzOffset which is the timezone offset in minutes for the specified
@@ -92,16 +92,14 @@ class NGC2244_Moonrise_Moonset {
         $this->month = $remote_dt->format ( 'm' );
         $this->day = $remote_dt->format ( 'd' );
         $today = $remote_dt->format ( 'D m/d/Y' );
-        
         $moonData = $this->getMoonTimes ( $lat, $lon );
-        
         $moonRiseData = $moonData->moonrise;
         $moonSetData = $moonData->moonset;
         $dtmr = new DateTime ( "@$moonRiseData" );
         $this->moonRise = $dtmr->format ( 'H:i' );
         $dtms = new DateTime ( "@$moonSetData" );
         $this->moonSet = $dtms->format ( 'H:i' );
-        
+
         // some days might not have a moonRise or moonSet
         if ($this->moonRise == "00:00") {
             $this->moonRise = "None";
@@ -110,7 +108,7 @@ class NGC2244_Moonrise_Moonset {
             $this->moonSet = "None";
         }
     }
-    
+
     /**
      * This is the original code from dxprog.com.
      * Only the timezone offset calculation has been changed.
@@ -123,7 +121,7 @@ class NGC2244_Moonrise_Moonset {
      */
     private function getMoonTimes($lat, $lon) {
         $utrise = $utset = 0;
-        
+
         // convert to fractional hours
         $timezone = $this->moonTzOffset / 60;
         $date = self::modifiedJulianDate ( $this->month, $this->day, $this->year );
@@ -132,13 +130,13 @@ class NGC2244_Moonrise_Moonset {
         $sinho = 0.0023271056;
         $sglat = sin ( $latRad );
         $cglat = cos ( $latRad );
-        
+
         $rise = false;
         $set = false;
         $above = false;
         $hour = 1;
         $ym = self::sinAlt ( $date, $hour - 1, $lon, $cglat, $sglat ) - $sinho;
-        
+
         $above = $ym > 0;
         while ( $hour < 25 && (false == $set || false == $rise) ) {
             
@@ -187,7 +185,7 @@ class NGC2244_Moonrise_Moonset {
                 $this->year );
         return $retVal;
     }
-    
+
     /**
      * finds the parabola throuh the three points (-1,ym), (0,yz), (1, yp)
      * and returns the coordinates of the max/min (if any) xe, ye
@@ -214,11 +212,10 @@ class NGC2244_Moonrise_Moonset {
             $nz = abs ( $z2 ) < 1 ? $nz + 1 : $nz;
             $z1 = $z1 < - 1 ? $z2 : $z1;
         }
-        
-        return array ($nz,$z1,$z2,$xe,$ye 
-        );
+        return array ($nz,$z1,$z2,$xe,$ye);
     }
-    
+
+
     /**
      * this rather mickey mouse function takes a lot of
      * arguments and then returns the sine of the altitude of the moon
@@ -227,15 +224,14 @@ class NGC2244_Moonrise_Moonset {
         $mjd += $hour / 24;
         $t = ($mjd - 51544.5) / 36525;
         $objpos = self::minimoon ( $t );
-        
+
         $ra = $objpos [1];
         $dec = $objpos [0];
         $decRad = deg2rad ( $dec );
         $tau = 15 * (self::lmst ( $mjd, $glon ) - $ra);
-        
         return $sglat * sin ( $decRad ) + $cglat * cos ( $decRad ) * cos ( deg2rad ( $tau ) );
     }
-    
+
     /**
      * returns an angle in degrees in the range 0 to 360
      */
@@ -252,7 +248,7 @@ class NGC2244_Moonrise_Moonset {
                 280.46061839 + 360.98564736629 * $d + 0.000387933 * $t * $t - $t * $t * $t / 38710000 );
         return $lst / 15 + $glon / 15;
     }
-    
+
     /**
      * takes t and returns the geocentric ra and dec in an array mooneq
      * claimed good to 5' (angle) in ra and 1' in dec
@@ -263,7 +259,7 @@ class NGC2244_Moonrise_Moonset {
         $arc = 206264.8062;
         $coseps = 0.91748;
         $sineps = 0.39778;
-        
+
         $lo = self::frac ( 0.606433 + 1336.855225 * $t );
         $l = $p2 * self::frac ( 0.374897 + 1325.552410 * $t );
         $l2 = $l * 2;
@@ -272,10 +268,10 @@ class NGC2244_Moonrise_Moonset {
         $d2 = $d * 2;
         $f = $p2 * self::frac ( 0.259086 + 1342.227825 * $t );
         $f2 = $f * 2;
-        
+
         $sinls = sin ( $ls );
         $sinf2 = sin ( $f2 );
-        
+
         $dl = 22640 * sin ( $l );
         $dl += - 4586 * sin ( $l - $d2 );
         $dl += 2370 * sin ( $d2 );
@@ -290,7 +286,7 @@ class NGC2244_Moonrise_Moonset {
         $dl += - 110 * sin ( $l + $ls );
         $dl += 148 * sin ( $l - $ls );
         $dl += - 55 * sin ( $f2 - $d2 );
-        
+
         $s = $f + ($dl + 412 * $sinf2 + 541 * $sinls) / $arc;
         $h = $f - $d2;
         $n = - 526 * sin ( $h );
@@ -315,8 +311,7 @@ class NGC2244_Moonrise_Moonset {
         $ra = (48 / $p2) * atan ( $y / ($x + $rho) );
         $ra = $ra < 0 ? $ra + 24 : $ra;
         
-        return array ($dec,$ra 
-        );
+        return array ($dec,$ra);
     }
     
     /**
@@ -326,7 +321,7 @@ class NGC2244_Moonrise_Moonset {
         $x -= ( int ) $x;
         return $x < 0 ? $x + 1 : $x;
     }
-    
+  
     /**
      * Takes the day, month, year and hours in the day and returns the
      * modified julian day number defined as mjd = jd - 2400000.5
@@ -337,7 +332,7 @@ class NGC2244_Moonrise_Moonset {
             $month += 12;
             $year --;
         }
-        
+
         $a = 10000 * $year + 100 * $month + $day;
         $b = 0;
         if ($a <= 15821004.1) {

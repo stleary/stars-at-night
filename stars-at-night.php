@@ -11,7 +11,7 @@
  * Author:            Sean Leary
  * Author URI:        https://github.com/stleary/stars-at-night
  */
- 
+
 /*
 MIT License
 

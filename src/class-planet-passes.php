@@ -35,7 +35,7 @@ include ('class-planet-data.php');
  */
 class NGC2244_Planet_Passes {
     public $sunriseSunset;
-    
+
     /**
      * Returns a string containing the HTML to render a table of
      * planet data inside a div.
@@ -58,14 +58,14 @@ class NGC2244_Planet_Passes {
         // convert the php-compatible timezone name to heavens-above format
         $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
         $heavensAboveTZ = $dateTime->format ( 'T' );
-        
+
         // just take a wild guess as to the location altitude, in meters
         $locationAlt = 300;
         $url = "http://www.heavens-above.com/PlanetSummary.aspx?lat=" . $lat;
         $url = $url . "&lng=" . $long . "&loc=Unspecified&alt=" . $locationAlt;
         // $url = $url . "&tz=" . $heavensAboveTZ;
         $rows = $this->getPlanetData ( $url, $sunriseSunset );
-        
+
         $mercury = 0;
         $venus = 1;
         $mars = 2;
@@ -74,7 +74,7 @@ class NGC2244_Planet_Passes {
         $uranus = 5;
         $neptune = 6;
         $pluto = 7;
-        
+
         // table and column headers
         $planetTable = '<div><table class="ngc2244_stars_at_night_standardTable">';
         $planetTable .= '<thead><tr><td align="center" valign="middle" colspan="11">Planetary Data for today</td></tr>';
@@ -196,7 +196,7 @@ class NGC2244_Planet_Passes {
         $planetTable = $planetTable . '</tbody></table></div>';
         return $planetTable;
     }
-    
+
     /**
      * Get an array of planet data from cache or server.
      * Each row of the array will be an NGC2244_Planet_Data instance. If the user makes multiple
@@ -219,7 +219,7 @@ class NGC2244_Planet_Passes {
          * only date field is populated in the first array element; it contains the
          * date of the query, to ensure transient cache holds the required day.
          */
-        
+
         // Uncomment when you want to clear the cache
         // error_log ( "delete cache for " . $url );
         // delete_transient ( $url );
@@ -284,7 +284,7 @@ class NGC2244_Planet_Passes {
         }
         return $data;
     }
-    
+
     /**
      * Sends a request to the remote heavens-above server for ISS data for the next 10 days.
      * Response might be empty of row content if there are no ISS passes or if the server is unable
@@ -299,7 +299,7 @@ class NGC2244_Planet_Passes {
     private function getPlanetDataFromServer($url, $sunriseSunset) {
         // error_log ( 'getting planet data' )
         $this->sunriseSunset = $sunriseSunset;
-        
+
         /**
          * Can't rely on using file_get_contents() since a php.ini server
          * config may dissallow use of this method: allow_url_fopen=0
@@ -316,22 +316,21 @@ class NGC2244_Planet_Passes {
         libxml_use_internal_errors ( $internalErrors );
         $doc->preserveWhiteSpace = false;
         $domXPath = new DOMXpath ( $doc );
-        
+
         /**
          * our anchor is going to be the table that has a Mercury column header
          * table > thead > tr > td > Mercury
          */
-        
+
         $table = $domXPath->query ( "//td[.='Mercury']/../../.." )->item ( 0 );
         $planetNames = $domXPath->query ( "//td[.='Mercury']/../*/text()", $table );
         $constellations = $domXPath->query ( "//td[.='Constellation']/../td/a/text()", $table );
         $meridians = $domXPath->query ( "//td[.='Meridian transit']/../td/text()", $table );
         $rises = $domXPath->query ( "//td[.='Rises']/../td/text()", $table );
         $sets = $domXPath->query ( "//td[.='Sets']/../td/text()", $table );
-        
         $today = new DateTime ();
         $todayStr = $today->format ( 'm/d/Y' );
-        
+
         /**
          * In this case data is an associate array key=planetname value=planet_data
          * For this table, every item has today's date, which is the transient expiration date.
@@ -342,7 +341,7 @@ class NGC2244_Planet_Passes {
             $data->date = $todayStr;
             $planetTable [$i] = $data;
         }
-        
+
         if (! is_null ( $planetNames )) {
             $count = 0;
             // there is an empty td on far left, but it does not seem to be returned in the query
@@ -351,7 +350,7 @@ class NGC2244_Planet_Passes {
                 ++ $count;
             }
         }
-        
+
         // fill in the planet data detail
         if (! is_null ( $constellations )) {
             $count = 0;
@@ -399,7 +398,7 @@ class NGC2244_Planet_Passes {
         }
         return $planetTable;
     }
-    
+
     /**
      * Calculate visibility for this planet on this date.
      * Not used at the present time - this method is buggy
@@ -425,24 +424,24 @@ class NGC2244_Planet_Passes {
         // error_log ( 'sunset2: ' . $sunset2Date->format ( "m/d/Y H:i:s" ) );
         // error_log ( 'end: ' . $endDate->format ( "m/d/Y H:i:s" ) );
         // error_log ( 'end2: ' . $end2Date->format ( "m/d/Y H:i:s" ) );
-        
+
         // resets all timestamps to today 00:00:00
         $riseDate = new DateTime ( 'today ' . $planetData->rise );
         $setDate = new DateTime ( 'today ' . $planetData->set );
         $meridianDate = new DateTime ( 'today ' . $planetData->meridian );
-        
+
         if ($meridianDate < $riseDate) {
             $meridianDate->add ( new DateInterval ( 'P1D' ) );
             $setDate->add ( new DateInterval ( 'P1D' ) );
         } else if ($setDate < $meridianDate) {
             $setDate->add ( new DateInterval ( 'P1D' ) );
         }
-        
+
         // error_log (
         // 'planet: ' . $planetData->name . ' rise: ' . $riseDate->format ( 'd H:i' ) .
         // ' merid: ' . $meridianDate->format ( 'd H:i' ) . ' set: ' .
         // $setDate->format ( 'd H:i' ) );
-        
+
         $visibility = '';
         if ($setDate >= $sunsetDate && $setDate < $sunset2Date) {
             $visibility = 'Visible';

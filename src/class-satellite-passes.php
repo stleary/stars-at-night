@@ -59,7 +59,7 @@ class NGC2244_Satellite_Passes {
         // convert the php-compatible timezone name to heavens-above format
         $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
         $heavensAboveTZ = $dateTime->format ( 'T' );
-        
+
         // just take a wild guess as to the location altitude, in meters
         $locationAlt = 300;
         $url = "http://www.heavens-above.com/PassSummary.aspx?satid=25544&lat=" . $lat;
@@ -117,7 +117,7 @@ class NGC2244_Satellite_Passes {
         $issTable = $issTable . '</table></div>';
         return $issTable;
     }
-    
+
     /**
      * Returns a string containing the HTML to render a table of
      * Iridium satellite pass data inside a div.
@@ -145,7 +145,7 @@ class NGC2244_Satellite_Passes {
         // convert the php-compatible timezone name to heavens-above format
         $dateTime->setTimeZone ( new DateTimeZone ( $timezone ) );
         $heavensAboveTZ = $dateTime->format ( 'T' );
-        
+
         // just take a wild guess as to the location altitude, in meters
         $locationAlt = 300;
         $url = "http://www.heavens-above.com/IridiumFlares.aspx?lat=" . $lat;
@@ -190,7 +190,7 @@ class NGC2244_Satellite_Passes {
         $iridiumTable = $iridiumTable . '</table></div>';
         return $iridiumTable;
     }
-    
+
     /**
      * Get an array of ISS visible passes from cache or server.
      * Each row of the array will be an NGC2244_ISS_Data instance. If the user makes multiple ISS
@@ -227,11 +227,11 @@ class NGC2244_Satellite_Passes {
          * date range ended before the date of the first matched row. Either way
          * the code should work correctly.
          */
-        
+
         // Uncomment when you want to clear the cache
         // error_log ( "delete cache for " . $url );
         // delete_transient ( $url );
-        
+
         error_log ( "getting transient for " . $url );
         if (false !== ($data = get_transient ( $url ))) {
             if (is_array ( $data )) {
@@ -246,7 +246,7 @@ class NGC2244_Satellite_Passes {
                         error_log ( 'row ' . $count ++ );
                         error_log ( $row->toString () );
                     }
-                    
+
                     $row = $data [0];
                     $rowDate = $row->date;
                     error_log ( "row date = " . $rowDate );
@@ -299,7 +299,7 @@ class NGC2244_Satellite_Passes {
             return $rows;
         }
     }
-    
+
     /**
      * Checks the dates on an array of rows, returning those that fall between the start and end
      * dates.
@@ -347,7 +347,7 @@ class NGC2244_Satellite_Passes {
                 } else {
                     $rowDateStr .= $curYearStr;
                 }
-                
+
                 $rowDate = new DateTime ( $rowDateStr );
                 if ($startDate <= $rowDate && $endDate >= $rowDate) {
                     // error_log ( 'row ' . $i . ' found ' . $data [$i]->date );
@@ -366,7 +366,7 @@ class NGC2244_Satellite_Passes {
         }
         return NULL;
     }
-    
+
     /**
      * Sends a request to the remote heavens-above server for ISS data for the next 10 days.
      * Response might be empty of row content if there are no ISS passes or if the server is unable
@@ -406,7 +406,7 @@ class NGC2244_Satellite_Passes {
         $tenday->add ( new DateInterval ( 'P10D' ) );
         $item->date = $tenday->format ( 'm/d/Y' );
         $issTable [0] = $item;
-        
+
         if (! is_null ( $rows )) {
             // error_log ( 'iss rows found' );
             $issTableCount = 1;
@@ -439,7 +439,7 @@ class NGC2244_Satellite_Passes {
         }
         return $issTable;
     }
-    
+
     /**
      * Sends a request to the remote heavens-above server for ISS data for the next 10 days.
      * Response might be empty of row content if there are no ISS passes or if the server is unable
@@ -478,7 +478,7 @@ class NGC2244_Satellite_Passes {
         $sevenday->add ( new DateInterval ( 'P7D' ) );
         $item->date = $sevenday->format ( 'm/d/Y' );
         $iridiumTable [0] = $item;
-        
+
         if (! is_null ( $rows )) {
             $iridiumTableCount = 1;
             foreach ( $rows as $row ) {

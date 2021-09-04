@@ -1,4 +1,5 @@
 <?php
+
 /*
  * MIT License
  *
@@ -41,7 +42,7 @@ class NGC2244_Sunrise_Sunset {
     public $sunSet;
     public $morningTwilight;
     public $eveningTwilight;
-    
+
     /**
      *
      * @param float $lat
@@ -60,7 +61,7 @@ class NGC2244_Sunrise_Sunset {
          * http://grokbase.com/t/php/php-bugs/09932wqn2a/49448-new-sunset-sunrise-zenith-default-values-wrong
          */
         $zenith = 90 + (50 / 60);
-        
+
         /**
          * get Sun times.
          * returns a string like this: 07:10
@@ -69,14 +70,14 @@ class NGC2244_Sunrise_Sunset {
                 $zenith, $sunTzOffset );
         $this->sunSet = date_sunset ( strtotime ( $date->format('m/d/Y') ), SUNFUNCS_RET_STRING, $lat, $long, 
                 $zenith, $sunTzOffset );
-        
+
         // get the twilight times, which we define as 90 minutes before sunrise, and after sunset
         $this->morningTwilight = $this->calculateTwilight ( $date, $sunTzOffset, $this->sunRise, 
                 (- 90 * 60) );
         $this->eveningTwilight = $this->calculateTwilight ( $date, $sunTzOffset, $this->sunSet, 
                 (90 * 60) );
     }
-    
+
     /**
      * This method can be used to calculate early morning or late evening
      * astronomical twilight.

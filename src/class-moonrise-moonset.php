@@ -92,9 +92,7 @@ class NGC2244_Moonrise_Moonset {
         $this->month = $remote_dt->format ( 'm' );
         $this->day = $remote_dt->format ( 'd' );
         $today = $remote_dt->format ( 'D m/d/Y' );
-
         $moonData = $this->getMoonTimes ( $lat, $lon );
-
         $moonRiseData = $moonData->moonrise;
         $moonSetData = $moonData->moonset;
         $dtmr = new DateTime ( "@$moonRiseData" );
@@ -214,10 +212,9 @@ class NGC2244_Moonrise_Moonset {
             $nz = abs ( $z2 ) < 1 ? $nz + 1 : $nz;
             $z1 = $z1 < - 1 ? $z2 : $z1;
         }
-
-        return array ($nz,$z1,$z2,$xe,$ye 
-        );
+        return array ($nz,$z1,$z2,$xe,$ye);
     }
+
 
     /**
      * this rather mickey mouse function takes a lot of
@@ -232,7 +229,6 @@ class NGC2244_Moonrise_Moonset {
         $dec = $objpos [0];
         $decRad = deg2rad ( $dec );
         $tau = 15 * (self::lmst ( $mjd, $glon ) - $ra);
-
         return $sglat * sin ( $decRad ) + $cglat * cos ( $decRad ) * cos ( deg2rad ( $tau ) );
     }
 
@@ -300,10 +296,10 @@ class NGC2244_Moonrise_Moonset {
         $n += 11 * sin ( - $ls + $h );
         $n += - 25 * sin ( - $l2 + $f );
         $n += 21 * sin ( - $l + $f );
-
+        
         $L_moon = $p2 * self::frac ( $lo + $dl / 1296000 );
         $B_moon = (18520.0 * sin ( $s ) + $n) / $arc;
-
+        
         $cb = cos ( $B_moon );
         $x = $cb * cos ( $L_moon );
         $v = $cb * sin ( $L_moon );
@@ -314,11 +310,10 @@ class NGC2244_Moonrise_Moonset {
         $dec = (360 / $p2) * atan ( $z / $rho );
         $ra = (48 / $p2) * atan ( $y / ($x + $rho) );
         $ra = $ra < 0 ? $ra + 24 : $ra;
-
-        return array ($dec,$ra 
-        );
+        
+        return array ($dec,$ra);
     }
-
+    
     /**
      * returns the self::fractional part of x as used in self::minimoon and minisun
      */
@@ -326,7 +321,7 @@ class NGC2244_Moonrise_Moonset {
         $x -= ( int ) $x;
         return $x < 0 ? $x + 1 : $x;
     }
-
+  
     /**
      * Takes the day, month, year and hours in the day and returns the
      * modified julian day number defined as mjd = jd - 2400000.5
@@ -345,11 +340,11 @@ class NGC2244_Moonrise_Moonset {
         } else {
             $b = ( int ) ($year / 400) - ( int ) ($year / 100) + ( int ) ($year / 4);
         }
-
+        
         $a = 365 * $year - 679004;
         return $a + $b + ( int ) (30.6001 * ($month + 1)) + $day;
     }
-
+    
     /**
      * Converts an hours decimal to hours and minutes
      */

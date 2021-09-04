@@ -146,11 +146,11 @@ class Stars_At_Night_Manager {
         if (! defined ( 'WPINC' )) {
             die ();
         }
-
+        
         $this->satellitePasses = new NGC2244_Satellite_Passes ();
         $this->planetPasses = new NGC2244_Planet_Passes ();
         $this->sunriseSunset = new NGC2244_Sunrise_Sunset ();
-
+        
         /**
          * these are the supported fields of raw user input
          */
@@ -309,16 +309,15 @@ class Stars_At_Night_Manager {
             $remote_dt = new DateTime ( $date->format ( 'm/d/Y' ), $remote_dtz );
             $sunTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 3600;
             $moonTzOffset = $remote_dtz->getOffset ( $remote_dt ) / 60;
-
+            
             // get the Sun times
             $this->sunriseSunset->calculate_sun_times ( $this->sanitized_lat, 
                     $this->sanitized_long, $sunTzOffset, $date );
-
+            
             // get the Moon times
             $moonriseMoonset = new NGC2244_Moonrise_Moonset ();
             $moonriseMoonset->calculate_moon_times ( $this->sanitized_lat, $this->sanitized_long, 
                     $moonTzOffset, $this->sanitized_timezone, $date );
-
             // convert date for table rendering
             $dateStr = $date->format ( 'd M Y' );
             // get the tables
@@ -356,10 +355,10 @@ class Stars_At_Night_Manager {
         // $phaseArray[$roundAge] );
         // $date->add ( new DateInterval ( 'P1D' ) );
         // }
-
+        
         return $sunMoonTable;
     }
-
+    
     /**
      * Validates the parameters sent by the user.
      *

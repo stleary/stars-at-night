@@ -328,7 +328,6 @@ class NGC2244_Planet_Passes {
         $meridians = $domXPath->query ( "//td[.='Meridian transit']/../td/text()", $table );
         $rises = $domXPath->query ( "//td[.='Rises']/../td/text()", $table );
         $sets = $domXPath->query ( "//td[.='Sets']/../td/text()", $table );
-
         $today = new DateTime ();
         $todayStr = $today->format ( 'm/d/Y' );
 

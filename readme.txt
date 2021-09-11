@@ -176,3 +176,4 @@ Minimum required version.
 
 == Contributors ==
 stleary
+Peter Lieverdink

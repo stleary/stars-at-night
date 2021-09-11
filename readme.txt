@@ -5,7 +5,7 @@ Tags: astronomy
 Requires at least: 4.6
 Requires PHP: 7.0
 Tested up to: 5.8
-Stable tag: 1.8.1
+Stable tag: 1.9
 License: MIT
 License URI: https://opensource.org/licenses/MIT
 
@@ -31,11 +31,17 @@ These parameters are optional:
 * stars-at-night name=Chennai lat=13.08 long=80.26 timezone=Asia/Kolkata days=1
 * stars-at-night name="COE Observing Field" lat=30.891 long=-97.4265 timezone=America/Chicago days=10
 
+You can also display the individual data tables via more specific shortcodes:
+
+* stars-at-night-sun-moon name="Mount Kilimanjaro" lat=-2.55 long=37.55 timezone=Africa/Nairobi
+* stars-at-night-planets name="Ushuaia" lat=-54.8 long=-68.33 timezone=America/Argentina/Ushuaia
+* stars-at-night-iss name="Mount Burnett Observatory" lat=-37.9 long=145.4 timezone=Australia/Melbourne days=7
+
 The output consists of simple HTML tables:
 
 * Sun/Moon table: The times for sunrise, sunset, moonrise, moonset, morning astronomical twilight, and evening astronomical twilight for the specified days (max 10 days).
 * Planets table: The times and visibility for the planets, for the current day.
-* (DISABLED - will be restored later) ISS table: The times and directions for visible ISS passes over the specified days (max 10 days).
+* ISS table: The times and directions for visible ISS passes over the specified days (max 10 days).
 * (REMOVED) Iridium flares table: The times and directions for visible Iridium flares over the specified days (max 7 days).
 
 You can view the plugin in action here: [http://johnjleary.com/notforlong](http://johnjleary.com/notforlong)
@@ -47,6 +53,7 @@ You can view the plugin in action here: [http://johnjleary.com/notforlong](http:
 * Moonrise and Moonset class (with a correction for timezone): http://dxprog.com/entry/calculate-moon-rise-and-set-in-php
 * Moon phase class: https://github.com/solarissmoke/php-moon-phase
 * Planetary, ISS and Iridium Flare tables are obtained by sending GET requests to: http://heavens-above.com (HTTP API used with permission)
+* Per-table shortcodes implemented by Peter Lieverdink
 
 == Installation ==
 
@@ -83,9 +90,15 @@ More is coming. Stay tuned!  If you have a specific request, let us know.
 
 1. Sunrise and sunset table
 2. Planet table
+3. ISS table
 
 
 == Changelog ==
+
+= 1.9 =
+
+Short codes to display a single table at a time.
+Restore ISS table.
 
 = 1.8.1 =
 

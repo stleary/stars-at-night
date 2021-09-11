@@ -13,7 +13,7 @@ The plugin is activated by the shortcode \[stars-at-night\]. Here is an example:
 
 You can also display the individual data tables via more specific shortcodes:
 
-* \[stars-at-night-sun-moon name=\"Mount Kilimanjaro\" lat=-2.55 long=37.55 timezone=Africa/EAT\]
+* \[stars-at-night-sun-moon name=\"Mount Kilimanjaro\" lat=-2.55 long=37.55 timezone=Africa/Nairobi\]
 * \[stars-at-night-planets name=\"Ushuaia\" lat=-54.8 long=-68.33 timezone=America/Argentina/Ushuaia\]
 * \[stars-at-night-iss name=\"Mount Burnett Observatory\" lat=-37.9 long=145.4 timezone=Australia/Melbourne days=7\]
 
